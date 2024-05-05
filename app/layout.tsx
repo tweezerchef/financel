@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   icons: {
-    icon: "/favicon.png", // /public path
+    icon: "/favicon.png",
   },
   title: "Financel",
   description: "A game for the brothers of Finance",
