@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     icon: "/favicon.png",
   },
   title: "Financel",
-  description: "A game for the brothers of Finance",
+  description: "A game for the Brothers of Finance",
 };
 
 export default function RootLayout({
