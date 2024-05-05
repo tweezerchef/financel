@@ -1,0 +1,44 @@
+model User {
+    id String @id @default(uuid())
+}
+
+model Dates {
+    id            String          @id @default(uuid())
+    date          String          @unique
+    Stocks        Stocks[]
+    InterestRates InterestRates[]
+    Currencys     Currencys[]
+    Commodities   Commodities[]
+}
+
+model Stocks {
+    id    String @id @default(uuid())
+    name  String
+    price Float
+    date  String
+    Dates Dates  @relation(fields: [date], references: [id])
+}
+
+model InterestRates {
+    id    String @id @default(uuid())
+    name  String
+    rate  Float
+    date  String
+    Dates Dates  @relation(fields: [date], references: [id])
+}
+
+model Currencys {
+    id    String @id @default(uuid())
+    name  String
+    price Float
+    date  String
+    Dates Dates  @relation(fields: [date], references: [id])
+}
+
+model Commodities {
+    id    String @id @default(uuid())
+    name  String
+    price Float
+    date  String
+    Dates Dates  @relation(fields: [date], references: [id])
+}
