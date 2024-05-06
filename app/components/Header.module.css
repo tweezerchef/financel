@@ -1,10 +1,6 @@
 .wrapper {
   position: relative;
   padding-top: rem(180px);
-  /* padding-bottom: rem(130px);
-  background-image: url(https://images.unsplash.com/photo-1573164713988-8665fc963095?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=980&q=80);
-  background-size: cover;
-  background-position: center; */
 
   @media (max-width: $mantine-breakpoint-xs) {
     padding-top: rem(80px);
@@ -45,7 +41,7 @@
   text-align: center;
 
   @media (max-width: $mantine-breakpoint-xs) {
-    font-size: var(--mantine-font-size-md);
+    font-size: var(--mantine-font-size-lg);
     text-align: left;
   }
 }

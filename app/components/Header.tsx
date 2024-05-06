@@ -1,6 +1,6 @@
-import cx from "clsx";
+import Link from "next/link";
 import { Title, Text, Container, Button, Overlay } from "@mantine/core";
-import classes from "./HeroImageBackground.module.css";
+import classes from "./Header.module.css";
 import Image from "next/image";
 
 export function Header() {
@@ -26,9 +26,11 @@ export function Header() {
         </Container>
 
         <div className={classes.controls}>
-          <Button className={classes.control} variant="white" size="lg">
-            Continue as Guest
-          </Button>
+          <Link href="/game">
+            <Button className={classes.control} variant="white" size="lg">
+              Continue as Guest
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
