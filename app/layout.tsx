@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import type { Metadata } from "next";
 import "@mantine/core/styles.css";
@@ -26,7 +25,9 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>{children}</MantineProvider>
+        <main>
+          <MantineProvider>{children}</MantineProvider>
+        </main>
       </body>
     </html>
   );
