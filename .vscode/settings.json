@@ -1,7 +1,7 @@
 {
   "WillLuke.nextjs.addTypesOnSave": true,
   "WillLuke.nextjs.hasPrompted": true,
-  "cSpell.words": ["Financel", "Mantine"],
+  "cSpell.words": ["Financel", "Financle", "Mantine"],
   "cssVariables.lookupFiles": [
     "**/*.css",
     "**/*.scss",
