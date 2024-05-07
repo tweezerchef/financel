@@ -16,11 +16,11 @@ export function Header() {
       <Overlay color="#000" opacity={0.65} zIndex={1} />
 
       <div className={classes.inner}>
-        <Title className={classes.title}>Financel</Title>
+        <Title className={classes.title}>Financle</Title>
 
         <Container size={640}>
           <Text size="lg" className={classes.description}>
-            Financel is where the Brothers Of Finance (gender neutral) come
+            Financle is where the Brothers Of Finance (gender neutral) come
             together to prove their worth.
           </Text>
         </Container>
