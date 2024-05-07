@@ -1,0 +1,7 @@
+/* Layout.module.css */
+.rootContainer {
+    width: 100%;         /* Use the full viewport width */
+    max-width: 500px;    /* Maximum width for the content */
+    margin-left: auto;   /* Automatically adjust the left margin */
+    margin-right: auto;  /* Automatically adjust the right margin */
+  }

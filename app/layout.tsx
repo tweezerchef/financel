@@ -1,6 +1,8 @@
 import { Inter } from "next/font/google";
 import type { Metadata } from "next";
+import { Center } from "@mantine/core";
 import "@mantine/core/styles.css";
+import styles from "./Layout.module.css";
 
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 
@@ -26,7 +28,11 @@ export default function RootLayout({
       </head>
       <body>
         <main>
-          <MantineProvider>{children}</MantineProvider>
+          <MantineProvider>
+            <div className={styles.rootContainer}>
+              <Center maw={500}>{children}</Center>
+            </div>
+          </MantineProvider>
         </main>
       </body>
     </html>
