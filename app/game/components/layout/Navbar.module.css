@@ -8,3 +8,15 @@
       background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
     }
   }
+  .burger {
+    position: absolute;
+    top: 10;
+    left: 0;
+    z-index: 2;
+  }
+
+  .menuGroup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }

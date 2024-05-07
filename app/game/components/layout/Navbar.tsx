@@ -1,21 +1,32 @@
 "use client";
 import { Burger, Group, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import classes from "./MobileNavbar.module.css";
+import classes from "./Navbar.module.css";
 
-export default function Navbar() {
+export function Navbar() {
   const [opened, { toggle }] = useDisclosure();
 
   return (
     <div>
       <Burger
+        className={classes.burger}
+        aria-label="Toggle navigation"
         opened={opened}
         onClick={toggle}
-        hiddenFrom="sm"
-        size="sm"
-        style={{ position: "absolute", top: 10, left: 10, zIndex: 2 }}
+        size="lg"
       />
-      {/* Add more client-only interactive elements here as needed */}
+      <Group
+        style={{
+          display: opened ? "flex" : "none",
+          flexDirection: "column",
+          padding: "10px 0",
+        }}
+      >
+        <UnstyledButton className={classes.control}>Home</UnstyledButton>
+        <UnstyledButton className={classes.control}>Blog</UnstyledButton>
+        <UnstyledButton className={classes.control}>Contacts</UnstyledButton>
+        <UnstyledButton className={classes.control}>Support</UnstyledButton>
+      </Group>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+"use client"
 import { Container, Group, Anchor } from "@mantine/core";
 import Image from "next/image";
 
