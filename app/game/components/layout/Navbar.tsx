@@ -15,11 +15,10 @@ export function Navbar() {
         onClick={toggle}
         size="lg"
       />
-      <Group
+     <Group
+        className={opened ? classes.menuVisible : classes.menuHidden}
         style={{
-          display: opened ? "flex" : "none",
           flexDirection: "column",
-          padding: "10px 0",
         }}
       >
         <UnstyledButton className={classes.control}>Home</UnstyledButton>
