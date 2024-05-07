@@ -10,6 +10,7 @@ export function Header() {
         src="/loginHeader.webp"
         alt="Financel"
         fill
+        sizes="max-width: 500px max-height: 300px"
         quality={100}
         priority={true}
       />
