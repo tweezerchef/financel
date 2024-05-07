@@ -1,6 +1,7 @@
-"use client";
-import { Grid } from "@mantine/core";
-import { InterestRateGuess } from "./components/interestRate/InterestRateGuess";
+'use client'
+
+import { Grid } from '@mantine/core'
+import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
 
 export default function Game() {
   return (
@@ -24,5 +25,5 @@ export default function Game() {
         <h1>Currency Date</h1>
       </Grid.Col>
     </Grid>
-  );
+  )
 }
