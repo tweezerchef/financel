@@ -1,25 +1,19 @@
 'use client'
 
-import { Stack } from '@mantine/core'
+import { Stack, Container } from '@mantine/core'
 import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
 import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
 import classes from './Game.module.css'
 
 export default function Game() {
   return (
-    <Stack
-      style={{ height: '100%' }}
-      bg="var(--mantine-color-body)"
-      align="center"
-      justify="center"
-      gap="sm"
-    >
-      <div style={{ height: '25%' }}>
+    <div className={classes.container}>
+      <div className={classes.dayOf}>
         <InterestRateDayOf />
       </div>
-      <div style={{ height: '75%' }}>
+      <div className={classes.guess}>
         <InterestRateGuess />
       </div>
-    </Stack>
+    </div>
   )
 }
