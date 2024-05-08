@@ -3,6 +3,7 @@
 import { Stack } from '@mantine/core'
 import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
 import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
+import classes from './Game.module.css'
 
 export default function Game() {
   return (

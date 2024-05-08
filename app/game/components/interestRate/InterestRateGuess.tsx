@@ -12,6 +12,9 @@ export function InterestRateGuess() {
       <NumberInput decimalScale={3} fixedDecimalScale />
       <NumberInput decimalScale={3} fixedDecimalScale />
       <NumberInput decimalScale={3} fixedDecimalScale />
+      <NumberInput decimalScale={3} fixedDecimalScale />
+      <NumberInput decimalScale={3} fixedDecimalScale />
+      <NumberInput decimalScale={3} fixedDecimalScale />
     </Stack>
   )
 }
