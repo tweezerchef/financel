@@ -1,7 +1,8 @@
-"use client";
-import Link from "next/link";
-import { useToggle, upperFirst } from "@mantine/hooks";
-import { useForm } from "@mantine/form";
+'use client'
+
+import Link from 'next/link'
+import { useToggle, upperFirst } from '@mantine/hooks'
+import { useForm } from '@mantine/form'
 import {
   TextInput,
   PasswordInput,
@@ -14,28 +15,28 @@ import {
   Checkbox,
   Anchor,
   Stack,
-} from "@mantine/core";
-import { GoogleButton } from "./buttons/GoogleButton";
-import { TwitterButton } from "./buttons/TwitterButton";
+} from '@mantine/core'
+import { GoogleButton } from './buttons/GoogleButton'
+import { TwitterButton } from './buttons/TwitterButton'
 
 export function Login(props: PaperProps) {
-  const [type, toggle] = useToggle(["login", "register"]);
+  const [type, toggle] = useToggle(['login', 'register'])
   const form = useForm({
     initialValues: {
-      email: "",
-      name: "",
-      password: "",
+      email: '',
+      name: '',
+      password: '',
       terms: true,
     },
 
     validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
+      email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
       password: (val) =>
         val.length <= 6
-          ? "Password should include at least 6 characters"
+          ? 'Password should include at least 6 characters'
           : null,
     },
-  });
+  })
 
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
@@ -52,13 +53,13 @@ export function Login(props: PaperProps) {
 
       <form onSubmit={form.onSubmit(() => {})}>
         <Stack>
-          {type === "register" && (
+          {type === 'register' && (
             <TextInput
               label="Name"
               placeholder="Your name"
               value={form.values.name}
               onChange={(event) =>
-                form.setFieldValue("name", event.currentTarget.value)
+                form.setFieldValue('name', event.currentTarget.value)
               }
               radius="md"
             />
@@ -70,9 +71,9 @@ export function Login(props: PaperProps) {
             placeholder="hello@mantine.dev"
             value={form.values.email}
             onChange={(event) =>
-              form.setFieldValue("email", event.currentTarget.value)
+              form.setFieldValue('email', event.currentTarget.value)
             }
-            error={form.errors.email && "Invalid email"}
+            error={form.errors.email && 'Invalid email'}
             radius="md"
           />
 
@@ -82,21 +83,21 @@ export function Login(props: PaperProps) {
             placeholder="Your password"
             value={form.values.password}
             onChange={(event) =>
-              form.setFieldValue("password", event.currentTarget.value)
+              form.setFieldValue('password', event.currentTarget.value)
             }
             error={
               form.errors.password &&
-              "Password should include at least 6 characters"
+              'Password should include at least 6 characters'
             }
             radius="md"
           />
 
-          {type === "register" && (
+          {type === 'register' && (
             <Checkbox
               label="I accept terms and conditions"
               checked={form.values.terms}
               onChange={(event) =>
-                form.setFieldValue("terms", event.currentTarget.checked)
+                form.setFieldValue('terms', event.currentTarget.checked)
               }
             />
           )}
@@ -110,8 +111,8 @@ export function Login(props: PaperProps) {
             onClick={() => toggle()}
             size="xs"
           >
-            {type === "register"
-              ? "Already have an account? Login"
+            {type === 'register'
+              ? 'Already have an account? Login'
               : "Don't have an account? Register"}
           </Anchor>
           <Button type="submit" radius="xl">
@@ -120,5 +121,5 @@ export function Login(props: PaperProps) {
         </Group>
       </form>
     </Paper>
-  );
+  )
 }
