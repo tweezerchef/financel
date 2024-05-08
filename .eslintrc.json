@@ -27,6 +27,7 @@
     "react/button-has-type": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": "off",
+    "react/jsx-props-no-spreading": "off",
     "import/prefer-default-export": "off",
     "semi": 0, // let it handle by prettier
     "react/function-component-definition": "off",

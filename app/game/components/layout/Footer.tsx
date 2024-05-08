@@ -1,19 +1,20 @@
-"use client"
-import { Container, Group, Anchor } from "@mantine/core";
-import Image from "next/image";
+'use client'
 
-import classes from "./Footer.module.css";
+import { Container, Group, Anchor } from '@mantine/core'
+import Image from 'next/image'
+
+import classes from './Footer.module.css'
 
 const links = [
-  { link: "#", label: "Contact" },
-  { link: "#", label: "Privacy" },
-  { link: "#", label: "Blog" },
-  { link: "#", label: "Careers" },
-];
+  { link: '#', label: 'Contact' },
+  { link: '#', label: 'Privacy' },
+  { link: '#', label: 'Blog' },
+  { link: '#', label: 'Careers' },
+]
 
 export function Footer() {
   const items = links.map((link) => (
-    <Anchor<"a">
+    <Anchor<'a'>
       c="dimmed"
       key={link.label}
       href={link.link}
@@ -22,7 +23,7 @@ export function Footer() {
     >
       {link.label}
     </Anchor>
-  ));
+  ))
 
   return (
     <div className={classes.footer}>
@@ -31,5 +32,5 @@ export function Footer() {
         <Group className={classes.links}>{items}</Group>
       </Container>
     </div>
-  );
+  )
 }
