@@ -7,13 +7,18 @@ import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
 export default function Game() {
   return (
     <Stack
+      style={{ height: '100%' }}
       bg="var(--mantine-color-body)"
       align="center"
       justify="center"
       gap="sm"
     >
-      <InterestRateGuess />
-      <InterestRateDayOf />
+      <div style={{ height: '25%' }}>
+        <InterestRateDayOf />
+      </div>
+      <div style={{ height: '75%' }}>
+        <InterestRateGuess />
+      </div>
     </Stack>
   )
 }

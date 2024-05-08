@@ -28,7 +28,7 @@ export default function RootLayout({
         <main>
           <MantineProvider>
             <div className={styles.rootContainer}>
-              <Center maw={500}>{children}</Center>
+              <Center>{children}</Center>
             </div>
           </MantineProvider>
         </main>

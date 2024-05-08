@@ -16,13 +16,21 @@ export default function Layout({
   children: React.ReactNode
 }>) {
   return (
-    <Container style={{ display: 'flex', flexDirection: 'column' }}>
+    <Container
+      style={{
+        minHeight: '99vh',
+        width: '100%',
+        display: 'flex',
+        overflow: 'hidden',
+        flexDirection: 'column',
+      }}
+    >
       <div style={{ height: 150, position: 'relative' }}>
         <Image
           src="/header.png"
           alt="Financel Logo"
-          fill
-          sizes="(max-width: 500px) 100vw"
+          layout="fill"
+          sizes="(max-width: 500px) 100vw, 500px"
           style={{ objectFit: 'cover' }}
           quality={100}
           priority
