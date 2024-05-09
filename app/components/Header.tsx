@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { Title, Text, Container, Button, Overlay } from "@mantine/core";
-import classes from "./Header.module.css";
-import Image from "next/image";
+import Link from 'next/link'
+import { Title, Text, Container, Button, Overlay } from '@mantine/core'
+import Image from 'next/image'
+import classes from './Header.module.css'
 
 export function Header() {
   return (
@@ -12,7 +12,7 @@ export function Header() {
         fill
         sizes="max-width: 500px max-height: 300px"
         quality={100}
-        priority={true}
+        priority
       />
       <Overlay color="#000" opacity={0.65} zIndex={1} />
 
@@ -35,5 +35,5 @@ export function Header() {
         </div>
       </div>
     </div>
-  );
+  )
 }

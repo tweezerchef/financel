@@ -1,29 +1,19 @@
 'use client'
 
-import { Grid } from '@mantine/core'
+import { Stack, Container } from '@mantine/core'
 import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
+import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
+import classes from './Game.module.css'
 
 export default function Game() {
   return (
-    <Grid justify="center" align="flex-start">
-      <Grid.Col span={6}>
+    <div className={classes.container}>
+      <div className={classes.dayOf}>
+        <InterestRateDayOf />
+      </div>
+      <div className={classes.guess}>
         <InterestRateGuess />
-      </Grid.Col>
-      <Grid.Col span={6}>
-        <h1>IR Date</h1>
-      </Grid.Col>
-      <Grid.Col span={6}>
-        <h1>Stock</h1>
-      </Grid.Col>
-      <Grid.Col span={6}>
-        <h1>StockDate</h1>
-      </Grid.Col>
-      <Grid.Col span={6}>
-        <h1>Currency</h1>
-      </Grid.Col>
-      <Grid.Col span={6}>
-        <h1>Currency Date</h1>
-      </Grid.Col>
-    </Grid>
+      </div>
+    </div>
   )
 }
