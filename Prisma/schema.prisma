@@ -19,6 +19,15 @@ enum Rank {
     PLATINUM
 }
 
+enum IRCategories {
+    T_30
+    T_20
+    T_10
+    T_5
+    T_1
+    T_OVERNIGHT
+}
+
 model User {
     id        String    @id @default(uuid())
     email     String    @unique
@@ -65,10 +74,10 @@ model StockPrice {
 }
 
 model InterestRate {
-    id     String              @id @default(uuid())
-    name   String              @unique
-    rates  InterestRatePrice[]
-    Result Result[]
+    id       String              @id @default(uuid())
+    catagory IRCategories        @unique
+    rates    InterestRatePrice[]
+    Result   Result[]
 }
 
 model InterestRatePrice {
