@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { arrowDecider } from '../../../../utility/arrowDecider'
+
+
 
 export async function GET(request: NextRequest) {
   const irDateInfo = { info: 'Interest Rate Date Info' }
@@ -12,31 +15,41 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { guess } = await request.json()
-    if (typeof guess !== 'number') throw new Error('Guess must be a number')
+    const { guess, category } = await request.json();
+    if (typeof guess !== 'number') throw new Error('Guess must be a number');
+    // if (typeof category !== IRCategory (category)) {
+    //   throw new Error('Invalid or missing category');
+    // }
+    //place holder this will be a placeholder for the actual rate.
+    const actualRate = 1.53;
 
-    return new NextResponse(`You guessed ${guess}`, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    })
+    const result = arrowDecider(guess, actualRate);
+
+    return new NextResponse(JSON.stringify({
+        guess: guess,
+        actualRate: actualRate,
+        direction: result.direction,
+        amount: result.amount
+    }), {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
   } catch (error: unknown) {
-    // We need to check if the error is an instance of Error
-    if (error instanceof Error)
+    if (error instanceof Error) {
       return new NextResponse(error.message, {
         status: 400,
         headers: {
           'Content-Type': 'text/plain',
         },
-      })
-
-    // If it's not an Error, we handle it generically
+      });
+    }
     return new NextResponse('An unexpected error occurred', {
       status: 500,
       headers: {
         'Content-Type': 'text/plain',
       },
-    })
+    });
   }
 }
