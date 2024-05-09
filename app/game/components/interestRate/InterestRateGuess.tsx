@@ -1,9 +1,20 @@
-import { Box } from "@mantine/core";
+import { Stack, NumberInput } from '@mantine/core'
 
 export function InterestRateGuess() {
   return (
-    <Box>
-      <h1>IR</h1>
-    </Box>
-  );
+    <Stack
+      style={{ height: '75%' }}
+      bg="var(--mantine-color-body)"
+      align="center"
+      justify="center"
+      gap="sm"
+    >
+      <NumberInput decimalScale={3} fixedDecimalScale />
+      <NumberInput decimalScale={3} fixedDecimalScale />
+      <NumberInput decimalScale={3} fixedDecimalScale />
+      <NumberInput decimalScale={3} fixedDecimalScale />
+      <NumberInput decimalScale={3} fixedDecimalScale />
+      <NumberInput decimalScale={3} fixedDecimalScale />
+    </Stack>
+  )
 }
