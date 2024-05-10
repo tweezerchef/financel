@@ -1,5 +1,4 @@
-// Assuming global.d.ts has the declaration:
-// declare type ResponseNumbers = 1 | 2 | 3 | 4 | 5;
+// for some reason the global type definitions are not working here
 type ResponseNumbers = 1 | 2 | 3 | 4 | 5
 
 type Direction = '↑' | '↓'

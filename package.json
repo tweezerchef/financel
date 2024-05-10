@@ -2,12 +2,16 @@
   "name": "financle",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "schema": "./app/lib/prisma/schema.prisma"
+  },
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
     "@mantine/core": "^7.9.0",
@@ -15,6 +19,7 @@
     "@mantine/hooks": "^7.9.0",
     "@mantine/notifications": "^7.9.0",
     "@mantinex/dev-icons": "^1.0.2",
+    "@prisma/client": "^5.13.0",
     "@vercel/postgres": "^0.8.0",
     "clsx": "^2.1.1",
     "next": "14.2.3",
