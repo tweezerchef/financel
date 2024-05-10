@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Title, Text, Container, Button, Overlay } from '@mantine/core'
 import Image from 'next/image'
-import classes from './Header.module.css'
+import classes from './ui/Header.module.css'
 
 export function Header() {
   return (

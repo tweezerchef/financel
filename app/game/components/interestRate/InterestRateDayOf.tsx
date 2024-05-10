@@ -1,6 +1,6 @@
 import { Box } from '@mantine/core'
 import Image from 'next/image'
-import classes from './InterestRateDayOf.module.css'
+import classes from './ui/InterestRateDayOf.module.css'
 
 export function InterestRateDayOf() {
   return (

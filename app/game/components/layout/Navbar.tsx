@@ -2,7 +2,7 @@
 
 import { Burger, Group, UnstyledButton } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import classes from './Navbar.module.css'
+import classes from './ui/Navbar.module.css'
 
 export function Navbar() {
   const [opened, { toggle }] = useDisclosure()
