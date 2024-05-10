@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { arrowDecider } from '../../../../utility/arrowDecider'
+import { arrowDecider } from '../../../lib/arrowDecider'
 
 
 
