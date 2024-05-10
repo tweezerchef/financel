@@ -21,6 +21,7 @@
     "@mantinex/dev-icons": "^1.0.2",
     "@prisma/client": "^5.13.0",
     "@vercel/postgres": "^0.8.0",
+    "@vercel/speed-insights": "^1.0.10",
     "clsx": "^2.1.1",
     "next": "14.2.3",
     "prisma": "^5.13.0",
