@@ -3,6 +3,7 @@
 ### 1. Introduction
 
 This is a project that takes some of the core concepts of games such as Tradle and Wordle and applies them to the world of finance. The goal is to create a system that is both fun and educational. The project is still in the early stages of development, but we are excited to see where it goes. For more information send me an email at [ltomblock@gmail.com](mailto:ltomblock@gmail.com)
+Change
 
 ### 2. Quick Local Setup
 
