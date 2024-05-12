@@ -1,3 +1,4 @@
+// MM change
 // for some reason the global type definitions are not working here
 type ResponseNumbers = 1 | 2 | 3 | 4 | 5
 
