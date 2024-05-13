@@ -1,13 +1,3 @@
-// for some reason the global type definitions are not working here
-type ResponseNumbers = 1 | 2 | 3 | 4 | 5
-
-type Direction = 'up' | 'down'
-
-type ArrowDeciderReturn = {
-  direction: Direction
-  amount: ResponseNumbers
-}
-
 function calculateArrowAmount(difference: number): ResponseNumbers {
   // This function determines the number of arrows based on the difference
   // Here, you define what difference corresponds to 1, 2, 3, 4, or 5 arrows
