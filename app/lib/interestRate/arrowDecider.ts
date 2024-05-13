@@ -1,7 +1,7 @@
 // for some reason the global type definitions are not working here
 type ResponseNumbers = 1 | 2 | 3 | 4 | 5
 
-type Direction = '↑' | '↓'
+type Direction = 'up' | 'down'
 
 type ArrowDeciderReturn = {
   direction: Direction
@@ -26,7 +26,7 @@ export function arrowDecider(
   const difference = Math.abs(guess - actual)
   const amount: ResponseNumbers = calculateArrowAmount(difference)
 
-  const direction = guess > actual ? '↓' : '↑'
+  const direction = guess > actual ? 'up' : 'down'
 
   return {
     direction,
