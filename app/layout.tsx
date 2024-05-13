@@ -1,11 +1,8 @@
-import { Inter } from 'next/font/google'
 import type { Metadata } from 'next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Center, ColorSchemeScript, MantineProvider } from '@mantine/core'
 import '@mantine/core/styles.css'
 import styles from './ui/Layout.module.css'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   icons: {

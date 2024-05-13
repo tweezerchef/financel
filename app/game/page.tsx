@@ -1,6 +1,5 @@
 'use client'
 
-import { Stack, Container } from '@mantine/core'
 import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
 import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
 import classes from './ui/Game.module.css'
