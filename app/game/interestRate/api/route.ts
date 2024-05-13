@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { arrowDecider } from '../../../lib/interestRate/arrowDecider'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const irDateInfo = { info: 'Interest Rate Date Info' }
   return new NextResponse(JSON.stringify({ irDateInfo }), {
     status: 200,
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { guess, category } = await request.json()
+    const { guess } = await request.json()
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
     // if (typeof category !== IRCategory (category)) {
     //   throw new Error('Invalid or missing category');
