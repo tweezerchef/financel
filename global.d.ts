@@ -1,5 +1,3 @@
-// Updated global.d.ts
-
 type Direction = 'up' | 'down'
 
 enum IRCategory {
