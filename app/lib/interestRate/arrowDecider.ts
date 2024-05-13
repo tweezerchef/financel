@@ -1,3 +1,4 @@
+
 function calculateArrowAmount(difference: number): ResponseNumbers {
   // This function determines the number of arrows based on the difference
   // Here, you define what difference corresponds to 1, 2, 3, 4, or 5 arrows
