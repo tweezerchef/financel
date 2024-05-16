@@ -1,58 +1,88 @@
 'use client'
 
-import { Stack, NumberInput, Button, Group } from '@mantine/core'
+import { NumberInput, Button, Group, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useState, useEffect } from 'react'
-import { GuessDisplay } from './components/GuessDisplay' // Ensure the path is correct
+import { useState } from 'react'
+import { GuessDisplay } from './components/GuessDisplay'
+import classes from './ui/InterestRateGuess.module.css'
 
 export function InterestRateGuess() {
-  const [result, setResult] = useState<{
-    number: ResponseNumbers
-    direction: Direction
-  } | null>(null)
-  const [flip, setFlip] = useState(false)
+  const [results, setResults] = useState<
+    Array<{
+      guess: number
+      result: { number: ResponseNumbers; direction: Direction } | null
+    } | null>
+  >(new Array(6).fill(null))
+  const [activeGuessIndex, setActiveGuessIndex] = useState(0)
   const form = useForm({
     initialValues: {
       guess: 0, // Initialize as number
     },
   })
 
-  const handleSubmit = (values: { guess: number }) => {
-    console.log('Submitted guess:', values.guess)
-    // Simulate a server response or call an API
-    setResult({ number: 2, direction: 'up' }) // Example server response
-    setFlip(true) // Trigger the flip on submission
+  const handleSubmit = async (values: { guess: number }) => {
+    try {
+      const result = fetch('/interestRate/api', {
+        method: 'POST',
+        body: JSON.stringify(values.guess),
+      })
+      console.log('Submitted guess:', values.guess)
+      // Simulate a server response or call an API
+      const newResults = [...results]
+      newResults[activeGuessIndex] = {
+        guess: values.guess,
+        result,
+      } // Example server response
+      setResults(newResults)
+
+      // Move to the next guess
+      if (activeGuessIndex < 5) setActiveGuessIndex(activeGuessIndex + 1)
+
+      form.reset()
+    } catch (error) {
+      console.error('Validation failed:', error)
+    }
+  }
+  // create a function that creates a random id
+  const createRandomId = () => {
+    return Math.random().toString(36).substring(7)
   }
 
-  useEffect(() => {
-    if (!form.values.guess) setFlip(false)
-  }, [form.values.guess])
-
   return (
-    <Stack
-      style={{ height: '75%' }}
-      bg="var(--mantine-color-body)"
-      align="center"
-      justify="center"
-      gap="sm"
-    >
-      <GuessDisplay guess={form.values.guess} result={result} flip={flip} />
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Group justify="center">
-          <NumberInput
-            decimalScale={2}
-            fixedDecimalScale
-            hideControls
-            {...form.getInputProps('guess', {
-              onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-                form.setFieldValue('guess', Number(event.currentTarget.value)),
-            })}
-          />
-          <Button type="submit" color="blue">
-            Submit
-          </Button>
-        </Group>
-      </form>
-    </Stack>
+    <div className={classes.stack}>
+      <div className={classes.guessDisplayBox}>
+        {results.map((result, index) => (
+          <div
+            key={createRandomId()} // Using index for simplicity here; make sure data has a stable unique ID in a real app.
+            className={classes.guessDisplay}
+            style={{ display: index <= activeGuessIndex ? 'block' : 'none' }}
+          >
+            <GuessDisplay
+              guess={result ? result.guess : 0} // Pass the stored guess value
+              result={result ? result.result : null} // Pass the stored result
+              flip={Boolean(result)}
+            />
+          </div>
+        ))}
+      </div>
+      <div className={classes.guessBox}>
+        {activeGuessIndex < 6 && (
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Group gap="xs">
+              <NumberInput
+                decimalScale={2}
+                fixedDecimalScale
+                hideControls
+                {...form.getInputProps('guess')}
+              />
+              <Button type="submit" color="blue">
+                Submit
+              </Button>
+            </Group>
+          </form>
+        )}
+        {activeGuessIndex >= 6 && <Text>All guesses submitted!</Text>}
+      </div>
+    </div>
   )
 }

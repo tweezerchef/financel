@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Center, ColorSchemeScript, MantineProvider } from '@mantine/core'
 import '@mantine/core/styles.css'
-import styles from './ui/Layout.module.css'
+import classes from './ui/Layout.module.css'
 
 export const metadata: Metadata = {
   icons: {
@@ -25,7 +25,7 @@ export default function RootLayout({
       <body>
         <main>
           <MantineProvider>
-            <div className={styles.rootContainer}>
+            <div className={classes.rootContainer}>
               <Center>{children}</Center>
             </div>
           </MantineProvider>
