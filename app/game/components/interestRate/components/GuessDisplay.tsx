@@ -1,5 +1,6 @@
-import { Card, Text } from '@mantine/core'
+import { Text, Paper, Group } from '@mantine/core'
 import { useSpring, animated } from '@react-spring/web'
+import classes from './ui/GuessDisplay.module.css'
 
 interface GuessDisplayProps {
   guess: number
@@ -20,19 +21,22 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   })
 
   return (
-    <Card
+    <Paper
+      className={classes.paper}
       shadow="sm"
-      radius="md"
-      style={{ padding: '20px', textAlign: 'center' }}
+      radius="xl"
+      style={{ textAlign: 'center' }}
     >
       <animated.div style={{ transform, opacity }}>
-        <Text>{guess}</Text>
-        {result && (
-          <Text>
-            {Array(result.number).fill(result.direction === 'up' ? '↑' : '↓')}
-          </Text>
-        )}
+        <Group justify="center" gap="xs">
+          <Text>{guess}</Text>
+          {result && (
+            <Text>
+              {Array(result.number).fill(result.direction === 'up' ? '↑' : '↓')}
+            </Text>
+          )}
+        </Group>
       </animated.div>
-    </Card>
+    </Paper>
   )
 }
