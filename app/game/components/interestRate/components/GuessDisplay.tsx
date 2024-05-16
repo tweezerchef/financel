@@ -4,15 +4,18 @@ import classes from './ui/GuessDisplay.module.css'
 
 interface GuessDisplayProps {
   guess: number
-  result?: { number: ResponseNumbers; direction: Direction } | null
+  result?: { amount: ResponseNumbers; direction: Direction } | null
   flip: boolean
+  createRandomId: () => string
 }
 
 export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   guess,
   result,
   flip,
+  createRandomId,
 }) => {
+  const { amount, direction } = result || { amount: 0, direction: 'up' }
   const { transform, opacity } = useSpring({
     reset: flip,
     from: { transform: 'rotateX(0deg)', opacity: 1 },
@@ -32,7 +35,13 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
           <Text>{guess}</Text>
           {result && (
             <Text>
-              {Array(result.number).fill(result.direction === 'up' ? '↑' : '↓')}
+              {Array(amount)
+                .fill(null)
+                .map(() => (
+                  <span key={createRandomId()}>
+                    {direction === 'up' ? '↓' : '↑'}
+                  </span>
+                ))}
             </Text>
           )}
         </Group>

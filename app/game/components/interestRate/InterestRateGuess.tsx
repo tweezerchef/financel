@@ -10,7 +10,7 @@ export function InterestRateGuess() {
   const [results, setResults] = useState<
     Array<{
       guess: number
-      result: { number: ResponseNumbers; direction: Direction } | null
+      result: { amount: ResponseNumbers; direction: Direction } | null
     } | null>
   >(new Array(6).fill(null))
   const [activeGuessIndex, setActiveGuessIndex] = useState(0)
@@ -22,16 +22,20 @@ export function InterestRateGuess() {
 
   const handleSubmit = async (values: { guess: number }) => {
     try {
-      const result = fetch('/interestRate/api', {
+      const response = await fetch('/game/interestRate/api/', {
         method: 'POST',
-        body: JSON.stringify(values.guess),
+        body: JSON.stringify({ guess: values.guess }),
       })
-      console.log('Submitted guess:', values.guess)
+      const result = await response.json()
+      console.log(result)
       // Simulate a server response or call an API
       const newResults = [...results]
       newResults[activeGuessIndex] = {
         guess: values.guess,
-        result,
+        result: {
+          amount: result.amount, // Ensure this matches the expected type
+          direction: result.direction,
+        },
       } // Example server response
       setResults(newResults)
 
@@ -59,8 +63,9 @@ export function InterestRateGuess() {
           >
             <GuessDisplay
               guess={result ? result.guess : 0} // Pass the stored guess value
-              result={result ? result.result : null} // Pass the stored result
+              result={result ? result.result : null} // Pass the stored result // Pass the stored result
               flip={Boolean(result)}
+              createRandomId={createRandomId}
             />
           </div>
         ))}
