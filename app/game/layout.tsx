@@ -1,14 +1,9 @@
 import Image from 'next/image'
-import dynamic from 'next/dynamic'
+
 import { Container } from '@mantine/core'
 import { Footer } from './components/layout/Footer'
-
-const Navbar = dynamic(
-  () => import('./components/layout/Navbar').then((mod) => mod.Navbar),
-  {
-    ssr: false,
-  }
-)
+import classes from './ui/Layout.module.css'
+import { Navbar } from './components/layout/Navbar'
 
 export default function Layout({
   children,
@@ -16,16 +11,8 @@ export default function Layout({
   children: React.ReactNode
 }>) {
   return (
-    <Container
-      style={{
-        minHeight: '99vh',
-        width: '100%',
-        display: 'flex',
-        overflow: 'hidden',
-        flexDirection: 'column',
-      }}
-    >
-      <div style={{ height: 150, position: 'relative' }}>
+    <Container className={classes.container}>
+      <div className={classes.header}>
         <Image
           src="/header.png"
           alt="Financel Logo"
@@ -37,8 +24,8 @@ export default function Layout({
         />
         <Navbar />
       </div>
-      {children}
-      <Footer />
+      <div className={classes.mainContent}>{children}</div>
+      <Footer className={classes.footer} />
     </Container>
   )
 }
