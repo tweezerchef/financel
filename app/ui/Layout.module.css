@@ -1,9 +1,32 @@
-/* Layout.module.css */
+/* Ensure the html and body use the full viewport */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.html {
+  width: 100%;
+  height: 100%;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  max-width: 100vw;
+}
+
 .rootContainer {
   width: 100%;
   height: 100%;
-  oveflow: hidden;
-  max-height: 98vh; /* Use the full viewport width */
+  overflow: hidden; /* Correct the typo here */
+  max-height: 100vh; /* Use the full viewport height */
   max-width: 500px; /* Maximum width for the content */
   margin-left: auto; /* Automatically adjust the left margin */
   margin-right: auto; /* Automatically adjust the right margin */
