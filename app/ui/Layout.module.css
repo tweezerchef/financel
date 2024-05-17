@@ -1,6 +1,6 @@
 /* Ensure the html and body use the full viewport */
-html,
-body {
+
+.body {
   margin: 0;
   padding: 0;
   width: 100%;
