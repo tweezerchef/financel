@@ -6,6 +6,7 @@
     "schema": "./app/lib/prisma/schema.prisma"
   },
   "scripts": {
+    "postinstall": "npm install --legacy-peer-deps",
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
