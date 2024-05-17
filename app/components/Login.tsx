@@ -11,12 +11,12 @@ import {
   PaperProps,
   Button,
   Divider,
-  Checkbox,
   Anchor,
   Stack,
 } from '@mantine/core'
 import { GoogleButton } from './buttons/GoogleButton'
 import { TwitterButton } from './buttons/TwitterButton'
+import classes from './ui/Login.module.css'
 
 export function Login(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register'])
@@ -38,7 +38,7 @@ export function Login(props: PaperProps) {
   })
 
   return (
-    <Paper radius="md" p="xl" withBorder {...props}>
+    <Paper p="md" {...props} className={classes.login}>
       <Text size="lg" fw={500}>
         To truly compete, {type} with
       </Text>
@@ -90,19 +90,9 @@ export function Login(props: PaperProps) {
             }
             radius="md"
           />
-
-          {type === 'register' && (
-            <Checkbox
-              label="I accept terms and conditions"
-              checked={form.values.terms}
-              onChange={(event) =>
-                form.setFieldValue('terms', event.currentTarget.checked)
-              }
-            />
-          )}
         </Stack>
 
-        <Group justify="space-between" mt="xl">
+        <Group mt="xl" gap="xs">
           <Anchor
             component="button"
             type="button"

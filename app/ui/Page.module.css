@@ -1,0 +1,11 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+  min-height: 100vh;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  /* Add padding to prevent content from touching edges */
+}
