@@ -19,8 +19,9 @@
     "sourceType": "module",
     "ecmaFeatures": { "jsx": true }
   },
-  "plugins": ["prettier"],
+  "plugins": ["eslint-plugin-react-compiler", "prettier"],
   "rules": {
+    "react-compiler/react-compiler": "error",
     "no-shadow": "off",
     "arrow-body-style": "off",
     "import/extensions": "off",
