@@ -18,11 +18,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={classes.html}>
       <head>
         <ColorSchemeScript />
       </head>
-      <body>
+      <body className={classes.body}>
         <main>
           <MantineProvider>
             <div className={classes.rootContainer}>

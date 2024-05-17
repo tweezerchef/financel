@@ -19,8 +19,8 @@ export function Header() {
       <div className={classes.inner}>
         <Title className={classes.title}>Financle</Title>
 
-        <Container size={640}>
-          <Text size="lg" className={classes.description}>
+        <Container>
+          <Text size="md" className={classes.description}>
             Financle is where the Brothers Of Finance (gender neutral) come
             together to prove their worth.
           </Text>
