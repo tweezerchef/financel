@@ -1,0 +1,27 @@
+.stack {
+  display: grid;
+  grid-template-rows: 1fr auto; /* The first row takes all available space, and the second row sizes according to its content */
+  height: 100%; /* Make sure the stack takes full height of its container */
+  width: 100%; /* Ensures the stack takes full width of its container */
+}
+
+.guessDisplayBox {
+  height: 204;
+}
+.guessDisplay {
+  /* Example margin, adjust as needed */
+  padding: 3;
+  heught: 28;
+}
+
+.guessBox {
+  /* This box will automatically align to the bottom because of the 'auto' row setting in the grid */
+  margin-top: auto; /* Aligns the form to the bottom of the guessBox */
+  padding-top: auto; /* Example padding, adjust as needed */
+  width: 100%; /* Ensures the form section spans the full width of the container */
+  display: flex; /* Ensures the content within guessBox can use flexbox properties */
+  justify-content: center; /* Centers the form horizontally in the guessBox */
+  align-self: flex-end; /* Aligns the form to the bottom of the guessBox */ /* Centers the form vertically in the guessBox, can be removed if not desired */
+}
+
+/* Additional styling for visual improvement or responsive behavior can be added as needed */

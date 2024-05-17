@@ -14,6 +14,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const { guess } = await request.json()
+    console.log(guess)
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
     // if (typeof category !== IRCategory (category)) {
     //   throw new Error('Invalid or missing category');
@@ -22,23 +23,16 @@ export async function POST(request: NextRequest) {
     const actualRate = 1.53
 
     const result = arrowDecider(guess, actualRate)
-
-    return new NextResponse(
-      JSON.stringify({
-        guess,
-        actualRate,
-        direction: result.direction,
-        amount: result.amount,
-      }),
+    return new Response(
+      JSON.stringify({ direction: result.direction, amount: result.amount }),
       {
         status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       }
     )
   } catch (error: unknown) {
     if (error instanceof Error)
+      // Return error response
       return new NextResponse(error.message, {
         status: 400,
         headers: {
@@ -46,6 +40,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
+    // Return generic error response
     return new NextResponse('An unexpected error occurred', {
       status: 500,
       headers: {
