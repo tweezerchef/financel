@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Center, ColorSchemeScript, MantineProvider } from '@mantine/core'
+import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
 

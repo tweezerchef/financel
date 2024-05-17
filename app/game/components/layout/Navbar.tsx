@@ -14,7 +14,7 @@ export function Navbar() {
         aria-label="Toggle navigation"
         opened={opened}
         onClick={toggle}
-        size="lg"
+        size="md"
       />
       <Group
         className={opened ? classes.menuVisible : classes.menuHidden}
