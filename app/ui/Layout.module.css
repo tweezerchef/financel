@@ -1,12 +1,4 @@
-/* Ensure the html and body use the full viewport */
-
-.body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+/* ui/Layout.module.css */
 
 .html {
   width: 100%;
@@ -14,18 +6,22 @@
 }
 
 .body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  overflow: hidden; /* Prevent scrolling */
   max-width: 100vw;
 }
 
 .rootContainer {
   width: 100%;
   height: 100%;
-  overflow: hidden; /* Correct the typo here */
+  overflow: hidden; /* Prevent scrolling */
   max-height: 100vh; /* Use the full viewport height */
   max-width: 500px; /* Maximum width for the content */
   margin-left: auto; /* Automatically adjust the left margin */
