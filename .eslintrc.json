@@ -21,6 +21,7 @@
   },
   "plugins": ["eslint-plugin-react-compiler", "prettier"],
   "rules": {
+    "react/require-default-props": "off",
     "react-compiler/react-compiler": "error",
     "no-shadow": "off",
     "arrow-body-style": "off",

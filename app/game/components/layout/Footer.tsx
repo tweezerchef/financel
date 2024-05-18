@@ -2,7 +2,7 @@
 
 import { Container, Group, Anchor } from '@mantine/core'
 import Image from 'next/image'
-
+import clsx from 'clsx'
 import classes from './ui/Footer.module.css'
 
 const links = [
@@ -12,7 +12,11 @@ const links = [
   { link: '#', label: 'Careers' },
 ]
 
-export function Footer() {
+interface FooterProps {
+  className?: string
+}
+
+export function Footer({ className = '' }: FooterProps) {
   const items = links.map((link) => (
     <Anchor<'a'>
       c="dimmed"
@@ -26,7 +30,7 @@ export function Footer() {
   ))
 
   return (
-    <div className={classes.footer}>
+    <div className={clsx(classes.footer, className)}>
       <Container className={classes.inner}>
         <Image src="/favicon.png" alt="Logo" width={60} height={60} />
         <Group className={classes.links}>{items}</Group>

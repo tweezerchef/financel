@@ -1,3 +1,5 @@
+/* ui/Navbar.module.css */
+
 .burger {
   position: absolute;
   top: 10px;
@@ -17,7 +19,7 @@
   top: 60px; /* adjust this value based on the actual height of the burger */
   width: 100%; /* ensure it spans the full width of the container */
   box-sizing: border-box; /* ensures padding does not affect width */
-  z-index: 1; /* ensure it appears on top but under burger when open */
+  z-index: 1000; /* ensure it appears on top but under burger when open */
 }
 
 .control {
@@ -30,5 +32,8 @@
 }
 
 .control:hover {
-  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-6)
+  );
 }
