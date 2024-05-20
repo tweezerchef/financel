@@ -27,7 +27,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   const { transform, opacity } = useSpring({
     transform: flipped ? 'rotateX(360deg)' : 'rotateX(0deg)',
     opacity: 1,
-    config: { duration: 1000 },
+    config: { duration: 500 },
   })
 
   const { amount, direction } = result || { amount: 0, direction: 'up' }
