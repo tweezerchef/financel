@@ -1,19 +1,55 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable no-case-declarations */
+
 'use client'
 
 import { NumberInput, Button, Group, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useState } from 'react'
+import { useReducer, useCallback } from 'react'
 import { GuessDisplay } from './components/GuessDisplay'
 import classes from './ui/InterestRateGuess.module.css'
 
+interface GuessState {
+  results: Array<{
+    guess: number
+    result: { amount: ResponseNumbers; direction: Direction } | null
+  } | null>
+  activeGuessIndex: number
+}
+
+type GuessAction =
+  | {
+      type: 'ADD_GUESS'
+      payload: {
+        guess: number
+        result: { amount: ResponseNumbers; direction: Direction } | null
+      }
+    }
+  | { type: 'NEXT_GUESS' }
+
+const initialState: GuessState = {
+  results: new Array(6).fill(null),
+  activeGuessIndex: 0,
+}
+
+function guessReducer(state: GuessState, action: GuessAction): GuessState {
+  switch (action.type) {
+    case 'ADD_GUESS':
+      const newResults = [...state.results]
+      newResults[state.activeGuessIndex] = {
+        guess: action.payload.guess,
+        result: action.payload.result,
+      }
+      return { ...state, results: newResults }
+    case 'NEXT_GUESS':
+      return { ...state, activeGuessIndex: state.activeGuessIndex + 1 }
+    default:
+      throw new Error('Unknown action type')
+  }
+}
+
 export function InterestRateGuess() {
-  const [results, setResults] = useState<
-    Array<{
-      guess: number
-      result: { amount: ResponseNumbers; direction: Direction } | null
-    } | null>
-  >(new Array(6).fill(null))
-  const [activeGuessIndex, setActiveGuessIndex] = useState(0)
+  const [state, dispatch] = useReducer(guessReducer, initialState)
   const form = useForm({
     initialValues: {
       guess: 0, // Initialize as number
@@ -28,50 +64,54 @@ export function InterestRateGuess() {
       })
       const result = await response.json()
       console.log(result)
-      // Simulate a server response or call an API
-      const newResults = [...results]
-      newResults[activeGuessIndex] = {
-        guess: values.guess,
-        result: {
-          amount: result.amount, // Ensure this matches the expected type
-          direction: result.direction,
+      // Dispatch the action to add the guess
+      dispatch({
+        type: 'ADD_GUESS',
+        payload: {
+          guess: values.guess,
+          result: {
+            amount: result.amount,
+            direction: result.direction,
+          },
         },
-      } // Example server response
-      setResults(newResults)
+      })
 
       // Move to the next guess
-      if (activeGuessIndex < 5) setActiveGuessIndex(activeGuessIndex + 1)
+      if (state.activeGuessIndex < 5) dispatch({ type: 'NEXT_GUESS' })
 
       form.reset()
     } catch (error) {
       console.error('Validation failed:', error)
     }
   }
-  // create a function that creates a random id
-  const createRandomId = () => {
-    return Math.random().toString(36).substring(7)
-  }
+
+  // Memoized function to create a unique ID
+  const createRandomId = useCallback(
+    () => Math.random().toString(36).substring(7),
+    []
+  )
 
   return (
     <div className={classes.stack}>
       <div className={classes.guessDisplayBox}>
-        {results.map((result, index) => (
+        {state.results.map((result, index) => (
           <div
-            key={createRandomId()} // Using index for simplicity here; make sure data has a stable unique ID in a real app.
+            key={`guess-${index}`} // Using index for simplicity here; make sure data has a stable unique ID in a real app.
             className={classes.guessDisplay}
-            style={{ display: index <= activeGuessIndex ? 'block' : 'none' }}
+            style={{
+              display: index <= state.activeGuessIndex ? 'block' : 'none',
+            }}
           >
             <GuessDisplay
-              guess={result ? result.guess : 0} // Pass the stored guess value
-              result={result ? result.result : null} // Pass the stored result // Pass the stored result
-              flip={Boolean(result)}
+              guess={result ? result.guess : 0}
+              result={result ? result.result : null}
               createRandomId={createRandomId}
             />
           </div>
         ))}
       </div>
       <div className={classes.guessBox}>
-        {activeGuessIndex < 6 && (
+        {state.activeGuessIndex < 6 && (
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Group gap="xs">
               <NumberInput
@@ -86,7 +126,7 @@ export function InterestRateGuess() {
             </Group>
           </form>
         )}
-        {activeGuessIndex >= 6 && <Text>All guesses submitted!</Text>}
+        {state.activeGuessIndex >= 6 && <Text>All guesses submitted!</Text>}
       </div>
     </div>
   )
