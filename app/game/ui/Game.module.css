@@ -15,7 +15,8 @@
 
 .guess {
   flex: 1;
-  height: 75%;
+  height: 100%;
   width: 100%; /* Ensure it takes up the full width */
-  background-color: black;
+  display: flex;
+  flex-direction: column;
 }

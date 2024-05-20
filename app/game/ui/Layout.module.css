@@ -20,12 +20,11 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background-color: rgba(0, 0, 255, 0.63);
 }
 
 .footer {
   height: 60px; /* Ensure this is a fixed height */
-  background-color: #84b0dc;
+  background-color: #449ffa;
   display: flex;
   align-items: center;
   justify-content: center;
