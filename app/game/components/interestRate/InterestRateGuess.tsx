@@ -120,7 +120,7 @@ export function InterestRateGuess() {
                 hideControls
                 {...form.getInputProps('guess')}
               />
-              <Button type="submit" color="blue">
+              <Button type="submit" color="blue" size="compact-sm">
                 Submit
               </Button>
             </Group>
