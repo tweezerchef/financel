@@ -1,27 +1,36 @@
 import { Text, Paper, Group } from '@mantine/core'
 import { useSpring, animated } from '@react-spring/web'
+import { useEffect, useState } from 'react'
 import classes from './ui/GuessDisplay.module.css'
 
 interface GuessDisplayProps {
   guess: number
   result?: { amount: ResponseNumbers; direction: Direction } | null
-  flip: boolean
   createRandomId: () => string
 }
 
 export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   guess,
   result,
-  flip,
   createRandomId,
 }) => {
-  const { amount, direction } = result || { amount: 0, direction: 'up' }
+  const [flipped, setFlipped] = useState(false)
+  const [initialFlip, setInitialFlip] = useState(false)
+
+  useEffect(() => {
+    if (!initialFlip && result) {
+      setFlipped(true)
+      setInitialFlip(true)
+    }
+  }, [result, initialFlip])
+
   const { transform, opacity } = useSpring({
-    reset: flip,
-    from: { transform: 'rotateX(0deg)', opacity: 1 },
-    to: { transform: 'rotateX(360deg)', opacity: 1 },
-    reverse: flip,
+    transform: flipped ? 'rotateX(360deg)' : 'rotateX(0deg)',
+    opacity: 1,
+    config: { duration: 1000 },
   })
+
+  const { amount, direction } = result || { amount: 0, direction: 'up' }
 
   return (
     <Paper
