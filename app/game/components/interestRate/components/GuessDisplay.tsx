@@ -26,7 +26,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
 
   const { transform, opacity } = useSpring({
     transform: flipped ? 'rotateX(360deg)' : 'rotateX(0deg)',
-    opacity: 1,
+    opacity: flipped ? 1 : 0,
     config: { duration: 500 },
   })
 
@@ -35,7 +35,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   return (
     <Paper
       className={classes.paper}
-      shadow="sm"
+      shadow="lg"
       radius="xl"
       style={{ textAlign: 'center' }}
     >
