@@ -1,9 +1,10 @@
-import { Box } from '@mantine/core'
+import { Container } from '@mantine/core'
 import Image from 'next/image'
+import classes from './ui/InterestRateDayOf.module.css'
 
 export function InterestRateDayOf() {
   return (
-    <Box>
+    <Container className={classes.dayOfContainer}>
       <Image
         src="/JP.webp"
         alt="Interest Rate"
@@ -12,6 +13,6 @@ export function InterestRateDayOf() {
         quality={100}
         priority
       />
-    </Box>
+    </Container>
   )
 }
