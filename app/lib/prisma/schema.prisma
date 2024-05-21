@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,7 +12,6 @@ enum Category {
   STOCK
   INTEREST_RATE
   CURRENCY
-  COMMODITY
 }
 
 enum Rank {
@@ -55,14 +48,34 @@ model User {
   results   Result[]
 }
 
+model Guest {
+  id        String   @id @default(uuid())
+  ip        String   @unique
+  attempted Boolean  @default(false)
+  results   Result[]
+  createdAt DateTime @default(now())
+}
+
+model DailyChallenge {
+  id              String            @id @default(uuid())
+  challengeDate   DateTime          @default(now())
+  dateId          String
+  date            Dates             @relation(fields: [dateId], references: [id])
+  interestRateId  String
+  interestRate    InterestRatePrice @relation(fields: [interestRateId], references: [id])
+  stockPriceId    String
+  stockPrice      StockPrice        @relation(fields: [stockPriceId], references: [id])
+  currencyValueId String
+  currencyValue   CurrencyValue     @relation(fields: [currencyValueId], references: [id])
+}
+
 model Dates {
-  id            String              @id @default(uuid())
-  date          DateTime            @unique
-  stockPrices   StockPrice[]
-  interestRates InterestRatePrice[]
-  currencies    CurrencyValue[]
-  commodities   CommodityPrice[]
-  results       Result[]
+  id             String              @id @default(uuid())
+  date           DateTime            @unique
+  stockPrices    StockPrice[]
+  interestRates  InterestRatePrice[]
+  currencies     CurrencyValue[]
+  DailyChallenge DailyChallenge[]
 
   @@index([date])
 }
@@ -75,29 +88,29 @@ model Stock {
 }
 
 model StockPrice {
-  id      String   @id @default(uuid())
-  stockId String
-  price   Decimal  @db.Decimal(10, 2)
-  dateId  String
-  stock   Stock    @relation(fields: [stockId], references: [id])
-  date    Dates    @relation(fields: [dateId], references: [id])
-  results Result[]
+  id             String           @id @default(uuid())
+  stockId        String
+  price          Decimal          @db.Decimal(10, 2)
+  dateId         String
+  stock          Stock            @relation(fields: [stockId], references: [id])
+  date           Dates            @relation(fields: [dateId], references: [id])
+  DailyChallenge DailyChallenge[]
 }
 
 model InterestRate {
   id       String              @id @default(uuid())
-  catagory IRCategories        @unique
+  category IRCategories
   rates    InterestRatePrice[]
-  Result   Result[]
 }
 
 model InterestRatePrice {
-  id         String       @id @default(uuid())
-  interestId String
-  rate       Decimal      @db.Decimal(5, 2)
-  dateId     String
-  interest   InterestRate @relation(fields: [interestId], references: [id])
-  date       Dates        @relation(fields: [dateId], references: [id])
+  id             String           @id @default(uuid())
+  interestId     String
+  rate           Decimal          @db.Decimal(5, 2)
+  dateId         String
+  interest       InterestRate     @relation(fields: [interestId], references: [id])
+  date           Dates            @relation(fields: [dateId], references: [id])
+  DailyChallenge DailyChallenge[]
 }
 
 model Currency {
@@ -107,50 +120,35 @@ model Currency {
 }
 
 model CurrencyValue {
-  id         String   @id @default(uuid())
-  currencyId String
-  value      Decimal  @db.Decimal(10, 4)
-  dateId     String
-  currency   Currency @relation(fields: [currencyId], references: [id])
-  date       Dates    @relation(fields: [dateId], references: [id])
-  Result     Result[]
-}
-
-model Commodity {
-  id     String           @id @default(uuid())
-  name   String           @unique
-  prices CommodityPrice[]
-}
-
-model CommodityPrice {
-  id          String    @id @default(uuid())
-  commodityId String
-  price       Decimal   @db.Decimal(10, 2)
-  dateId      String
-  commodity   Commodity @relation(fields: [commodityId], references: [id])
-  date        Dates     @relation(fields: [dateId], references: [id])
-  Result      Result[]
+  id             String           @id @default(uuid())
+  currencyId     String
+  value          Decimal          @db.Decimal(10, 4)
+  dateId         String
+  currency       Currency         @relation(fields: [currencyId], references: [id])
+  date           Dates            @relation(fields: [dateId], references: [id])
+  DailyChallenge DailyChallenge[]
 }
 
 model Result {
-  id       String   @id @default(uuid())
-  userId   String
-  dateId   String
-  category Category
-  guess    Decimal  @db.Decimal(10, 2)
-  correct  Boolean
-  tries    Int
-  user     User     @relation(fields: [userId], references: [id])
-  date     Dates    @relation(fields: [dateId], references: [id])
+  id         String           @id @default(uuid())
+  userId     String?
+  guestId    String?
+  date       DateTime
+  user       User?            @relation(fields: [userId], references: [id])
+  guest      Guest?           @relation(fields: [guestId], references: [id])
+  categories ResultCategory[]
 
-  // References to specific data points for each type of guess
-  stockPriceId     String?
-  interestRateId   String?
-  currencyValueId  String?
-  commodityPriceId String?
+  @@unique([guestId, date])
+  @@index([userId, date])
+}
 
-  stockPrice     StockPrice?     @relation(fields: [stockPriceId], references: [id])
-  interestRate   InterestRate?   @relation(fields: [interestRateId], references: [id])
-  currencyValue  CurrencyValue?  @relation(fields: [currencyValueId], references: [id])
-  commodityPrice CommodityPrice? @relation(fields: [commodityPriceId], references: [id])
+model ResultCategory {
+  id        String   @id @default(uuid())
+  resultId  String
+  category  Category
+  guess     Decimal  @db.Decimal(10, 2)
+  correct   Boolean
+  tries     Int
+  timeTaken Int // Time taken to complete the guess in seconds
+  result    Result   @relation(fields: [resultId], references: [id])
 }
