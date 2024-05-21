@@ -21,13 +21,14 @@
     "@mantinex/dev-icons": "^1.0.2",
     "@prisma/client": "^5.13.0",
     "@react-spring/web": "^9.7.3",
+    "@types/node-cron": "^3.0.11",
     "@vercel/postgres": "^0.8.0",
     "@vercel/speed-insights": "^1.0.10",
     "babel-plugin-react-compiler": "^0.0.0-experimental-c23de8d-20240515",
     "clsx": "^2.1.1",
     "eslint-plugin-react-compiler": "^0.0.0-experimental-53bb89e-20240515",
     "next": "^14.3.0-canary.68",
-    "prisma": "^5.13.0",
+    "node-cron": "^3.0.3",
     "react": "^19.0.0-beta-04b058868c-20240508",
     "react-dom": "^19.0.0-beta-04b058868c-20240508",
     "sharp": "^0.33.3"
@@ -50,6 +51,7 @@
     "postcss-preset-mantine": "^1.15.0",
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.2.5",
+    "prisma": "^5.14.0",
     "typescript": "^5"
   }
 }
