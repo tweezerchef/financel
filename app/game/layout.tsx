@@ -17,7 +17,7 @@ export default function Layout({
           src="/header.png"
           alt="Financel Logo"
           fill
-          sizes="(max-width: 500px) 100vw, 500px"
+          sizes="(max-width: 800px) 100vw, 800px"
           style={{ objectFit: 'cover' }}
           quality={100}
           priority
