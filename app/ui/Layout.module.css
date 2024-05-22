@@ -3,6 +3,7 @@
 .html {
   width: 100%;
   height: 100%;
+  padding: 0;
 }
 
 .body {
@@ -19,11 +20,11 @@
 }
 
 .rootContainer {
+  padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden; /* Prevent scrolling */
-  max-height: 100vh; /* Use the full viewport height */
-  max-width: 500px; /* Maximum width for the content */
-  margin-left: auto; /* Automatically adjust the left margin */
-  margin-right: auto; /* Automatically adjust the right margin */
+  height: 100vh; /* Use the full viewport height */
+  min-width: 400px;
+  max-width: 800px; /* Maximum width for the content */
 }
