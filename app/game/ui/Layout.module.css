@@ -19,17 +19,6 @@
   margin: 0;
 }
 
-.logoContainer {
-  display: flex;
-  align-items: center;
-}
-
-.title {
-  margin-left: 10;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
 .mainContent {
   flex: 1;
   display: flex;
