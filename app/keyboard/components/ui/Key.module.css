@@ -1,0 +1,19 @@
+.key {
+  margin: 1.5;
+  padding: 1.5;
+  font-size: 0.7rem;
+  text-align: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.key:active {
+  background-color: #1e11ce;
+}
