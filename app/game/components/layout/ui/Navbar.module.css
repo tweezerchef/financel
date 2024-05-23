@@ -1,10 +1,20 @@
-/* ui/Navbar.module.css */
+.navbarContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 
-.burger {
-  position: absolute;
-  top: 10px;
-  left: 0;
-  z-index: 2;
+.logoContainer {
+  display: flex;
+  align-items: center;
+  cursor: pointer; /* Make the logo clickable */
+}
+
+.title {
+  margin-left: 10px;
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .menuHidden {
@@ -16,10 +26,11 @@
   background-color: rgba(0, 0, 0, 0.5); /* semi-opaque background */
   padding: 10px 0;
   position: absolute;
-  top: 60px; /* adjust this value based on the actual height of the burger */
+  max-width: 30vw;
+  top: 60px; /* adjust this value based on the actual height of the header */
   width: 100%; /* ensure it spans the full width of the container */
   box-sizing: border-box; /* ensures padding does not affect width */
-  z-index: 1000; /* ensure it appears on top but under burger when open */
+  z-index: 1000; /* ensure it appears on top */
 }
 
 .control {
