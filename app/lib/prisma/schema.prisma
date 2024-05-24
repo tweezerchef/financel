@@ -48,6 +48,8 @@ model User {
   results   Result[]
 }
 
+//rename //date //uniuqe ip /date
+// IP address is unique for each guest subtable for every date
 model Guest {
   id        String   @id @default(uuid())
   ip        String   @unique
@@ -69,6 +71,7 @@ model DailyChallenge {
   currencyValue   CurrencyValue     @relation(fields: [currencyValueId], references: [id])
 }
 
+// daily challenge share table?
 model Dates {
   id             String              @id @default(uuid())
   date           DateTime            @unique

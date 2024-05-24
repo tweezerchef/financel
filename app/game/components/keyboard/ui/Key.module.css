@@ -1,5 +1,5 @@
 .key {
-  margin: 1.5;
+  margin: 3;
   padding: 1.5;
   font-size: 0.7rem;
   text-align: center;
@@ -12,8 +12,9 @@
   background-color: #f0f0f0;
   border: 1px solid #ccc;
   cursor: pointer;
+  color: #000;
 }
 
 .key:active {
-  background-color: #1e11ce;
+  background-color: #ccc;
 }

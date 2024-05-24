@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import classes from './ui/GuessDisplay.module.css'
 
 interface GuessDisplayProps {
-  guess: number
+  guess: string
   result?: { amount: ResponseNumbers; direction: Direction } | null
   createRandomId: () => string
 }
@@ -24,9 +24,9 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
     }
   }, [result, initialFlip])
 
-  const { transform, opacity } = useSpring({
+  const { transform } = useSpring({
     transform: flipped ? 'rotateX(360deg)' : 'rotateX(0deg)',
-    opacity: flipped ? 1 : 0,
+    // opacity: flipped ? 1 : 0,
     config: { duration: 500 },
   })
 
@@ -39,7 +39,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
       radius="xl"
       style={{ textAlign: 'center' }}
     >
-      <animated.div style={{ transform, opacity }}>
+      <animated.div style={{ transform }}>
         <Group justify="center" gap="xs">
           <Text>{guess}</Text>
           {result && (
