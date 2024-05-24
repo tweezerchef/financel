@@ -22,29 +22,32 @@ export function InterestRateGuess() {
 
   const form = useForm({
     initialValues: {
-      guess: '0',
+      guess: '',
     },
     validate: {
       guess: (value) =>
         /^\d{1,3}\.\d{2}$/.test(value)
           ? null
-          : 'Invalid guess format (e.g., 1.00)',
+          : 'Invalid guess format (e.g., 1.003)',
     },
   })
 
   const handleSubmit = async (values: { guess: string }) => {
-    console.log('Submitting guess:', values.guess)
+    // Ensure the guess includes two decimal places
+    const formattedGuess = parseFloat(values.guess).toFixed(2)
+
+    console.log('Submitting guess:', formattedGuess)
     try {
       const response = await fetch('/game/interestRate/api/', {
         method: 'POST',
-        body: JSON.stringify({ guess: parseFloat(values.guess) }), // Convert to number on server side
+        body: JSON.stringify({ guess: parseFloat(formattedGuess) }), // Convert to number on server side
       })
       const result = await response.json()
       console.log(result)
 
       const newGuesses = [...guesses]
       newGuesses[activeGuessIndex] = {
-        guess: values.guess,
+        guess: formattedGuess,
         result: {
           amount: result.amount,
           direction: result.direction,
