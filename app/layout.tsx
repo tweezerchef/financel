@@ -1,9 +1,36 @@
 import type { Metadata } from 'next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import { Center, ColorSchemeScript, MantineProvider } from '@mantine/core'
+import {
+  Center,
+  ColorSchemeScript,
+  MantineProvider,
+  createTheme,
+  MantineColorsTuple,
+} from '@mantine/core'
 import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
+
+const myColor: MantineColorsTuple = [
+  '#e0fbff',
+  '#cbf2ff',
+  '#9ae2ff',
+  '#64d2ff',
+  '#3cc5fe',
+  '#23bcfe',
+  '#09b8ff',
+  '#00a1e4',
+  '#0090cd',
+  '#007cb5',
+]
+
+const theme = createTheme({
+  colors: {
+    myColor,
+  },
+  primaryColor: 'myColor',
+  primaryShade: 6,
+})
 
 export const metadata: Metadata = {
   icons: {
@@ -34,7 +61,7 @@ export default function RootLayout({
       </head>
       <body className={classes.body}>
         <main>
-          <MantineProvider>
+          <MantineProvider theme={theme}>
             <div className={classes.rootContainer}>
               <Center>{children}</Center>
             </div>

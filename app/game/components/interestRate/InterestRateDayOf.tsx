@@ -10,7 +10,7 @@ export function InterestRateDayOf() {
         alt="Interest Rate"
         width={250}
         height={166.5}
-        quality={100}
+        quality={80}
         priority
       />
     </Container>

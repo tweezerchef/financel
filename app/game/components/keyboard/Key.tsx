@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from '@mantine/core'
+import { ActionIcon } from '@mantine/core'
 import classes from './ui/Key.module.css'
 
 interface KeyProps {
@@ -10,8 +10,8 @@ interface KeyProps {
 
 export const Key: React.FC<KeyProps> = ({ value, icon, onClick }) => {
   return (
-    <Button className={classes.key} onClick={() => onClick(value)}>
+    <ActionIcon className={classes.key} onClick={() => onClick(value)}>
       {icon || value}
-    </Button>
+    </ActionIcon>
   )
 }

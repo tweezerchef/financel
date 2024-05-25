@@ -1,18 +1,16 @@
 .key {
-  margin: 3;
-  padding: 1.5;
+  margin: 4;
   font-size: 0.7rem;
   text-align: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
+  background-color: #3b82f6;
+  color: #ffff;
   cursor: pointer;
-  color: #000;
 }
 
 .key:active {
