@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 'use client'
 
 import { Container, Group, Anchor } from '@mantine/core'
 import Image from 'next/image'
-import clsx from 'clsx'
+
 import classes from './ui/Footer.module.css'
 
 const links = [
@@ -30,7 +32,7 @@ export function Footer({ className = '' }: FooterProps) {
   ))
 
   return (
-    <div className={clsx(classes.footer, className)}>
+    <div className={classes.footer}>
       <Container className={classes.inner}>
         <Image src="/favicon.png" alt="Logo" width={60} height={60} />
         <Group className={classes.links}>{items}</Group>
