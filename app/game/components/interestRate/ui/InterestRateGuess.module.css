@@ -4,7 +4,6 @@
   flex-direction: column;
   flex: 1;
   width: 100%;
-  background-color: rgba(230, 232, 241, 0.632); /* For debugging */
 }
 
 .guessDisplayBox {

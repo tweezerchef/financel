@@ -14,9 +14,13 @@
 }
 
 .guess {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   flex: 1;
   height: 100%;
   width: 100%; /* Ensure it takes up the full width */
   display: flex;
   flex-direction: column;
+  padding: 10px;
 }
