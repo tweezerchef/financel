@@ -7,9 +7,8 @@ import classes from './ui/Keyboard.module.css'
 import { Key } from './Key'
 
 const keys = [
-  [1, 2, 3, 4, 5],
-  [6, 7, 8, 9, 0],
-  ['.', 'Backspace', 'Enter'],
+  [1, 2, 3, 4, 5, 'Backspace'],
+  [6, 7, 8, 9, 0, '.', 'Enter'],
 ]
 
 interface KeyboardProps {
@@ -40,20 +39,18 @@ export const Keyboard: React.FC<KeyboardProps> = ({
   }
 
   return (
-    <div className={classes.container}>
-      <div className={classes.keyboard}>
-        {keys.map((row, rowIndex) => (
-          <div key={rowIndex} className={classes.row}>
-            {row.map((key) => (
-              <Key
-                key={key}
-                value={key.toString()}
-                onClick={() => handleKeyPress(key.toString())}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
+    <div className={classes.keyboard}>
+      {keys.map((row, rowIndex) => (
+        <div key={rowIndex} className={classes.row}>
+          {row.map((key) => (
+            <Key
+              key={key}
+              value={key.toString()}
+              onClick={() => handleKeyPress(key.toString())}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   )
 }
