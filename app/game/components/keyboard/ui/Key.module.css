@@ -1,16 +1,17 @@
 .key {
-  margin: 4;
-  font-size: 0.7rem;
+  margin: 4px; /* Small margin around each key */
+  font-size: 1rem; /* Adjusted font size for better readability */
   text-align: center;
-  width: 2rem;
-  height: 2rem;
+  width: calc(100% / 7 - 8px); /* 7 keys per row with some margin */
+  height: 3rem; /* Increase the height for better touch targets */
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  background-color: #3b82f6;
-  color: #ffff;
+  background-color: #2f3336;
+  color: #71d4fe;
   cursor: pointer;
+  transition: background-color 0.1s ease;
 }
 
 .key:active {
