@@ -2,7 +2,7 @@
 
 'use client'
 
-import { Group, Text } from '@mantine/core'
+import { Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useState, useCallback } from 'react'
 import { Keyboard } from '../keyboard/Keyboard'
@@ -90,13 +90,11 @@ export function InterestRateGuess() {
       <div className={classes.guessBox}>
         {activeGuessIndex < 6 && (
           <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Group gap="xs">
-              <Keyboard
-                form={form}
-                field="guess"
-                handleSubmit={() => handleSubmit(form.values)}
-              />
-            </Group>
+            <Keyboard
+              form={form}
+              field="guess"
+              handleSubmit={() => handleSubmit(form.values)}
+            />
           </form>
         )}
         {activeGuessIndex >= 6 && <Text>All guesses submitted!</Text>}

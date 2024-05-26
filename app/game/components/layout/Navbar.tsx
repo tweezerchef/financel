@@ -32,7 +32,9 @@ export function Navbar() {
           width={50} // Set the appropriate width
           height={50} // Set the appropriate height
         />
-        <span className={classes.title}>Financel</span>
+      </div>
+      <div className={classes.titleContainer}>
+        <span className={classes.title}>Financle</span>
       </div>
       <Group
         className={opened ? classes.menuVisible : classes.menuHidden}
