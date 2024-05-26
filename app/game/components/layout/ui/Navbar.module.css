@@ -3,8 +3,8 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-
   color: #ffffff;
+  position: relative; /* Ensure it can be used for absolute positioning */
 }
 
 .logoContainer {
@@ -13,10 +13,34 @@
   cursor: pointer; /* Make the logo clickable */
 }
 
+.titleContainer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  width: 100%; /* Ensure it spans the full width */
+}
+
 .title {
-  margin-left: 10px;
-  font-size: 1rem;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 0, 1) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  font-size: 2rem;
   font-weight: bold;
+  background-clip: text;
+}
+
+.navContent {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center; /* Center the title */
 }
 
 .menuHidden {
