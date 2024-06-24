@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
+import { uuid } from 'uuidv4'
 import prisma from '../../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
@@ -13,9 +15,8 @@ export async function POST(req: NextRequest) {
       { message: 'User already exists with this email address.' },
       { status: 400 }
     )
-
+  const emailToken = uuid()
   /// email validation will be added here
-  // we need to hash the password
   const hashedPassword = await bcrypt.hash(password, 10)
   // Create the user
   const newUser = await prisma.user.create({
