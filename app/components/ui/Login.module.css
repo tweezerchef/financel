@@ -4,6 +4,7 @@
   margin: 0 auto;
   padding: 1;
   box-sizing: border-box;
+  overflow-x: auto;
 }
 
 @media (max-width: 600px) {
