@@ -34,11 +34,11 @@
     "react": "^19.0.0-beta-04b058868c-20240508",
     "react-dom": "^19.0.0-beta-04b058868c-20240508",
     "sharp": "^0.33.3",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "@prisma/client": "^5.15.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.2.3",
-    "@prisma/client": "^5.15.1",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
