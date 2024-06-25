@@ -1,6 +1,6 @@
 'use client'
 
-import useAuth from '../lib/auth/useAuth'
+import useAuth from './lib/useAuth'
 import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
 import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
 import classes from './ui/Game.module.css'
