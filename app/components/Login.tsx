@@ -18,12 +18,18 @@ import { GoogleButton } from './buttons/GoogleButton'
 import { TwitterButton } from './buttons/TwitterButton'
 import classes from './ui/Login.module.css'
 
+type FormProps = {
+  email: string
+  username?: string
+  password: string
+}
+
 export function Login(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register'])
   const form = useForm({
     initialValues: {
       email: '',
-      name: '',
+      username: '',
       password: '',
       terms: true,
     },
@@ -37,6 +43,9 @@ export function Login(props: PaperProps) {
     },
   })
 
+  const formSubmit = (values: FormProps) => {
+    console.log({ ...values, type })
+  }
   return (
     <Paper p="md" {...props} className={classes.login}>
       <Text size="lg" fw={500}>
@@ -50,15 +59,15 @@ export function Login(props: PaperProps) {
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form onSubmit={form.onSubmit((values) => formSubmit(values))}>
         <Stack>
           {type === 'register' && (
             <TextInput
-              label="Name"
-              placeholder="Your name"
-              value={form.values.name}
+              label="Username"
+              placeholder="Your Username"
+              value={form.values.username}
               onChange={(event) =>
-                form.setFieldValue('name', event.currentTarget.value)
+                form.setFieldValue('username', event.currentTarget.value)
               }
               radius="md"
             />
