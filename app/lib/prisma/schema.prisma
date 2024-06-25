@@ -33,19 +33,20 @@ enum IRCategories {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  username  String    @unique
-  password  String?
-  avatar    String?
-  moto      String?
-  rank      Rank      @default(WOOD)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  lastLogin DateTime?
-  isActive  Boolean   @default(true)
-  deletedAt DateTime?
-  results   Result[]
+  id         String    @id @default(uuid())
+  email      String    @unique
+  username   String?   @unique
+  password   String
+  emailToken String?
+  avatar     String?
+  moto       String?
+  rank       Rank      @default(WOOD)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastLogin  DateTime?
+  isActive   Boolean   @default(true)
+  deletedAt  DateTime?
+  results    Result[]
 }
 
 //rename //date //uniuqe ip /date
