@@ -1,13 +1,11 @@
 'use client'
 
-import useAuth from './lib/useAuth'
 import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
 import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
 import classes from './ui/Game.module.css'
 
 export default function Game() {
-  const isAuthenticated = useAuth()
-
+  const isAuthenticated = localStorage.getItem('token')
   if (!isAuthenticated) return <div>Loading...</div>
 
   return (
