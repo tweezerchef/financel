@@ -4,7 +4,7 @@
   position: relative;
   padding-top: rem(30px);
   padding-bottom: rem(10px);
-
+  max-width: 400px;
   @media (max-width: $mantine-breakpoint-xs) {
     padding-top: rem(1px);
   }
