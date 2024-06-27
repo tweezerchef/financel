@@ -43,8 +43,30 @@ export function Login(props: PaperProps) {
     },
   })
 
-  const formSubmit = (values: FormProps) => {
+  const formSubmit = async (values: FormProps) => {
     console.log({ ...values, type })
+    const { email, password } = values
+    try {
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      }
+
+      if (type === 'login') {
+        // login logic
+        const response = await fetch('auth/api/login', requestOptions)
+        const user = await response.json()
+        console.log(user)
+      } else {
+        // register logic
+        const response = await fetch('auth/api/register', requestOptions)
+        const user = await response.json()
+        console.log(user)
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
   return (
     <Paper p="md" {...props} className={classes.login}>
