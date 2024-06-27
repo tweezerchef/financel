@@ -14,6 +14,7 @@ import {
   Anchor,
   Stack,
 } from '@mantine/core'
+import { useRouter } from 'next/navigation'
 import { GoogleButton } from './buttons/GoogleButton'
 import { TwitterButton } from './buttons/TwitterButton'
 import classes from './ui/Login.module.css'
@@ -26,6 +27,7 @@ type FormProps = {
 
 export function Login(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register'])
+  const router = useRouter()
   const form = useForm({
     initialValues: {
       email: '',
@@ -52,17 +54,22 @@ export function Login(props: PaperProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       }
-
+      let response
+      let user
       if (type === 'login') {
         // login logic
-        const response = await fetch('auth/api/login', requestOptions)
-        const user = await response.json()
+        response = await fetch('auth/api/login', requestOptions)
+        user = await response.json()
         console.log(user)
       } else {
         // register logic
-        const response = await fetch('auth/api/register', requestOptions)
-        const user = await response.json()
+        response = await fetch('auth/api/register', requestOptions)
+        user = await response.json()
         console.log(user)
+      }
+      if (response.ok && user.token) {
+        localStorage.setItem('token', user.token)
+        router.push('/game')
       }
     } catch (error) {
       console.error(error)
