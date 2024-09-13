@@ -1,7 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import { useLocalStorage } from './lib/useLocalStorage'
 import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
 import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
@@ -9,15 +9,16 @@ import classes from './ui/Game.module.css'
 
 export default function Game() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
+
   const token = useLocalStorage('token')
 
   useEffect(() => {
-    if (token === null || !token) router.push('/')
-    else setIsLoading(false)
+    if (!token) router.push('/')
   }, [token, router])
 
-  if (isLoading) return <div>Loading...</div>
+  if (!token)
+    // Optionally, you can return null or a loading state here
+    return <div>You are not authenticated</div>
 
   return (
     <div className={classes.container}>
