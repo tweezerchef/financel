@@ -1,6 +1,6 @@
-import Link from 'next/link'
-import { Title, Text, Container, Button, Overlay } from '@mantine/core'
+import { Title, Text, Container, Overlay } from '@mantine/core'
 import Image from 'next/image'
+import { GuestButton } from './buttons/GuestButton'
 import classes from './ui/Header.module.css'
 
 export function Header() {
@@ -25,14 +25,7 @@ export function Header() {
             together to prove their worth.
           </Text>
         </Container>
-
-        <div className={classes.controls}>
-          <Link href="/game">
-            <Button className={classes.control} variant="white" size="lg">
-              Continue as Guest
-            </Button>
-          </Link>
-        </div>
+        <GuestButton />
       </div>
     </div>
   )
