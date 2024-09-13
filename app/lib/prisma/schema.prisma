@@ -52,11 +52,21 @@ model User {
 //rename //date //uniuqe ip /date
 // IP address is unique for each guest subtable for every date
 model Guest {
-  id        String   @id @default(uuid())
-  ip        String   @unique
-  attempted Boolean  @default(false)
+  id        String      @id @default(uuid())
+  ip        String      @unique
+  createdAt DateTime    @default(now())
+  lastPlay  DateTime?
+  plays     GuestPlay[]
   results   Result[]
-  createdAt DateTime @default(now())
+}
+
+model GuestPlay {
+  id       String   @id @default(uuid())
+  guestId  String
+  playedAt DateTime @default(now())
+  guest    Guest    @relation(fields: [guestId], references: [id])
+
+  @@unique([guestId, playedAt])
 }
 
 model DailyChallenge {
