@@ -17,6 +17,7 @@ export const GuestButton = () => {
       })
       const data = await response.json()
       if (response.ok) {
+        console.log('Guest login successful:', data)
         // Store the token in localStorage or a secure cookie
         localStorage.setItem('guestToken', data.token)
         router.push('/game')

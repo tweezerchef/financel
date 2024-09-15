@@ -10,15 +10,16 @@ import classes from './ui/Game.module.css'
 export default function Game() {
   const router = useRouter()
 
-  const token = useLocalStorage('token')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [token, setToken, isLoading] = useLocalStorage('token')
 
   useEffect(() => {
-    if (!token) router.push('/')
-  }, [token, router])
+    if (!isLoading && !token) router.push('/')
+  }, [isLoading, token, router])
 
-  if (!token)
-    // Optionally, you can return null or a loading state here
-    return <div>You are not authenticated</div>
+  if (isLoading) return <div>Loading...</div>
+
+  if (!token) return <div>You are not authenticated</div>
 
   return (
     <div className={classes.container}>
