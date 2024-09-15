@@ -4,6 +4,7 @@ import prisma from '../../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ip = req.headers.get('x-forwarded-for') || req.ip
 
     if (!ip)
@@ -23,15 +24,15 @@ export async function POST(req: NextRequest) {
         include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
 
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    // const today = new Date()
+    // today.setHours(0, 0, 0, 0)
 
-    const lastPlay = guest.plays[0]
-    if (lastPlay && lastPlay.playedAt >= today)
-      return NextResponse.json(
-        { message: 'You have already played today as a guest.' },
-        { status: 400 }
-      )
+    // const lastPlay = guest.plays[0]
+    // if (lastPlay && lastPlay.playedAt >= today)
+    //   return NextResponse.json(
+    //     { message: 'You have already played today as a guest.' },
+    //     { status: 400 }
+    //   )
 
     // Create a new play record
     await prisma.guestPlay.create({
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
-    const token = jwt.sign({ guestId: guest.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ guestId: '12345' }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
 
