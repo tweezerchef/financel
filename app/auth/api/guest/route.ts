@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
-    const token = jwt.sign({ guestId: id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
 
