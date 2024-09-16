@@ -19,6 +19,7 @@
     "@mantine/hooks": "^7.9.0",
     "@mantine/notifications": "^7.9.0",
     "@mantinex/dev-icons": "^1.0.2",
+    "@prisma/client": "^5.15.1",
     "@react-spring/web": "^9.7.3",
     "@types/node-cron": "^3.0.11",
     "@vercel/postgres": "^0.8.0",
@@ -31,19 +32,18 @@
     "next": "^14.3.0-canary.68",
     "next-auth": "^4.24.7",
     "node-cron": "^3.0.3",
-    "react": "^19.0.0-beta-04b058868c-20240508",
-    "react-dom": "^19.0.0-beta-04b058868c-20240508",
+    "react": "19.0.0-rc-f2df5694-20240916",
+    "react-dom": "19.0.0-rc-f2df5694-20240916",
     "sharp": "^0.33.3",
-    "uuidv4": "^6.2.13",
-    "@prisma/client": "^5.15.1"
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.2.3",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",
     "eslint": "^8.57.0",
@@ -61,5 +61,9 @@
     "prettier": "^3.2.5",
     "prisma": "^5.15.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc"
   }
 }
