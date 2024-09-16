@@ -26,13 +26,14 @@ export async function POST(req: Req) {
         { message: 'Password is incorrect.' },
         { status: 400 }
       )
+    const { id } = user
     // Create a token
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
-    return NextResponse.json({ token, message: 'Logged in successfully' })
+    return NextResponse.json({ token, id, message: 'Logged in successfully' })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
