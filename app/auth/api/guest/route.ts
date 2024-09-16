@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         data: { ip },
         include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
-
+    console.log(guest)
     // const today = new Date()
     // today.setHours(0, 0, 0, 0)
 
@@ -44,15 +44,17 @@ export async function POST(req: NextRequest) {
       where: { id: guest.id },
       data: { lastPlay: new Date() },
     })
+    const { id } = guest
 
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
-    const token = jwt.sign({ guestId: '12345' }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ guestId: id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
 
     return NextResponse.json({
       token,
+      id,
       message: 'Logged in as guest successfully',
     })
   } catch (error) {
