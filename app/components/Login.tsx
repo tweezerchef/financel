@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation'
 import { GoogleButton } from './buttons/GoogleButton'
 import { TwitterButton } from './buttons/TwitterButton'
 import classes from './ui/Login.module.css'
+import { useUserContext } from '../context/user/UserContext'
 
 type FormProps = {
   email: string
@@ -28,6 +29,7 @@ type FormProps = {
 export function Login(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register'])
   const router = useRouter()
+  const { setUser } = useUserContext()
   const form = useForm({
     initialValues: {
       email: '',
@@ -69,6 +71,7 @@ export function Login(props: PaperProps) {
       }
       if (response.ok && user.token) {
         localStorage.setItem('token', user.token)
+        setUser({ id: user.id, type: 'registered' })
         router.push('/game')
       }
     } catch (error) {
