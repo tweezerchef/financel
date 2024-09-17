@@ -4,10 +4,11 @@
 import { parse } from 'csv-parse'
 import fs from 'fs'
 import path from 'path'
-import prisma from '../prisma/prisma'
+import { IRCategories } from '@prisma/client'
+import prisma from '../../../lib/prisma/prisma'
 
-async function importInterestRates() {
-  const csvFilePath = path.resolve(__dirname, 'InterestRates.csv')
+export async function importInterestRates() {
+  const csvFilePath = path.resolve(process.cwd(), 'public/InterestRates.csv')
   const csvData = fs.readFileSync(csvFilePath, 'utf8')
 
   const parser = parse(csvData, {
@@ -28,14 +29,13 @@ async function importInterestRates() {
     let dateEntry = await prisma.dates.findUnique({
       where: { date },
     })
-
     if (!dateEntry)
       dateEntry = await prisma.dates.create({
         data: { date },
       })
 
     // Map CSV columns to IRCategories
-    const categoryMap: { [key: string]: keyof typeof IRCategory } = {
+    const categoryMap: { [key: string]: keyof typeof IRCategories } = {
       '1 Yr': 'T_1',
       '5 Yr': 'T_5',
       '10 Yr': 'T_10',
@@ -77,12 +77,3 @@ async function importInterestRates() {
 
   console.log('Import completed successfully')
 }
-
-importInterestRates()
-  .catch((e) => {
-    console.error('Error during import:', e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
