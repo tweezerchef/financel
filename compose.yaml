@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+    environment:
+      DATABASE_URL: "postgresql://tom:${POSTGRES_PASSWORD}@db:5432/financel?schema=public"
+      POSTGRES_PRISMA_URL: "postgresql://tom:${POSTGRES_PASSWORD}@db:5432/financel?schema=public"
+      POSTGRES_URL_NON_POOLING: "postgresql://tom:${POSTGRES_PASSWORD}@db:5432/financel?schema=public"
+      JWT_SECRET: "financeBrothers"
+      NODE_ENV: production
+    ports:
+      - 3000:3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=financel
+      - POSTGRES_USER=tom
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
+
+secrets:
+  db-password:
+    file: db/password.txt
