@@ -10,6 +10,7 @@ import {
 import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
+import { UserProvider } from './context/user/UserContext'
 
 const myColor: MantineColorsTuple = [
   '#e0fbff',
@@ -48,22 +49,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={classes.html}>
       <head>
-        {(process.env.NODE_ENV === 'development' ||
-          process.env.VERCEL_ENV === 'preview') && (
-          // eslint-disable-next-line @next/next/no-sync-scripts
-          <script
-            data-project-id="3PVf4jj5xWcUli4mwbcCXjsviq2spH6Ag09Qu5DR"
-            data-is-production-environment="false"
-            src="https://snippet.meticulous.ai/v1/meticulous.js"
-          />
-        )}
         <ColorSchemeScript />
       </head>
       <body className={classes.body}>
         <main>
           <MantineProvider theme={theme}>
             <div className={classes.rootContainer}>
-              <Center>{children}</Center>
+              <UserProvider>
+                <Center>{children}</Center>
+              </UserProvider>
             </div>
           </MantineProvider>
         </main>

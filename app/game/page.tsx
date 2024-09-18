@@ -1,33 +1,29 @@
+// app/game/page.tsx
+
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { useLocalStorage } from './lib/useLocalStorage'
-import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
-import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
-import classes from './ui/Game.module.css'
+
+const AuthenticatedGame = dynamic(
+  () =>
+    import('./components/AuthenticatedGame').then(
+      (mod) => mod.AuthenticatedGame
+    ),
+  { ssr: false }
+)
 
 export default function Game() {
   const router = useRouter()
+  const [token, , isLoading] = useLocalStorage('token')
 
-  const token = useLocalStorage('token')
+  if (isLoading) return <div>Loading...</div>
 
-  useEffect(() => {
-    if (!token) router.push('/')
-  }, [token, router])
+  if (!token) {
+    router.push('/')
+    return null
+  }
 
-  if (!token)
-    // Optionally, you can return null or a loading state here
-    return <div>You are not authenticated</div>
-
-  return (
-    <div className={classes.container}>
-      <div className={classes.dayOf}>
-        <InterestRateDayOf />
-      </div>
-      <div className={classes.guess}>
-        <InterestRateGuess />
-      </div>
-    </div>
-  )
+  return <AuthenticatedGame />
 }

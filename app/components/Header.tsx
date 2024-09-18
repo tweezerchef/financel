@@ -25,7 +25,9 @@ export function Header() {
             together to prove their worth.
           </Text>
         </Container>
-        <GuestButton />
+        <div className={classes.control}>
+          <GuestButton />
+        </div>
       </div>
     </div>
   )
