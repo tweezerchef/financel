@@ -1,34 +1,29 @@
+// app/game/page.tsx
+
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { useLocalStorage } from './lib/useLocalStorage'
-import { InterestRateGuess } from './components/interestRate/InterestRateGuess'
-import { InterestRateDayOf } from './components/interestRate/InterestRateDayOf'
-import classes from './ui/Game.module.css'
+
+const AuthenticatedGame = dynamic(
+  () =>
+    import('./components/AuthenticatedGame').then(
+      (mod) => mod.AuthenticatedGame
+    ),
+  { ssr: false }
+)
 
 export default function Game() {
   const router = useRouter()
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [token, setToken, isLoading] = useLocalStorage('token')
-
-  useEffect(() => {
-    if (!isLoading && !token) router.push('/')
-  }, [isLoading, token, router])
+  const [token, , isLoading] = useLocalStorage('token')
 
   if (isLoading) return <div>Loading...</div>
 
-  if (!token) return <div>You are not authenticated</div>
+  if (!token) {
+    router.push('/')
+    return null
+  }
 
-  return (
-    <div className={classes.container}>
-      <div className={classes.dayOf}>
-        <InterestRateDayOf />
-      </div>
-      <div className={classes.guess}>
-        <InterestRateGuess />
-      </div>
-    </div>
-  )
+  return <AuthenticatedGame />
 }
