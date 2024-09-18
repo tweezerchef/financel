@@ -29,7 +29,10 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/app/lib/prisma ./lib/prisma
+
 
 # Set the correct permission for prerender cache
 RUN mkdir .next
@@ -46,10 +49,8 @@ EXPOSE 3000
 ENV PORT=3000
 
 # Add a startup script to run Prisma migrations
-# COPY --chown=nextjs:nodejs prisma-migrate.sh ./
-#RUN chmod +x prisma-migrate.sh
-
-# CMD []
+COPY --chown=nextjs:nodejs prisma-migrate.sh ./
+RUN chmod +x prisma-migrate.sh
 
 ENV HOSTNAME="0.0.0.0"
-CMD ["node", "server.js"]
+CMD ["./prisma-migrate.sh", "&&", "node", "server.js"]
