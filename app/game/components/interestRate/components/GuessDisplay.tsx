@@ -22,7 +22,6 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   return (
     <Group className={classes.container} justify="center" gap="xs">
       <Group className={classes.guessGroup}>
-        <SingleDisplay value={wholePart ? wholePart[0] : ''} />
         <SingleDisplay
           value={wholePart && wholePart.length > 1 ? wholePart[1] : ''}
         />
