@@ -1,6 +1,9 @@
 /* eslint-disable no-nested-ternary */
 // GuessDisplay.tsx
 
+// GuessDisplay.tsx
+
+import React from 'react'
 import { Group } from '@mantine/core'
 import { SingleDisplay } from './SingleDisplay'
 import classes from './ui/GuessDisplay.module.css'
@@ -15,25 +18,18 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   result,
 }) => {
   const [wholePart, decimalPart] = guess.split('.')
-  const isFlipped = !!result
-
-  // Ensure wholePart and decimalPart are always strings
-  const wholePartString = wholePart || ''
-  const decimalPartString = decimalPart || ''
 
   return (
     <Group className={classes.container} justify="center" gap="xs">
       <Group className={classes.guessGroup}>
-        <SingleDisplay value={wholePartString[0] || ''} isFlipped={isFlipped} />
-        <SingleDisplay value={wholePartString[1] || ''} isFlipped={isFlipped} />
-        <span className={classes.decimal}>.</span>
+        <SingleDisplay value={wholePart ? wholePart[0] : ''} />
         <SingleDisplay
-          value={decimalPartString[0] || ''}
-          isFlipped={isFlipped}
+          value={wholePart && wholePart.length > 1 ? wholePart[1] : ''}
         />
+        <span className={classes.decimal}>.</span>
+        <SingleDisplay value={decimalPart ? decimalPart[0] : ''} />
         <SingleDisplay
-          value={decimalPartString[1] || ''}
-          isFlipped={isFlipped}
+          value={decimalPart && decimalPart.length > 1 ? decimalPart[1] : ''}
         />
       </Group>
       {result && (
@@ -43,7 +39,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
             .map((_, index) => (
               <SingleDisplay
                 // eslint-disable-next-line react/no-array-index-key
-                key={index}
+                key={`result-${index}-${result.amount}-${result.direction}`}
                 value={
                   index < result.amount
                     ? result.direction === 'up'
@@ -51,7 +47,6 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
                       : '↓'
                     : ''
                 }
-                isFlipped={isFlipped}
               />
             ))}
         </Group>

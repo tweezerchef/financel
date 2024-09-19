@@ -1,9 +1,4 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
+/* SingleDisplay.module.css */
 
 .flipBox {
   background-color: transparent;
@@ -21,11 +16,7 @@
   transform-style: preserve-3d;
 }
 
-.flipping .flipBoxInner {
-  transform: rotateY(180deg);
-}
-
-.flipped .flipBoxInner {
+.flipBoxInner.flipped {
   transform: rotateY(180deg);
 }
 
@@ -40,47 +31,15 @@
   justify-content: center;
   font-size: 24px;
   font-weight: bold;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .flipBoxFront {
   background-color: #000000;
-  color: white;
 }
 
 .flipBoxBack {
   background-color: #3b82f6;
   color: white;
   transform: rotateY(180deg);
-}
-
-.inputContainer {
-  width: 100%;
-  max-width: 300px;
-}
-
-.label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-.input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
 }
