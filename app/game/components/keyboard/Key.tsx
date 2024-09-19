@@ -11,7 +11,7 @@ interface KeyProps {
 export const Key: React.FC<KeyProps> = ({ value, icon, onClick }) => {
   return (
     <ActionIcon className={classes.key} onClick={() => onClick(value)}>
-      {icon || value}
+      <span className={classes.keyContent}>{icon || value}</span>
     </ActionIcon>
   )
 }
