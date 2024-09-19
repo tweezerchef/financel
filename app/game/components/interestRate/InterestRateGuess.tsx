@@ -4,7 +4,7 @@
 
 import { Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { Keyboard } from '../keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
 import classes from './ui/InterestRateGuess.module.css'
@@ -63,10 +63,10 @@ export function InterestRateGuess() {
     }
   }
 
-  const createRandomId = useCallback(
-    () => Math.random().toString(36).substring(7),
-    []
-  )
+  // const createRandomId = useCallback(
+  //   () => Math.random().toString(36).substring(7),
+  //   []
+  // )
 
   return (
     <div className={classes.stack}>
@@ -82,7 +82,6 @@ export function InterestRateGuess() {
             <GuessDisplay
               guess={result ? result.guess : form.values.guess || '0.00'}
               result={result ? result.result : null}
-              createRandomId={createRandomId}
             />
           </div>
         ))}
