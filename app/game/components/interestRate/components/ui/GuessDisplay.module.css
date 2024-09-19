@@ -1,5 +1,22 @@
-.paper {
+/* GuessDisplay.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  height: 28;
-  background-color: rgba(142, 167, 195, 0.661);
+}
+
+.guessGroup,
+.resultGroup {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.decimal {
+  font-size: 24px;
+  font-weight: bold;
+  align-self: flex-end;
+  margin-bottom: 8px;
 }
