@@ -19,7 +19,6 @@ export const SingleDisplay: React.FC<SingleDisplayProps> = ({ value }) => {
   const [isFlipped, setIsFlipped] = useState(false)
 
   useEffect(() => {
-    console.log('Value changed:', value) // Debug log
     setIsFlipped(value !== '')
   }, [value])
 

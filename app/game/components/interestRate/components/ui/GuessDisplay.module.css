@@ -1,50 +1,22 @@
-/* SingleDisplay.module.css */
+/* GuessDisplay.module.css */
 
-.flipBox {
-  background-color: transparent;
-  width: 1.5rem;
-  height: 2rem;
-  perspective: 1000px;
-}
-
-.flipBoxInner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-
-.flipping .flipBoxInner {
-  transform: rotateY(180deg);
-}
-
-.flipped .flipBoxInner {
-  transform: rotateY(180deg);
-}
-
-.flipBoxFront,
-.flipBoxBack {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
+.container {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  width: 100%;
+}
+
+.guessGroup,
+.resultGroup {
+  display: flex;
   justify-content: center;
+  gap: 1px;
+}
+
+.decimal {
   font-size: 24px;
   font-weight: bold;
-  border-radius: 4px;
-}
-
-.flipBoxFront {
-  background-color: #000000;
-  color: white;
-}
-
-.flipBoxBack {
-  background-color: #3b82f6;
-  color: white;
-  transform: rotateY(180deg);
+  align-self: flex-end;
+  margin-bottom: 8px;
 }
