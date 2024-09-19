@@ -4,7 +4,6 @@
 import { parse } from 'csv-parse'
 import fs from 'fs'
 import path from 'path'
-import { IRCategories } from '@prisma/client'
 import prisma from '../../../lib/prisma/prisma'
 
 export async function importInterestRates() {
@@ -35,7 +34,7 @@ export async function importInterestRates() {
       })
 
     // Map CSV columns to IRCategories
-    const categoryMap: { [key: string]: keyof typeof IRCategories } = {
+    const categoryMap: { [key: string]: keyof typeof IRCategory } = {
       '1 Yr': 'T_1',
       '5 Yr': 'T_5',
       '10 Yr': 'T_10',
