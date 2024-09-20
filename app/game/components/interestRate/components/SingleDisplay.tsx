@@ -1,31 +1,19 @@
-/* eslint-disable consistent-return */
-
-' use client '
-
-// SingleDisplay.tsx
-
-// SingleDisplay.tsx
-
-// SingleDisplay.tsx
-
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import styles from './ui/SingleDisplay.module.css'
 
 interface SingleDisplayProps {
   value: string
+  isFlipping: boolean
 }
 
-export const SingleDisplay: React.FC<SingleDisplayProps> = ({ value }) => {
-  const [isFlipped, setIsFlipped] = useState(false)
-
-  useEffect(() => {
-    setIsFlipped(value !== '')
-  }, [value])
-
+export const SingleDisplay: React.FC<SingleDisplayProps> = ({
+  value,
+  isFlipping,
+}) => {
   return (
     <div className={styles.flipBox}>
       <div
-        className={`${styles.flipBoxInner} ${isFlipped ? styles.flipped : ''}`}
+        className={`${styles.flipBoxInner} ${isFlipping ? styles.flipping : ''} ${value !== '' ? styles.flipped : ''}`}
       >
         <div className={styles.flipBoxFront} />
         <div className={styles.flipBoxBack}>{value}</div>
