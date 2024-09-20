@@ -22,14 +22,10 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   return (
     <Group className={classes.container} justify="center" gap="xs">
       <Group className={classes.guessGroup}>
-        <SingleDisplay
-          value={wholePart && wholePart.length > 1 ? wholePart[1] : ''}
-        />
+        <SingleDisplay value={wholePart || ''} />
         <span className={classes.decimal}>.</span>
-        <SingleDisplay value={decimalPart ? decimalPart[0] : ''} />
-        <SingleDisplay
-          value={decimalPart && decimalPart.length > 1 ? decimalPart[1] : ''}
-        />
+        <SingleDisplay value={decimalPart?.[0] || ''} />
+        <SingleDisplay value={decimalPart?.[1] || ''} />
       </Group>
       {result && (
         <Group className={classes.resultGroup}>
