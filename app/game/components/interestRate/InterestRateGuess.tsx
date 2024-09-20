@@ -25,15 +25,12 @@ export function InterestRateGuess() {
       guess: '',
     },
     validate: {
-      guess: (value) =>
-        /^\d{1,3}\.\d{2}$/.test(value)
-          ? null
-          : 'Invalid guess format (e.g., 1.00)',
+      guess: (value) => (value.length === 3 ? null : 'Please enter 3 digits'),
     },
   })
 
   const handleSubmit = async (values: { guess: string }) => {
-    const formattedGuess = parseFloat(values.guess).toFixed(2)
+    const formattedGuess = `${values.guess[0]}.${values.guess.slice(1)}`
 
     try {
       const response = await fetch('/game/interestRate/api/', {
@@ -74,7 +71,10 @@ export function InterestRateGuess() {
         ))}
         {activeGuessIndex < 6 && (
           <div className={classes.guessDisplay}>
-            <GuessDisplay guess={form.values.guess || '0.00'} result={null} />
+            <GuessDisplay
+              guess={`${form.values.guess[0] || ''}.${form.values.guess.slice(1)}`}
+              result={null}
+            />
           </div>
         )}
       </div>
