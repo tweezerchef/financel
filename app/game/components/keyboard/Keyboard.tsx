@@ -8,7 +8,7 @@ import { Key } from './Key'
 
 const keys = [
   [1, 2, 3, 4, 5, 'Backspace'],
-  [6, 7, 8, 9, 0, '.', 'Enter'],
+  [6, 7, 8, 9, 0, 'Enter'],
 ]
 
 interface KeyboardProps {
