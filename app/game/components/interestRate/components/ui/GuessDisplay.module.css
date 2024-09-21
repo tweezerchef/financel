@@ -1,22 +1,30 @@
-/* GuessDisplay.module.css */
-
 .container {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
+  gap: 1rem;
 }
 
 .guessGroup,
 .resultGroup {
   display: flex;
-  justify-content: center;
-  gap: 4px;
+  align-items: center;
+  gap: 1px;
 }
 
 .decimal {
   font-size: 24px;
   font-weight: bold;
   align-self: flex-end;
-  margin-bottom: 8px;
+  margin: 0 2px;
+}
+
+.guessGroup {
+  flex: 0 0 auto;
+}
+
+.resultGroup {
+  flex: 0 0 auto;
+  min-width: 8rem; /* Adjust this value as needed to ensure consistent spacing */
 }
