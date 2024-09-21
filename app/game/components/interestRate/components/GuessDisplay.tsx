@@ -1,60 +1,65 @@
-import { Text, Paper, Group } from '@mantine/core'
-import { useSpring, animated } from '@react-spring/web'
-import { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { Group, Box } from '@mantine/core'
+import { SingleDisplay } from './SingleDisplay'
 import classes from './ui/GuessDisplay.module.css'
 
 interface GuessDisplayProps {
   guess: string
   result?: { amount: ResponseNumbers; direction: Direction } | null
-  createRandomId: () => string
+  isActive: boolean
+  onAnimationComplete: () => void
 }
 
 export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   guess,
   result,
-  createRandomId,
+  isActive,
+  onAnimationComplete,
 }) => {
-  const [flipped, setFlipped] = useState(false)
-  const [initialFlip, setInitialFlip] = useState(false)
+  const [wholePart, decimalPart] = guess.split('.')
+  const [isFlipping, setIsFlipping] = useState(false)
+  const [showResult, setShowResult] = useState(false)
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (!initialFlip && result) {
-      setFlipped(true)
-      setInitialFlip(true)
+    if (isActive && result) {
+      setIsFlipping(true)
+      const timer = setTimeout(() => {
+        setIsFlipping(false)
+        setShowResult(true)
+        onAnimationComplete()
+      }, 600) // Match this with the CSS transition duration
+      return () => clearTimeout(timer)
     }
-  }, [result, initialFlip])
-
-  const { transform } = useSpring({
-    transform: flipped ? 'rotateX(360deg)' : 'rotateX(0deg)',
-    // opacity: flipped ? 1 : 0,
-    config: { duration: 500 },
-  })
-
-  const { amount, direction } = result || { amount: 0, direction: 'up' }
+  }, [isActive, result, onAnimationComplete])
 
   return (
-    <Paper
-      className={classes.paper}
-      shadow="lg"
-      radius="xl"
-      style={{ textAlign: 'center' }}
-    >
-      <animated.div style={{ transform }}>
-        <Group justify="center" gap="xs">
-          <Text>{guess}</Text>
-          {result && (
-            <Text>
-              {Array(amount)
-                .fill(null)
-                .map(() => (
-                  <span key={createRandomId()}>
-                    {direction === 'up' ? '↓' : '↑'}
-                  </span>
-                ))}
-            </Text>
-          )}
-        </Group>
-      </animated.div>
-    </Paper>
+    <Box className={classes.container}>
+      <Group className={classes.guessGroup}>
+        <SingleDisplay value={wholePart || ''} isFlipping={isFlipping} />
+        <span className={classes.decimal}>.</span>
+        <SingleDisplay value={decimalPart?.[0] || ''} isFlipping={isFlipping} />
+        <SingleDisplay value={decimalPart?.[1] || ''} isFlipping={isFlipping} />
+      </Group>
+      <Group className={classes.resultGroup}>
+        {Array(5)
+          .fill(null)
+          .map((_, index) => (
+            <SingleDisplay
+              // eslint-disable-next-line react/no-array-index-key
+              key={`result-${index}`}
+              value={
+                // eslint-disable-next-line no-nested-ternary
+                showResult && result && index < result.amount
+                  ? result.direction === 'up'
+                    ? '↑'
+                    : '↓'
+                  : ''
+              }
+              isFlipping={isFlipping}
+            />
+          ))}
+      </Group>
+    </Box>
   )
 }

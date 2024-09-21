@@ -8,7 +8,7 @@ import { Key } from './Key'
 
 const keys = [
   [1, 2, 3, 4, 5, 'Backspace'],
-  [6, 7, 8, 9, 0, '.', 'Enter'],
+  [6, 7, 8, 9, 0, 'Enter'],
 ]
 
 interface KeyboardProps {
@@ -25,15 +25,10 @@ export const Keyboard: React.FC<KeyboardProps> = ({
   const handleKeyPress = (value: string) => {
     let newValue = form.values.guess
     if (value === 'Enter') {
-      if (!newValue.includes('.')) newValue += '.00'
-      else if (newValue.split('.')[1].length === 1) newValue += '0'
-
-      form.setFieldValue(field, newValue)
-      form.validateField(field)
-      if (form.isValid()) form.onSubmit((values) => handleSubmit(values))()
-    } else if (value === 'Backspace') newValue = newValue.slice(0, -1) || '0'
-    else if (newValue === '0') newValue = value
-    else newValue += value
+      if (newValue.length === 3)
+        form.onSubmit((values) => handleSubmit(values))()
+    } else if (value === 'Backspace') newValue = newValue.slice(0, -1)
+    else if (value !== '.') if (newValue.length < 3) newValue += value
 
     form.setFieldValue(field, newValue)
   }
