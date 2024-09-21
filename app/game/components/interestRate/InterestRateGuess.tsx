@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
@@ -14,7 +16,6 @@ interface Guess {
 
 export function InterestRateGuess() {
   const [guesses, setGuesses] = useState<Array<Guess>>([])
-  const [activeGuessIndex, setActiveGuessIndex] = useState<number>(0)
   const [isAnimating, setIsAnimating] = useState(false)
 
   const form = useForm({
@@ -27,7 +28,7 @@ export function InterestRateGuess() {
   })
 
   const handleSubmit = async (values: { guess: string }) => {
-    if (isAnimating) return
+    if (isAnimating || guesses.length >= 6) return
 
     const formattedGuess = `${values.guess[0]}.${values.guess.slice(1)}`
 
@@ -55,13 +56,9 @@ export function InterestRateGuess() {
       form.reset()
     } catch (error) {
       console.error('Submission failed:', error)
+    } finally {
       setIsAnimating(false)
     }
-  }
-
-  const handleAnimationComplete = () => {
-    setIsAnimating(false)
-    if (activeGuessIndex < 5) setActiveGuessIndex(activeGuessIndex + 1)
   }
 
   return (
@@ -72,12 +69,12 @@ export function InterestRateGuess() {
             <GuessDisplay
               guess={guess.guess}
               result={guess.result}
-              isActive={index === activeGuessIndex - 1}
-              onAnimationComplete={handleAnimationComplete}
+              isActive={index === guesses.length - 1}
+              onAnimationComplete={() => setIsAnimating(false)}
             />
           </div>
         ))}
-        {activeGuessIndex < 6 && (
+        {guesses.length < 6 && (
           <div className={classes.guessDisplay}>
             <GuessDisplay
               guess={`${form.values.guess[0] || ''}.${form.values.guess.slice(1)}`}
@@ -89,12 +86,13 @@ export function InterestRateGuess() {
         )}
       </div>
       <div className={classes.guessBox}>
-        {activeGuessIndex < 6 && !isAnimating && (
+        {guesses.length < 6 ? (
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Keyboard form={form} field="guess" handleSubmit={handleSubmit} />
           </form>
+        ) : (
+          <Text>All guesses submitted!</Text>
         )}
-        {activeGuessIndex >= 6 && <Text>All guesses submitted!</Text>}
       </div>
     </div>
   )

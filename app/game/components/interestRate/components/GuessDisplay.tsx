@@ -1,10 +1,5 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-nested-ternary */
-
-'use client'
-
 import React, { useState, useEffect } from 'react'
-import { Group } from '@mantine/core'
+import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from './SingleDisplay'
 import classes from './ui/GuessDisplay.module.css'
 
@@ -25,6 +20,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   const [isFlipping, setIsFlipping] = useState(false)
   const [showResult, setShowResult] = useState(false)
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (isActive && result) {
       setIsFlipping(true)
@@ -38,7 +34,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   }, [isActive, result, onAnimationComplete])
 
   return (
-    <Group className={classes.container} justify="center" gap="xs">
+    <Box className={classes.container}>
       <Group className={classes.guessGroup}>
         <SingleDisplay value={wholePart || ''} isFlipping={isFlipping} />
         <span className={classes.decimal}>.</span>
@@ -53,6 +49,7 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
               // eslint-disable-next-line react/no-array-index-key
               key={`result-${index}`}
               value={
+                // eslint-disable-next-line no-nested-ternary
                 showResult && result && index < result.amount
                   ? result.direction === 'up'
                     ? '↑'
@@ -63,6 +60,6 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
             />
           ))}
       </Group>
-    </Group>
+    </Box>
   )
 }
