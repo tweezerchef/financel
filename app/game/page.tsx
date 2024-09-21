@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useLocalStorage } from './lib/useLocalStorage'
+import { useUserContext } from '../context/user/UserContext'
 
 const AuthenticatedGame = dynamic(
   () =>
@@ -15,51 +16,71 @@ const AuthenticatedGame = dynamic(
 
 export default function Game() {
   const router = useRouter()
-  const [token, setToken, isLoading] = useLocalStorage('token')
-  const [isTokenValid, setIsTokenValid] = useState(false)
+  const [token, , tokenIsLoading] = useLocalStorage('token')
+  const [guestToken, , guestTokenIsLoading] = useLocalStorage('guestToken')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { setUser } = useUserContext()
 
   useEffect(() => {
     console.log('Game component mounted')
-    console.log('Token:', token)
-    console.log('Is loading:', isLoading)
+    console.log('Regular token:', token)
+    console.log('Guest token:', guestToken)
+    console.log('Token loading:', tokenIsLoading)
+    console.log('Guest token loading:', guestTokenIsLoading)
 
     const validateToken = async () => {
-      if (!token) {
-        console.log('No token found, redirecting to login')
+      if (tokenIsLoading || guestTokenIsLoading) {
+        console.log('Tokens still loading, waiting...')
+        return
+      }
+
+      if (!token && !guestToken) {
+        console.log('No tokens found, redirecting to login')
         router.push('/')
         return
       }
 
+      const activeToken = token || guestToken
+      console.log('Active token:', activeToken)
+
       try {
         // Here you would typically make an API call to validate the token
-        // For now, we'll just simulate a validation check
-        const isValid = token.length > 0 // Replace with actual validation logic
+        // For now, we'll just check if it exists
+        const isValid = !!activeToken
         console.log('Token validation result:', isValid)
-        setIsTokenValid(isValid)
 
-        if (!isValid) {
+        if (isValid) {
+          setIsAuthenticated(true)
+          if (guestToken) setUser({ id: 'guest', type: 'guest' })
+          // You might want to decode the token to get the user ID
+          else setUser({ id: 'user', type: 'registered' })
+        } else {
           console.log('Invalid token, clearing and redirecting to login')
-          setToken(null)
+          localStorage.removeItem('token')
+          localStorage.removeItem('guestToken')
+          setUser(null)
           router.push('/')
         }
       } catch (error) {
         console.error('Error validating token:', error)
-        setIsTokenValid(false)
-        setToken(null)
+        setIsAuthenticated(false)
+        localStorage.removeItem('token')
+        localStorage.removeItem('guestToken')
+        setUser(null)
         router.push('/')
       }
     }
 
-    if (!isLoading) validateToken()
-  }, [token, isLoading, router, setToken])
+    validateToken()
+  }, [token, guestToken, tokenIsLoading, guestTokenIsLoading, router, setUser])
 
-  if (isLoading) {
-    console.log('Still loading...')
+  if (tokenIsLoading || guestTokenIsLoading) {
+    console.log('Still loading tokens...')
     return <div>Loading...</div>
   }
 
-  if (!token || !isTokenValid) {
-    console.log('No valid token, component will return null')
+  if (!isAuthenticated) {
+    console.log('Not authenticated, component will return null')
     return null
   }
 
