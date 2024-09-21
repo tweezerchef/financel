@@ -14,16 +14,22 @@ export const GuestButton = () => {
   const handleGuestLogin = async () => {
     setIsLoading(true)
     try {
+      console.log('Attempting guest login')
       const response = await fetch('/auth/api/guest', {
         method: 'POST',
       })
       const data = await response.json()
+      console.log('Guest login response:', data)
       if (response.ok) {
-        console.log('Guest login successful:', data)
+        console.log('Guest login successful, setting token')
         localStorage.setItem('guestToken', data.token)
         setUser({ id: data.id, type: 'guest' })
+        console.log('Redirecting to game page')
         router.push('/game')
-      } else alert(data.message)
+      } else {
+        console.error('Guest login failed:', data.message)
+        alert(data.message)
+      }
     } catch (error) {
       console.error('Guest login error:', error)
       alert('An error occurred during guest login.')

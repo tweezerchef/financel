@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // change when docker for container for target
+  // target: '??',
   reactStrictMode: true,
   experimental: {
     reactCompiler: true,

@@ -1,61 +1,65 @@
-/* eslint-disable no-nested-ternary */
-// GuessDisplay.tsx
-
-import { Group } from '@mantine/core'
+import React, { useState, useEffect } from 'react'
+import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from './SingleDisplay'
 import classes from './ui/GuessDisplay.module.css'
 
 interface GuessDisplayProps {
   guess: string
   result?: { amount: ResponseNumbers; direction: Direction } | null
+  isActive: boolean
+  onAnimationComplete: () => void
 }
 
 export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   guess,
   result,
+  isActive,
+  onAnimationComplete,
 }) => {
   const [wholePart, decimalPart] = guess.split('.')
-  const isFlipped = !!result
+  const [isFlipping, setIsFlipping] = useState(false)
+  const [showResult, setShowResult] = useState(false)
 
-  // Ensure wholePart and decimalPart are always strings
-  const wholePartString = wholePart || ''
-  const decimalPartString = decimalPart || ''
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (isActive && result) {
+      setIsFlipping(true)
+      const timer = setTimeout(() => {
+        setIsFlipping(false)
+        setShowResult(true)
+        onAnimationComplete()
+      }, 600) // Match this with the CSS transition duration
+      return () => clearTimeout(timer)
+    }
+  }, [isActive, result, onAnimationComplete])
 
   return (
-    <Group className={classes.container} justify="center" gap="xs">
+    <Box className={classes.container}>
       <Group className={classes.guessGroup}>
-        <SingleDisplay value={wholePartString[0] || ''} isFlipped={isFlipped} />
-        <SingleDisplay value={wholePartString[1] || ''} isFlipped={isFlipped} />
+        <SingleDisplay value={wholePart || ''} isFlipping={isFlipping} />
         <span className={classes.decimal}>.</span>
-        <SingleDisplay
-          value={decimalPartString[0] || ''}
-          isFlipped={isFlipped}
-        />
-        <SingleDisplay
-          value={decimalPartString[1] || ''}
-          isFlipped={isFlipped}
-        />
+        <SingleDisplay value={decimalPart?.[0] || ''} isFlipping={isFlipping} />
+        <SingleDisplay value={decimalPart?.[1] || ''} isFlipping={isFlipping} />
       </Group>
-      {result && (
-        <Group className={classes.resultGroup}>
-          {Array(5)
-            .fill(null)
-            .map((_, index) => (
-              <SingleDisplay
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-                value={
-                  index < result.amount
-                    ? result.direction === 'up'
-                      ? '↑'
-                      : '↓'
-                    : ''
-                }
-                isFlipped={isFlipped}
-              />
-            ))}
-        </Group>
-      )}
-    </Group>
+      <Group className={classes.resultGroup}>
+        {Array(5)
+          .fill(null)
+          .map((_, index) => (
+            <SingleDisplay
+              // eslint-disable-next-line react/no-array-index-key
+              key={`result-${index}`}
+              value={
+                // eslint-disable-next-line no-nested-ternary
+                showResult && result && index < result.amount
+                  ? result.direction === 'up'
+                    ? '↑'
+                    : '↓'
+                  : ''
+              }
+              isFlipping={isFlipping}
+            />
+          ))}
+      </Group>
+    </Box>
   )
 }

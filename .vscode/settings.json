@@ -8,5 +8,11 @@
     "**/*.sass",
     "**/*.less",
     "node_modules/@mantine/core/styles.css"
-  ]
+  ],
+  "github.copilot.enable": {
+    "typescript": true,
+    "typescriptreact": true,
+    "dockerfile": true,
+    "plaintext": true
+  }
 }

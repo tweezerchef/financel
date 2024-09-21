@@ -10,12 +10,15 @@ export function useLocalStorage(
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    console.log(`useLocalStorage effect for key: ${key}`)
     const storedValue = localStorage.getItem(key)
+    console.log(`Retrieved value for ${key}:`, storedValue)
     setValue(storedValue)
     setIsLoading(false)
   }, [key])
 
   const setStoredValue = (newValue: string | null) => {
+    console.log(`Setting value for ${key}:`, newValue)
     setValue(newValue)
     if (newValue === null) localStorage.removeItem(key)
     else localStorage.setItem(key, newValue)
