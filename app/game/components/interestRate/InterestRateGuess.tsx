@@ -1,103 +1,98 @@
-/* eslint-disable react/no-array-index-key */
-
 'use client'
 
+import { useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useState, useCallback } from 'react'
 import { Keyboard } from '../keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
 import classes from './ui/InterestRateGuess.module.css'
 
 interface Guess {
+  id: string
   guess: string
   result: { amount: ResponseNumbers; direction: Direction } | null
 }
 
 export function InterestRateGuess() {
-  const [guesses, setGuesses] = useState<Array<Guess | null>>(
-    new Array(6).fill(null)
-  )
-  const [activeGuessIndex, setActiveGuessIndex] = useState<number>(0)
+  const [guesses, setGuesses] = useState<Array<Guess>>([])
+  const [isAnimating, setIsAnimating] = useState(false)
 
   const form = useForm({
     initialValues: {
       guess: '',
     },
     validate: {
-      guess: (value) =>
-        /^\d{1,3}\.\d{2}$/.test(value)
-          ? null
-          : 'Invalid guess format (e.g., 1.003)',
+      guess: (value) => (value.length === 3 ? null : 'Please enter 3 digits'),
     },
   })
 
   const handleSubmit = async (values: { guess: string }) => {
-    // Ensure the guess includes two decimal places
-    const formattedGuess = parseFloat(values.guess).toFixed(2)
+    if (isAnimating || guesses.length >= 6) return
 
-    console.log('Submitting guess:', formattedGuess)
+    const formattedGuess = `${values.guess[0]}.${values.guess.slice(1)}`
+
     try {
+      setIsAnimating(true)
       const response = await fetch('/game/interestRate/api/', {
         method: 'POST',
-        body: JSON.stringify({ guess: parseFloat(formattedGuess) }), // Convert to number on server side
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ guess: parseFloat(formattedGuess) }),
       })
       const result = await response.json()
-      console.log(result)
 
-      const newGuesses = [...guesses]
-      newGuesses[activeGuessIndex] = {
+      const newGuess: Guess = {
+        id: uuidv4(),
         guess: formattedGuess,
         result: {
           amount: result.amount,
           direction: result.direction,
         },
       }
-      setGuesses(newGuesses)
 
-      if (activeGuessIndex < 5) setActiveGuessIndex(activeGuessIndex + 1)
-
+      setGuesses((prevGuesses) => [...prevGuesses, newGuess])
       form.reset()
     } catch (error) {
-      console.error('Validation failed:', error)
+      console.error('Submission failed:', error)
+    } finally {
+      setIsAnimating(false)
     }
   }
-
-  const createRandomId = useCallback(
-    () => Math.random().toString(36).substring(7),
-    []
-  )
 
   return (
     <div className={classes.stack}>
       <div className={classes.guessDisplayBox}>
-        {guesses.map((result, index) => (
-          <div
-            key={`guess-${index}`}
-            className={classes.guessDisplay}
-            style={{
-              display: index <= activeGuessIndex ? 'block' : 'none',
-            }}
-          >
+        {guesses.map((guess, index) => (
+          <div key={guess.id} className={classes.guessDisplay}>
             <GuessDisplay
-              guess={result ? result.guess : form.values.guess || '0.00'}
-              result={result ? result.result : null}
-              createRandomId={createRandomId}
+              guess={guess.guess}
+              result={guess.result}
+              isActive={index === guesses.length - 1}
+              onAnimationComplete={() => setIsAnimating(false)}
             />
           </div>
         ))}
+        {guesses.length < 6 && (
+          <div className={classes.guessDisplay}>
+            <GuessDisplay
+              guess={`${form.values.guess[0] || ''}.${form.values.guess.slice(1)}`}
+              result={null}
+              isActive={false}
+              onAnimationComplete={() => {}}
+            />
+          </div>
+        )}
       </div>
       <div className={classes.guessBox}>
-        {activeGuessIndex < 6 && (
+        {guesses.length < 6 ? (
           <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Keyboard
-              form={form}
-              field="guess"
-              handleSubmit={() => handleSubmit(form.values)}
-            />
+            <Keyboard form={form} field="guess" handleSubmit={handleSubmit} />
           </form>
+        ) : (
+          <Text>All guesses submitted!</Text>
         )}
-        {activeGuessIndex >= 6 && <Text>All guesses submitted!</Text>}
       </div>
     </div>
   )

@@ -1,0 +1,47 @@
+.flipBox {
+  background-color: transparent;
+  width: 1.5rem;
+  height: 1.6rem;
+  perspective: 100px;
+}
+
+.flipBoxInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.9s;
+  transform-style: preserve-3d;
+}
+
+.flipBoxInner.flipping {
+  transform: rotateY(180deg);
+}
+
+.flipBoxInner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flipBoxFront,
+.flipBoxBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 2px;
+}
+
+.flipBoxFront {
+  background-color: #000000;
+}
+
+.flipBoxBack {
+  background-color: #3b82f6;
+  color: white;
+  transform: rotateY(180deg);
+}
