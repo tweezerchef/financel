@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -77,10 +78,10 @@ model DailyChallenge {
   date            Dates             @relation(fields: [dateId], references: [id])
   interestRateId  String
   interestRate    InterestRatePrice @relation(fields: [interestRateId], references: [id])
-  stockPriceId    String
-  stockPrice      StockPrice        @relation(fields: [stockPriceId], references: [id])
-  currencyValueId String
-  currencyValue   CurrencyValue     @relation(fields: [currencyValueId], references: [id])
+  stockPriceId    String?
+  stockPrice      StockPrice?       @relation(fields: [stockPriceId], references: [id])
+  currencyValueId String?
+  currencyValue   CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
 }
 
 // daily challenge share table?
