@@ -24,7 +24,11 @@ export async function POST(req: NextRequest) {
         include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
     console.log(guest)
-    // const today = new Date()
+    const today = new Date()
+    const result = await prisma.result.create({
+      data: { guestId: guest.id, date: today },
+    })
+    console.log(result)
     // today.setHours(0, 0, 0, 0)
 
     // const lastPlay = guest.plays[0]
