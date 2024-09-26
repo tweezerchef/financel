@@ -1,5 +1,3 @@
-// components/AuthenticatedGame.tsx
-
 'use client'
 
 import { InterestRateGuess } from './interestRate/InterestRateGuess'
