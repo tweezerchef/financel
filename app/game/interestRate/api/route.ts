@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       today.getMonth(),
       today.getDate()
     )
-    const { guess } = await request.json()
+    const { guess, resultId, guessCount } = await request.json()
     console.log(guess)
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
 
@@ -69,7 +69,43 @@ export async function POST(request: NextRequest) {
     const result = arrowDecider(guess, rateNumber)
     console.log('result', result, 'rate', rateNumber)
 
-    return new Response(
+    await prisma.$transaction(async (tx) => {
+      // Check if ResultCategory for this Result and Category already exists
+      const existingCategory = await tx.resultCategory.findFirst({
+        where: {
+          resultId,
+          category: 'INTEREST_RATE',
+        },
+      })
+      if (existingCategory)
+        await tx.resultCategory.update({
+          where: {
+            id: existingCategory.id,
+          },
+          data: {
+            guess,
+            correct: result.amount === 0,
+            tries: guessCount,
+          },
+        })
+      else
+        await tx.resultCategory.create({
+          data: {
+            resultId,
+            category: 'INTEREST_RATE',
+            guess,
+            correct: result.amount === 0,
+            tries: guessCount,
+          },
+        })
+
+      await tx.result.update({
+        where: { id: resultId },
+        data: { date: dateOnly },
+      })
+    })
+
+    return new NextResponse(
       JSON.stringify({ direction: result.direction, amount: result.amount }),
       {
         status: 200,
