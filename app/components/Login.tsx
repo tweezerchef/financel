@@ -71,7 +71,7 @@ export function Login(props: PaperProps) {
       }
       if (response.ok && user.token) {
         localStorage.setItem('token', user.token)
-        setUser({ id: user.id, type: 'registered' })
+        setUser({ id: user.id, type: 'registered', resultId: user.resultId })
         router.push('/game')
       }
     } catch (error) {
