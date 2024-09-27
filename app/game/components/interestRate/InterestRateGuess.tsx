@@ -6,6 +6,7 @@ import { Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { Keyboard } from '../keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
+import { useUserContext } from '../../../context/user/UserContext'
 import classes from './ui/InterestRateGuess.module.css'
 
 interface Guess {
@@ -13,12 +14,16 @@ interface Guess {
   guess: string
   result: { amount: ResponseNumbers; direction: Direction } | null
 }
+interface UserDataType {
+  resultId: string
+}
 
 export function InterestRateGuess() {
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const guessCount = useRef(1)
-
+  const { user } = useUserContext()
+  const { resultId } = user as UserDataType
   const form = useForm({
     initialValues: {
       guess: '',
@@ -43,6 +48,7 @@ export function InterestRateGuess() {
         body: JSON.stringify({
           guess: parseFloat(formattedGuess),
           guessCount: guessCount.current,
+          resultId,
         }),
       })
       guessCount.current += 1
