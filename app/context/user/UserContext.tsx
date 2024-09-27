@@ -7,6 +7,7 @@ type UserType = 'guest' | 'registered'
 interface UserData {
   id: string
   type: UserType
+  resultId: string
 }
 
 interface UserContextType {
