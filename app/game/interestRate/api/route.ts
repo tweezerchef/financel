@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { arrowDecider } from '../../../lib/interestRate/arrowDecider'
+import prisma from '../../../lib/prisma/prisma'
+
+export const config = {
+  runtime: 'edge',
+}
+
+const getSecondsUntilMidnight = () => {
+  const now = new Date()
+  const midnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1
+  )
+  return Math.floor((midnight.getTime() - now.getTime()) / 1000)
+}
 
 export async function GET() {
   const irDateInfo = { info: 'Interest Rate Date Info' }
@@ -13,16 +28,47 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const today = new Date()
+    const dateOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    )
     const { guess } = await request.json()
     console.log(guess)
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
-    // if (typeof category !== IRCategory (category)) {
-    //   throw new Error('Invalid or missing category');
-    // }
-    // place holder this will be a placeholder for the actual rate.
-    const actualRate = 1.53
 
-    const result = arrowDecider(guess, actualRate)
+    const cacheKey = `dailyChallenge-${dateOnly.toISOString().split('T')[0]}`
+    const cache = await caches.open('daily-challenge-cache')
+    const cachedData = await cache.match(cacheKey)
+
+    let dailyChallenge
+    if (cachedData) dailyChallenge = await cachedData.json()
+    else
+      dailyChallenge = await prisma.dailyChallenge.findUnique({
+        where: { challengeDate: dateOnly },
+        include: {
+          interestRate: {
+            select: {
+              rate: true,
+            },
+          },
+        },
+      })
+
+    if (!dailyChallenge) throw new Error('Invalid daily challenge')
+    const cacheResponse = new Response(JSON.stringify(dailyChallenge))
+    const secondsUntilMidnight = getSecondsUntilMidnight()
+    cacheResponse.headers.set(
+      'Cache-Control',
+      `max-age=${secondsUntilMidnight}`
+    )
+    await cache.put(cacheKey, cacheResponse)
+    const { rate } = dailyChallenge.interestRate
+    const rateNumber = rate.toNumber()
+    const result = arrowDecider(guess, rateNumber)
+    console.log('result', result, 'rate', rateNumber)
+
     return new Response(
       JSON.stringify({ direction: result.direction, amount: result.amount }),
       {

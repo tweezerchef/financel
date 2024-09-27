@@ -13,6 +13,12 @@ export function arrowDecider(
   guess: number,
   actual: number
 ): ArrowDeciderReturn {
+  if (guess === actual)
+    return {
+      direction: 'same',
+      amount: 0,
+    }
+
   const difference = Math.abs(guess - actual)
   const amount: ResponseNumbers = calculateArrowAmount(difference)
 
