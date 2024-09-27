@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    console.log(ip)
 
     if (!ip)
       return NextResponse.json(
