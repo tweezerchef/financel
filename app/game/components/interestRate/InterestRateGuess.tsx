@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
@@ -17,6 +17,7 @@ interface Guess {
 export function InterestRateGuess() {
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
+  const guessCount = useRef(1)
 
   const form = useForm({
     initialValues: {
@@ -39,8 +40,12 @@ export function InterestRateGuess() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ guess: parseFloat(formattedGuess) }),
+        body: JSON.stringify({
+          guess: parseFloat(formattedGuess),
+          guessCount: guessCount.current,
+        }),
       })
+      guessCount.current += 1
       const result = await response.json()
 
       const newGuess: Guess = {
