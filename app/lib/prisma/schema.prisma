@@ -74,7 +74,7 @@ model GuestPlay {
 
 model DailyChallenge {
   id              String            @id @default(uuid())
-  challengeDate   DateTime          @default(now())
+  challengeDate   DateTime          @unique @db.Date
   dateId          String
   date            Dates             @relation(fields: [dateId], references: [id])
   interestRateId  String
@@ -83,6 +83,8 @@ model DailyChallenge {
   stockPrice      StockPrice?       @relation(fields: [stockPriceId], references: [id])
   currencyValueId String?
   currencyValue   CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
+
+  @@index([challengeDate])
 }
 
 // daily challenge share table?

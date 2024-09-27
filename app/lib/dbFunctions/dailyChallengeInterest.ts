@@ -2,6 +2,12 @@
 import prisma from '../prisma/prisma'
 
 export async function createDailyChallenge() {
+  const today = new Date()
+  const dateOnly = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  )
   // Get the total count of dates
   const totalDates = await prisma.dates.count()
 
@@ -36,6 +42,7 @@ export async function createDailyChallenge() {
   // Create the daily challenge
   const challenge = await prisma.dailyChallenge.create({
     data: {
+      challengeDate: dateOnly,
       dateId: randomDate.id,
       interestRateId: randomInterestRate.id,
     },
