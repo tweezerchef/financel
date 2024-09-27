@@ -31,9 +31,15 @@ export async function POST(req: NextRequest) {
         include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
     console.log(guest)
-    const result = await prisma.result.create({
-      data: { guestId: guest.id, date: dateOnly },
+
+    let result = await prisma.result.findFirst({
+      where: { guestId: guest.id, date: dateOnly },
     })
+    if (!result)
+      result = await prisma.result.create({
+        data: { guestId: guest.id, date: dateOnly },
+      })
+
     console.log(result)
 
     await prisma.guestPlay.create({
