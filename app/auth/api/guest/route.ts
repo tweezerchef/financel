@@ -24,17 +24,12 @@ export async function POST(req: NextRequest) {
         include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
     console.log(guest)
-    // const today = new Date()
-    // today.setHours(0, 0, 0, 0)
+    const today = new Date()
+    const result = await prisma.result.create({
+      data: { guestId: guest.id, date: today },
+    })
+    console.log(result)
 
-    // const lastPlay = guest.plays[0]
-    // if (lastPlay && lastPlay.playedAt >= today)
-    //   return NextResponse.json(
-    //     { message: 'You have already played today as a guest.' },
-    //     { status: 400 }
-    //   )
-
-    // Create a new play record
     await prisma.guestPlay.create({
       data: { guestId: guest.id },
     })
@@ -45,6 +40,7 @@ export async function POST(req: NextRequest) {
       data: { lastPlay: new Date() },
     })
     const { id } = guest
+    const resultId = result.id
 
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
@@ -55,6 +51,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       token,
       id,
+      resultId,
       message: 'Logged in as guest successfully',
     })
   } catch (error) {

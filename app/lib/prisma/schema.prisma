@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -62,10 +63,11 @@ model Guest {
 }
 
 model GuestPlay {
-  id       String   @id @default(uuid())
-  guestId  String
-  playedAt DateTime @default(now())
-  guest    Guest    @relation(fields: [guestId], references: [id])
+  id        String   @id @default(uuid())
+  guestId   String
+  playedAt  DateTime @default(now())
+  completed Boolean  @default(false)
+  guest     Guest    @relation(fields: [guestId], references: [id])
 
   @@unique([guestId, playedAt])
 }
@@ -77,10 +79,10 @@ model DailyChallenge {
   date            Dates             @relation(fields: [dateId], references: [id])
   interestRateId  String
   interestRate    InterestRatePrice @relation(fields: [interestRateId], references: [id])
-  stockPriceId    String
-  stockPrice      StockPrice        @relation(fields: [stockPriceId], references: [id])
-  currencyValueId String
-  currencyValue   CurrencyValue     @relation(fields: [currencyValueId], references: [id])
+  stockPriceId    String?
+  stockPrice      StockPrice?       @relation(fields: [stockPriceId], references: [id])
+  currencyValueId String?
+  currencyValue   CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
 }
 
 // daily challenge share table?
@@ -154,7 +156,9 @@ model Result {
   categories ResultCategory[]
 
   @@unique([guestId, date])
+  @@unique([userId, date])
   @@index([userId, date])
+  @@index([guestId, date])
 }
 
 model ResultCategory {
