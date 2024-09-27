@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Decimal } from '@prisma/client/runtime/library'
 import { arrowDecider } from '../../../lib/interestRate/arrowDecider'
 import prisma from '../../../lib/prisma/prisma'
+
+// Define types for the daily challenge data
+type InterestRate = {
+  rate: Decimal
+}
+
+type DailyChallenge = {
+  challengeDate: Date
+  interestRate: InterestRate
+}
+
+// In-memory cache with proper typing
+let dailyChallengeCache: {
+  data: DailyChallenge
+  expiresAt: number
+} | null = null
 
 export const config = {
   runtime: 'edge',
@@ -18,12 +35,7 @@ const getSecondsUntilMidnight = () => {
 
 export async function GET() {
   const irDateInfo = { info: 'Interest Rate Date Info' }
-  return new NextResponse(JSON.stringify({ irDateInfo }), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  return NextResponse.json({ irDateInfo }, { status: 200 })
 }
 
 export async function POST(request: NextRequest) {
@@ -35,16 +47,16 @@ export async function POST(request: NextRequest) {
       today.getDate()
     )
     const { guess, resultId, guessCount } = await request.json()
-    console.log(guess)
+    console.log('Received guess:', guess)
+
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
 
-    const cacheKey = `dailyChallenge-${dateOnly.toISOString().split('T')[0]}`
-    const cache = await caches.open('daily-challenge-cache')
-    const cachedData = await cache.match(cacheKey)
-
     let dailyChallenge
-    if (cachedData) dailyChallenge = await cachedData.json()
-    else
+    const now = Date.now()
+
+    if (dailyChallengeCache && dailyChallengeCache.expiresAt > now)
+      dailyChallenge = dailyChallengeCache.data
+    else {
       dailyChallenge = await prisma.dailyChallenge.findUnique({
         where: { challengeDate: dateOnly },
         include: {
@@ -56,32 +68,31 @@ export async function POST(request: NextRequest) {
         },
       })
 
-    if (!dailyChallenge) throw new Error('Invalid daily challenge')
-    const cacheResponse = new Response(JSON.stringify(dailyChallenge))
-    const secondsUntilMidnight = getSecondsUntilMidnight()
-    cacheResponse.headers.set(
-      'Cache-Control',
-      `max-age=${secondsUntilMidnight}`
-    )
-    await cache.put(cacheKey, cacheResponse)
+      if (!dailyChallenge) throw new Error('Invalid daily challenge')
+
+      const secondsUntilMidnight = getSecondsUntilMidnight()
+      dailyChallengeCache = {
+        data: dailyChallenge,
+        expiresAt: now + secondsUntilMidnight * 1000,
+      }
+    }
+
     const { rate } = dailyChallenge.interestRate
     const rateNumber = rate.toNumber()
     const result = arrowDecider(guess, rateNumber)
-    console.log('result', result, 'rate', rateNumber)
+    console.log('Result:', result, 'Actual rate:', rateNumber)
 
     await prisma.$transaction(async (tx) => {
-      // Check if ResultCategory for this Result and Category already exists
       const existingCategory = await tx.resultCategory.findFirst({
         where: {
           resultId,
           category: 'INTEREST_RATE',
         },
       })
+
       if (existingCategory)
         await tx.resultCategory.update({
-          where: {
-            id: existingCategory.id,
-          },
+          where: { id: existingCategory.id },
           data: {
             guess,
             correct: result.amount === 0,
@@ -105,29 +116,18 @@ export async function POST(request: NextRequest) {
       })
     })
 
-    return new NextResponse(
-      JSON.stringify({ direction: result.direction, amount: result.amount }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }
+    return NextResponse.json(
+      { direction: result.direction, amount: result.amount },
+      { status: 200 }
     )
   } catch (error: unknown) {
+    console.error('Error in POST request:', error)
     if (error instanceof Error)
-      // Return error response
-      return new NextResponse(error.message, {
-        status: 400,
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-      })
+      return NextResponse.json({ message: error.message }, { status: 400 })
 
-    // Return generic error response
-    return new NextResponse('An unexpected error occurred', {
-      status: 500,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    })
+    return NextResponse.json(
+      { message: 'An unexpected error occurred' },
+      { status: 500 }
+    )
   }
 }

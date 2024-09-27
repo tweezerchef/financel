@@ -3,9 +3,16 @@ import jwt from 'jsonwebtoken'
 import prisma from '../../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
+  const today = new Date()
+  const dateOnly = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  )
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const ip = req.headers.get('x-forwarded-for') || req.ip
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    console.log(ip)
 
     if (!ip)
       return NextResponse.json(
@@ -24,9 +31,8 @@ export async function POST(req: NextRequest) {
         include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
     console.log(guest)
-    const today = new Date()
     const result = await prisma.result.create({
-      data: { guestId: guest.id, date: today },
+      data: { guestId: guest.id, date: dateOnly },
     })
     console.log(result)
 
