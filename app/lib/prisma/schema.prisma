@@ -168,8 +168,8 @@ model ResultCategory {
   resultId  String
   category  Category
   guess     Decimal  @db.Decimal(10, 2)
-  correct   Boolean
+  correct   Boolean  @default(false)
   tries     Int
-  timeTaken Int // Time taken to complete the guess in seconds
+  timeTaken Int? // Time taken to complete the guess in seconds
   result    Result   @relation(fields: [resultId], references: [id])
 }
