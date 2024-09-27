@@ -152,7 +152,7 @@ model Result {
   id         String           @id @default(uuid())
   userId     String?
   guestId    String?
-  date       DateTime
+  date       DateTime         @db.Date
   user       User?            @relation(fields: [userId], references: [id])
   guest      Guest?           @relation(fields: [guestId], references: [id])
   categories ResultCategory[]
