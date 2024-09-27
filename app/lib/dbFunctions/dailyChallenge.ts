@@ -2,6 +2,12 @@ import cron from 'node-cron'
 import prisma from '../prisma/prisma'
 
 async function createDailyChallenge() {
+  const today = new Date()
+  const dateOnly = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  )
   const randomDate = await prisma.dates.findFirst({
     orderBy: {
       date: 'asc',
@@ -58,6 +64,7 @@ async function createDailyChallenge() {
 
   await prisma.dailyChallenge.create({
     data: {
+      challengeDate: dateOnly,
       dateId: randomDate.id,
       interestRateId: randomInterestRate.id,
       stockPriceId: randomStockPrice.id,

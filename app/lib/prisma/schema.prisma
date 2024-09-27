@@ -74,7 +74,7 @@ model GuestPlay {
 
 model DailyChallenge {
   id              String            @id @default(uuid())
-  challengeDate   DateTime          @default(now())
+  challengeDate   DateTime          @unique @db.Date
   dateId          String
   date            Dates             @relation(fields: [dateId], references: [id])
   interestRateId  String
@@ -83,6 +83,8 @@ model DailyChallenge {
   stockPrice      StockPrice?       @relation(fields: [stockPriceId], references: [id])
   currencyValueId String?
   currencyValue   CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
+
+  @@index([challengeDate])
 }
 
 // daily challenge share table?
@@ -150,7 +152,7 @@ model Result {
   id         String           @id @default(uuid())
   userId     String?
   guestId    String?
-  date       DateTime
+  date       DateTime         @db.Date
   user       User?            @relation(fields: [userId], references: [id])
   guest      Guest?           @relation(fields: [guestId], references: [id])
   categories ResultCategory[]
@@ -166,8 +168,8 @@ model ResultCategory {
   resultId  String
   category  Category
   guess     Decimal  @db.Decimal(10, 2)
-  correct   Boolean
+  correct   Boolean  @default(false)
   tries     Int
-  timeTaken Int // Time taken to complete the guess in seconds
+  timeTaken Int? // Time taken to complete the guess in seconds
   result    Result   @relation(fields: [resultId], references: [id])
 }
