@@ -25,20 +25,29 @@ Change
 3. Set up the database:
 
    - Install PostgreSQL on your local machine if you haven't already.
-   - Create a new database named `financel`.
 
 4. Set up environment variables:
 
    - Copy `.env.example` to `.env`
-   - Update the database connection details in `.env`
+   - Update the database connection details in `.env` (see instructions in the file)
 
 5. Run database migrations:
 
    ```
    npx prisma migrate dev
+
+   npx generate
+
+   npm run import-rates
    ```
 
-6. Start the development server:
+6. In the future the setting up of the "Daily Challenge" will be automated, but for now you need do it manually by running the following command for every new day, as of right now the only category is "Interest Rates":
+
+   ```
+   npm run daily-challenge
+   ```
+
+7. Start the development server:
 
    ```
    npm run dev

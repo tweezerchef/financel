@@ -1,4 +1,4 @@
-type Direction = 'up' | 'down'
+type Direction = 'up' | 'down' | 'same'
 
 enum IRCategory {
   T_30 = 'T_30',
@@ -9,7 +9,7 @@ enum IRCategory {
   T_OVERNIGHT = 'T_OVERNIGHT',
 }
 
-type ResponseNumbers = 1 | 2 | 3 | 4 | 5
+type ResponseNumbers = 0 | 1 | 2 | 3 | 4 | 5
 
 interface GuessResponse {
   guess: boolean

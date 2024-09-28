@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -62,25 +63,28 @@ model Guest {
 }
 
 model GuestPlay {
-  id       String   @id @default(uuid())
-  guestId  String
-  playedAt DateTime @default(now())
-  guest    Guest    @relation(fields: [guestId], references: [id])
+  id        String   @id @default(uuid())
+  guestId   String
+  playedAt  DateTime @default(now())
+  completed Boolean  @default(false)
+  guest     Guest    @relation(fields: [guestId], references: [id])
 
   @@unique([guestId, playedAt])
 }
 
 model DailyChallenge {
   id              String            @id @default(uuid())
-  challengeDate   DateTime          @default(now())
+  challengeDate   DateTime          @unique @db.Date
   dateId          String
   date            Dates             @relation(fields: [dateId], references: [id])
   interestRateId  String
   interestRate    InterestRatePrice @relation(fields: [interestRateId], references: [id])
-  stockPriceId    String
-  stockPrice      StockPrice        @relation(fields: [stockPriceId], references: [id])
-  currencyValueId String
-  currencyValue   CurrencyValue     @relation(fields: [currencyValueId], references: [id])
+  stockPriceId    String?
+  stockPrice      StockPrice?       @relation(fields: [stockPriceId], references: [id])
+  currencyValueId String?
+  currencyValue   CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
+
+  @@index([challengeDate])
 }
 
 // daily challenge share table?
@@ -148,13 +152,15 @@ model Result {
   id         String           @id @default(uuid())
   userId     String?
   guestId    String?
-  date       DateTime
+  date       DateTime         @db.Date
   user       User?            @relation(fields: [userId], references: [id])
   guest      Guest?           @relation(fields: [guestId], references: [id])
   categories ResultCategory[]
 
   @@unique([guestId, date])
+  @@unique([userId, date])
   @@index([userId, date])
+  @@index([guestId, date])
 }
 
 model ResultCategory {
@@ -162,8 +168,8 @@ model ResultCategory {
   resultId  String
   category  Category
   guess     Decimal  @db.Decimal(10, 2)
-  correct   Boolean
+  correct   Boolean  @default(false)
   tries     Int
-  timeTaken Int // Time taken to complete the guess in seconds
+  timeTaken Int? // Time taken to complete the guess in seconds
   result    Result   @relation(fields: [resultId], references: [id])
 }

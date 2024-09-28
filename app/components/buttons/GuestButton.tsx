@@ -23,7 +23,7 @@ export const GuestButton = () => {
       if (response.ok) {
         console.log('Guest login successful, setting token')
         localStorage.setItem('guestToken', data.token)
-        setUser({ id: data.id, type: 'guest' })
+        setUser({ id: data.id, type: 'guest', resultId: data.resultId })
         console.log('Redirecting to game page')
         router.push('/game')
       } else {
