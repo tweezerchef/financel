@@ -19,9 +19,7 @@ let dailyChallengeCache: {
   expiresAt: number
 } | null = null
 
-export const config = {
-  runtime: 'edge',
-}
+export const runtime = 'edge'
 
 const getSecondsUntilMidnight = () => {
   const now = new Date()
