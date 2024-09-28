@@ -41,7 +41,13 @@ Change
    npm run import-rates
    ```
 
-6. Start the development server:
+6. In the future the setting up of the "Daily Challenge" will be automated, but for now you need do it manually by running the following command for every new day, as of right now the only category is "Interest Rates":
+
+   ```
+   npm run daily-challenge
+   ```
+
+7. Start the development server:
 
    ```
    npm run dev
