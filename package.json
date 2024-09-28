@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "import-rates": "ts-node --esm app/lib/dbFunctions/interestRateInput.ts",
+    "daily-challenge": "npx tsx app/lib/dbFunctions/testDailyChallenge.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

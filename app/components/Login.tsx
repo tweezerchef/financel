@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useToggle, upperFirst } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
 import {
@@ -28,6 +29,7 @@ type FormProps = {
 
 export function Login(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register'])
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
   const form = useForm({
@@ -48,6 +50,7 @@ export function Login(props: PaperProps) {
   })
 
   const formSubmit = async (values: FormProps) => {
+    setIsLoading(true)
     console.log({ ...values, type })
     const { email, password } = values
     try {
@@ -73,9 +76,15 @@ export function Login(props: PaperProps) {
         localStorage.setItem('token', user.token)
         setUser({ id: user.id, type: 'registered', resultId: user.resultId })
         router.push('/game')
+      } else {
+        console.error('Guest login failed:', user.message)
+        alert(user.message)
       }
     } catch (error) {
-      console.error(error)
+      console.error('Guest login error:', error)
+      alert('An error occurred during guest login.')
+    } finally {
+      setIsLoading(false)
     }
   }
   return (
@@ -145,7 +154,7 @@ export function Login(props: PaperProps) {
               ? 'Already have an account? Login'
               : "Don't have an account? Register"}
           </Anchor>
-          <Button type="submit" radius="xl">
+          <Button type="submit" radius="xl" disabled={isLoading}>
             {upperFirst(type)}
           </Button>
         </Group>
