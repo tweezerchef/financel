@@ -3,9 +3,15 @@ import jwt from 'jsonwebtoken'
 import prisma from '../../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
+  const today = new Date()
+  const dateOnly = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  )
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const ip = req.headers.get('x-forwarded-for') || req.ip
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
 
     if (!ip)
       return NextResponse.json(
@@ -24,17 +30,17 @@ export async function POST(req: NextRequest) {
         include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
     console.log(guest)
-    // const today = new Date()
-    // today.setHours(0, 0, 0, 0)
 
-    // const lastPlay = guest.plays[0]
-    // if (lastPlay && lastPlay.playedAt >= today)
-    //   return NextResponse.json(
-    //     { message: 'You have already played today as a guest.' },
-    //     { status: 400 }
-    //   )
+    let result = await prisma.result.findFirst({
+      where: { guestId: guest.id, date: dateOnly },
+    })
+    if (!result)
+      result = await prisma.result.create({
+        data: { guestId: guest.id, date: dateOnly },
+      })
 
-    // Create a new play record
+    console.log(result)
+
     await prisma.guestPlay.create({
       data: { guestId: guest.id },
     })
@@ -45,6 +51,7 @@ export async function POST(req: NextRequest) {
       data: { lastPlay: new Date() },
     })
     const { id } = guest
+    const resultId = result.id
 
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
@@ -55,6 +62,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       token,
       id,
+      resultId,
       message: 'Logged in as guest successfully',
     })
   } catch (error) {

@@ -49,12 +49,8 @@ export default function Game() {
         const isValid = !!activeToken
         console.log('Token validation result:', isValid)
 
-        if (isValid) {
-          setIsAuthenticated(true)
-          if (guestToken) setUser({ id: 'guest', type: 'guest' })
-          // You might want to decode the token to get the user ID
-          else setUser({ id: 'user', type: 'registered' })
-        } else {
+        if (isValid) setIsAuthenticated(true)
+        else {
           console.log('Invalid token, clearing and redirecting to login')
           localStorage.removeItem('token')
           localStorage.removeItem('guestToken')
