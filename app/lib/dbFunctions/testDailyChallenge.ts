@@ -20,7 +20,7 @@ async function testCreateDailyChallenge() {
         date: true,
         interestRate: {
           include: {
-            interest: true,
+            rateType: true,
           },
         },
       },

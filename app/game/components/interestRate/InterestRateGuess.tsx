@@ -40,7 +40,7 @@ export function InterestRateGuess() {
 
     try {
       setIsAnimating(true)
-      const response = await fetch('/game/interestRate/api/', {
+      const response = await fetch('/game/components/interestRate/api/guess/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
