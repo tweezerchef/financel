@@ -1,6 +1,13 @@
 'use client'
 
-import { createContext, useContext, useMemo, useState, ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  ReactNode,
+  useEffect,
+} from 'react'
 
 type UserType = 'guest' | 'registered'
 
@@ -14,6 +21,7 @@ interface UserContextType {
   user: UserData | null
   setUser: (userData: UserData | null) => void
 }
+
 interface UserProviderProps {
   children: ReactNode
 }
@@ -31,7 +39,19 @@ export const useUserContext = () => {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserData | null>(null)
 
-  const value = useMemo(() => ({ user, setUser }), [user, setUser])
+  useEffect(() => {
+    // Load user data from localStorage on initial render
+    const storedUser = localStorage.getItem('userData')
+    if (storedUser) setUser(JSON.parse(storedUser))
+  }, [])
+
+  const setUserAndStore = (userData: UserData | null) => {
+    setUser(userData)
+    if (userData) localStorage.setItem('userData', JSON.stringify(userData))
+    else localStorage.removeItem('userData')
+  }
+
+  const value = useMemo(() => ({ user, setUser: setUserAndStore }), [user])
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>
 }

@@ -1,4 +1,4 @@
-import { Text, Paper } from '@mantine/core'
+import { Text, Paper, Container } from '@mantine/core'
 import classes from './ui/DayOfInfo.module.css'
 
 interface DayOfInfoProps {
@@ -24,10 +24,39 @@ const getDuration = (rateType: string) => {
   }
 }
 
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+const addOrdinalSuffix = (day: number): string => {
+  if (day > 3 && day < 21) return `${day}th`
+  switch (day % 10) {
+    case 1:
+      return `${day}st`
+    case 2:
+      return `${day}nd`
+    case 3:
+      return `${day}rd`
+    default:
+      return `${day}th`
+  }
+}
+
 export function DayOfInfo({ date, category }: DayOfInfoProps) {
   const duration = getDuration(category)
+
+  const formattedDate = formatDate(date)
+  const [month, day, year] = formattedDate.split(' ')
+  const dayWithSuffix = addOrdinalSuffix(parseInt(day, 10))
+  const finalDate = `${month} ${dayWithSuffix}, ${year}`
+
   return (
-    <div className={classes.infoWrapper}>
+    <Container className={classes.container}>
       <Paper
         shadow="md"
         withBorder
@@ -35,9 +64,15 @@ export function DayOfInfo({ date, category }: DayOfInfoProps) {
         p="md"
         className={classes.paper}
       >
-        <Text>{date}</Text>
-        <Text>{duration}</Text>
+        <div className={classes.textContainer}>
+          <Text size="lg" className={classes.date}>
+            {finalDate}
+          </Text>
+          <Text size="md" className={classes.bondType}>
+            {duration}
+          </Text>
+        </div>
       </Paper>
-    </div>
+    </Container>
   )
 }
