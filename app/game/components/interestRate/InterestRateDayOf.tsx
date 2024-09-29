@@ -1,18 +1,17 @@
+import { Dispatch, SetStateAction } from 'react'
 import { Container } from '@mantine/core'
-import Image from 'next/image'
+import { DayOfImage } from './components/DayOfImage'
 import classes from './ui/InterestRateDayOf.module.css'
 
-export function InterestRateDayOf() {
+interface InterestRateDayOfProps {
+  dayOfSlide: 'image' | 'day' | 'guess'
+  // eslint-disable-next-line react/no-unused-prop-types
+  setDayOfSlide: Dispatch<SetStateAction<'image' | 'day' | 'guess'>>
+}
+export function InterestRateDayOf({ dayOfSlide }: InterestRateDayOfProps) {
   return (
     <Container className={classes.dayOfContainer}>
-      <Image
-        src="/JP.webp"
-        alt="Interest Rate"
-        width={250}
-        height={166.5}
-        quality={80}
-        priority
-      />
+      {dayOfSlide === 'image' && <DayOfImage />}
     </Container>
   )
 }
