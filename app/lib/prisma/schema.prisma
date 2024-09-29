@@ -127,7 +127,7 @@ model InterestRatePrice {
   interestId     String
   rate           Decimal          @db.Decimal(5, 2)
   dateId         String
-  interest       InterestRate     @relation(fields: [interestId], references: [id])
+  rateType       InterestRate     @relation(fields: [interestId], references: [id])
   date           Dates            @relation(fields: [dateId], references: [id])
   DailyChallenge DailyChallenge[]
 }
