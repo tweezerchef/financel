@@ -1,6 +1,9 @@
 /* eslint-disable consistent-return */
+
+'use client'
+
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { Container, Transition, Stack } from '@mantine/core'
+import { Container, Transition } from '@mantine/core'
 import { DayOfImage } from './components/DayOfImage'
 import classes from './ui/InterestRateDayOf.module.css'
 import { DayOfInfo } from './components/DayOfInfo'
@@ -45,15 +48,15 @@ export function InterestRateDayOf({
   }, [dayOfSlide, setDayOfSlide]) // Add setDayOfSlide to dependency array
   return (
     <Container className={classes.dayOfContainer}>
-      <Stack>
+      <div className={classes.slideWrapper}>
         <Transition
           mounted={dayOfSlide === 'image'}
-          transition="fade"
+          transition="slide-left"
           duration={400}
           timingFunction="ease"
         >
           {(styles) => (
-            <div style={styles}>
+            <div style={styles} className={classes.slide}>
               <DayOfImage />
             </div>
           )}
@@ -61,12 +64,12 @@ export function InterestRateDayOf({
 
         <Transition
           mounted={dayOfSlide === 'day' && dayOfInfo !== null}
-          transition="fade"
+          transition="slide-left"
           duration={400}
           timingFunction="ease"
         >
           {(styles) => (
-            <div style={styles}>
+            <div style={styles} className={classes.slide}>
               {dayOfInfo && (
                 <DayOfInfo
                   date={dayOfInfo.date}
@@ -76,7 +79,7 @@ export function InterestRateDayOf({
             </div>
           )}
         </Transition>
-      </Stack>
+      </div>
     </Container>
   )
 }

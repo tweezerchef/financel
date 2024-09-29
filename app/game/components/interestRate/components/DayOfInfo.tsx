@@ -1,4 +1,5 @@
 import { Text, Paper } from '@mantine/core'
+import classes from './ui/DayOfInfo.module.css'
 
 interface DayOfInfoProps {
   date: string
@@ -26,8 +27,14 @@ const getDuration = (rateType: string) => {
 export function DayOfInfo({ date, category }: DayOfInfoProps) {
   const duration = getDuration(category)
   return (
-    <div>
-      <Paper shadow="md" withBorder radius="md" p="xl">
+    <div className={classes.infoWrapper}>
+      <Paper
+        shadow="md"
+        withBorder
+        radius="md"
+        p="md"
+        className={classes.paper}
+      >
         <Text>{date}</Text>
         <Text>{duration}</Text>
       </Paper>
