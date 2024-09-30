@@ -13,7 +13,9 @@ interface Guess {
   id: string
   guess: string
   result: { amount: ResponseNumbers; direction: Direction } | null
+  isSpinning: boolean
 }
+
 interface UserDataType {
   resultId: string
 }
@@ -37,6 +39,7 @@ export function InterestRateGuess() {
     if (isAnimating || guesses.length >= 6) return
 
     const formattedGuess = `${values.guess[0]}.${values.guess.slice(1)}`
+    const currentGuessCount = guessCount.current
 
     try {
       setIsAnimating(true)
@@ -47,7 +50,7 @@ export function InterestRateGuess() {
         },
         body: JSON.stringify({
           guess: parseFloat(formattedGuess),
-          guessCount: guessCount.current,
+          guessCount: currentGuessCount,
           resultId,
         }),
       })
@@ -61,12 +64,23 @@ export function InterestRateGuess() {
           amount: result.amount,
           direction: result.direction,
         },
+        isSpinning: true,
       }
 
       setGuesses((prevGuesses) => [...prevGuesses, newGuess])
       form.reset()
+
+      setTimeout(() => {
+        setGuesses((prevGuesses) =>
+          prevGuesses.map((g) =>
+            g.id === newGuess.id ? { ...g, isSpinning: false } : g
+          )
+        )
+        setIsAnimating(false)
+      }, 1500)
     } catch (error) {
       console.error('Submission failed:', error)
+      setIsAnimating(false)
     } finally {
       setIsAnimating(false)
     }
@@ -75,23 +89,21 @@ export function InterestRateGuess() {
   return (
     <div className={classes.stack}>
       <div className={classes.guessDisplayBox}>
-        {guesses.map((guess, index) => (
+        {guesses.map((guess) => (
           <div key={guess.id} className={classes.guessDisplay}>
             <GuessDisplay
               guess={guess.guess}
               result={guess.result}
-              isActive={index === guesses.length - 1}
-              onAnimationComplete={() => setIsAnimating(false)}
+              isSpinning={guess.isSpinning}
             />
           </div>
         ))}
-        {guesses.length < 6 && (
+        {!isAnimating && guesses.length < 6 && (
           <div className={classes.guessDisplay}>
             <GuessDisplay
               guess={`${form.values.guess[0] || ''}.${form.values.guess.slice(1)}`}
               result={null}
-              isActive={false}
-              onAnimationComplete={() => {}}
+              isSpinning={false}
             />
           </div>
         )}
