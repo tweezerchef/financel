@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
     console.log('Received guess:', guess)
 
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
+    if (!resultId) throw new Error('resultId is required')
 
     let dailyChallenge
     const now = Date.now()
