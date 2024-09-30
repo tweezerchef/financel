@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+/* eslint-disable no-nested-ternary */
+import React from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from './SingleDisplay'
 import classes from './ui/GuessDisplay.module.css'
@@ -6,57 +8,52 @@ import classes from './ui/GuessDisplay.module.css'
 interface GuessDisplayProps {
   guess: string
   result?: { amount: ResponseNumbers; direction: Direction } | null
-  isActive: boolean
-  onAnimationComplete: () => void
+  isSpinning: boolean
 }
 
 export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   guess,
   result,
-  isActive,
-  onAnimationComplete,
+  isSpinning,
 }) => {
   const [wholePart, decimalPart] = guess.split('.')
-  const [isFlipping, setIsFlipping] = useState(false)
-  const [showResult, setShowResult] = useState(false)
-
-  // eslint-disable-next-line consistent-return
-  useEffect(() => {
-    if (isActive && result) {
-      setIsFlipping(true)
-      const timer = setTimeout(() => {
-        setIsFlipping(false)
-        setShowResult(true)
-        onAnimationComplete()
-      }, 600) // Match this with the CSS transition duration
-      return () => clearTimeout(timer)
-    }
-  }, [isActive, result, onAnimationComplete])
+  const spinDuration = 1500 // 1.5 seconds of spinning
 
   return (
     <Box className={classes.container}>
       <Group className={classes.guessGroup}>
-        <SingleDisplay value={wholePart || ''} isFlipping={isFlipping} />
+        <SingleDisplay
+          value={wholePart || ''}
+          isSpinning={isSpinning}
+          spinDuration={spinDuration}
+        />
         <span className={classes.decimal}>.</span>
-        <SingleDisplay value={decimalPart?.[0] || ''} isFlipping={isFlipping} />
-        <SingleDisplay value={decimalPart?.[1] || ''} isFlipping={isFlipping} />
+        <SingleDisplay
+          value={decimalPart?.[0] || ''}
+          isSpinning={isSpinning}
+          spinDuration={spinDuration}
+        />
+        <SingleDisplay
+          value={decimalPart?.[1] || ''}
+          isSpinning={isSpinning}
+          spinDuration={spinDuration}
+        />
       </Group>
       <Group className={classes.resultGroup}>
         {Array(5)
           .fill(null)
           .map((_, index) => (
             <SingleDisplay
-              // eslint-disable-next-line react/no-array-index-key
-              key={`result-${index}`}
+              key={uuidv4()}
               value={
-                // eslint-disable-next-line no-nested-ternary
-                showResult && result && index < result.amount
+                result && index < result.amount
                   ? result.direction === 'up'
                     ? '↑'
                     : '↓'
                   : ''
               }
-              isFlipping={isFlipping}
+              isSpinning={isSpinning}
+              spinDuration={spinDuration}
             />
           ))}
       </Group>
