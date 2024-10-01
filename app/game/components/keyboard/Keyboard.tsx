@@ -6,8 +6,8 @@ import classes from './ui/Keyboard.module.css'
 import { Key } from './Key'
 
 const keys = [
-  [1, 2, 3, 4, 5, 'Backspace'],
-  [6, 7, 8, 9, 0, 'Enter'],
+  [1, 2, 3, 4, 5, '⌫'],
+  [6, 7, 8, 9, 0, '↵'],
 ]
 
 interface KeyboardProps {
@@ -23,7 +23,7 @@ export const Keyboard: React.FC<KeyboardProps> = ({
 }) => {
   const handleKeyPress = (value: string) => {
     let newValue = form.values.guess
-    if (value === 'Enter') {
+    if (value === '↵') {
       if (newValue.length === 3)
         form.onSubmit((values) => handleSubmit(values))()
     } else if (value === 'Backspace') newValue = newValue.slice(0, -1)
