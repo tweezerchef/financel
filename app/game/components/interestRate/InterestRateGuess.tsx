@@ -73,10 +73,7 @@ export function InterestRateGuess() {
         const newGuess: Guess = {
           id: uuidv4(),
           guess: formattedGuess,
-          result: {
-            amount: result.amount,
-            direction: result.direction,
-          },
+          result: null,
           isSpinning: true,
         }
 
@@ -86,11 +83,20 @@ export function InterestRateGuess() {
         setTimeout(() => {
           setGuesses((prevGuesses) =>
             prevGuesses.map((g) =>
-              g.id === newGuess.id ? { ...g, isSpinning: false } : g
+              g.id === newGuess.id
+                ? {
+                    ...g,
+                    isSpinning: false,
+                    result: {
+                      amount: result.amount,
+                      direction: result.direction,
+                    },
+                  }
+                : g
             )
           )
           setIsAnimating(false)
-        }, 1500)
+        }, 1000)
       } catch (error) {
         console.error('Submission failed:', error)
         setIsAnimating(false)

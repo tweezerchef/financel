@@ -1,5 +1,7 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-plusplus */
 /* eslint-disable no-nested-ternary */
-import React from 'react'
+import { FC, useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from './SingleDisplay'
@@ -11,33 +13,40 @@ interface GuessDisplayProps {
   isSpinning: boolean
 }
 
-export const GuessDisplay: React.FC<GuessDisplayProps> = ({
+export const GuessDisplay: FC<GuessDisplayProps> = ({
   guess,
   result,
   isSpinning,
 }) => {
   const [wholePart, decimalPart] = guess.split('.')
-  const spinDuration = 1500 // 1.5 seconds of spinning
+  const [displayedResults, setDisplayedResults] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!isSpinning && result) {
+      const resultArray = Array(result.amount).fill(
+        result.direction === 'down' ? '↑' : '↓'
+      )
+      let currentIndex = 0
+
+      const intervalID = setInterval(() => {
+        if (currentIndex < resultArray.length) {
+          setDisplayedResults((prev) => [...prev, resultArray[currentIndex]])
+          currentIndex++
+        } else clearInterval(intervalID)
+      }, 200)
+
+      return () => clearInterval(intervalID)
+    }
+    if (isSpinning) setDisplayedResults([])
+  }, [isSpinning, result])
 
   return (
     <Box className={classes.container}>
       <Group className={classes.guessGroup}>
-        <SingleDisplay
-          value={wholePart || ''}
-          isSpinning={isSpinning}
-          spinDuration={spinDuration}
-        />
+        <SingleDisplay value={wholePart || ''} isSpinning={isSpinning} />
         <span className={classes.decimal}>.</span>
-        <SingleDisplay
-          value={decimalPart?.[0] || ''}
-          isSpinning={isSpinning}
-          spinDuration={spinDuration}
-        />
-        <SingleDisplay
-          value={decimalPart?.[1] || ''}
-          isSpinning={isSpinning}
-          spinDuration={spinDuration}
-        />
+        <SingleDisplay value={decimalPart?.[0] || ''} isSpinning={isSpinning} />
+        <SingleDisplay value={decimalPart?.[1] || ''} isSpinning={isSpinning} />
       </Group>
       <Group className={classes.resultGroup}>
         {Array(5)
@@ -45,15 +54,8 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
           .map((_, index) => (
             <SingleDisplay
               key={uuidv4()}
-              value={
-                result && index < result.amount
-                  ? result.direction === 'up'
-                    ? '↑'
-                    : '↓'
-                  : ''
-              }
+              value={displayedResults[index] || ''}
               isSpinning={isSpinning}
-              spinDuration={spinDuration}
             />
           ))}
       </Group>
