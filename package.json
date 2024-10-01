@@ -6,7 +6,7 @@
     "schema": "./app/lib/prisma/schema.prisma"
   },
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "import-rates": "ts-node --esm app/dev/api/ratesInput/importInterestRates.ts",
     "daily-challenge": "npx tsx app/lib/dbFunctions/testDailyChallenge.ts",
     "build": "next build",
