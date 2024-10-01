@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "ResultCategory" ADD COLUMN     "completed" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "endTime" TIMESTAMP(3),
+ADD COLUMN     "startTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
