@@ -164,12 +164,17 @@ model Result {
 }
 
 model ResultCategory {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   resultId  String
   category  Category
-  guess     Decimal  @db.Decimal(10, 2)
-  correct   Boolean  @default(false)
+  guess     Decimal   @db.Decimal(10, 2)
+  correct   Boolean   @default(false)
   tries     Int
-  timeTaken Int? // Time taken to complete the guess in seconds
-  result    Result   @relation(fields: [resultId], references: [id])
+  startTime DateTime  @default(now())
+  completed Boolean   @default(false)
+  endTime   DateTime?
+  timeTaken Int?
+  result    Result    @relation(fields: [resultId], references: [id])
+
+  @@unique([resultId, category])
 }

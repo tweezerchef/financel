@@ -4,14 +4,13 @@ import { arrowDecider } from '../../../../../lib/interestRate/arrowDecider'
 import prisma from '../../../../../lib/prisma/prisma'
 
 // Define types for the daily challenge data
-type InterestRate = {
-  rate: Decimal
-}
 
 type DailyChallenge = {
   challengeDate: Date
-  interestRate: InterestRate
-}
+  interestRate: {
+    rate: Decimal
+  }
+} | null
 
 // In-memory cache with proper typing
 let dailyChallengeCache: {
@@ -48,80 +47,86 @@ export async function POST(request: NextRequest) {
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
     if (!resultId) throw new Error('resultId is required')
 
-    let dailyChallenge
-    const now = Date.now()
-
-    if (dailyChallengeCache && dailyChallengeCache.expiresAt > now)
-      dailyChallenge = dailyChallengeCache.data
-    else {
+    let dailyChallenge = dailyChallengeCache?.data
+    if (!dailyChallenge) {
       dailyChallenge = await prisma.dailyChallenge.findUnique({
         where: { challengeDate: dateOnly },
-        include: {
-          interestRate: {
-            select: {
-              rate: true,
-            },
-          },
-        },
+        include: { interestRate: { select: { rate: true } } },
       })
-
       if (!dailyChallenge) throw new Error('Invalid daily challenge')
-
-      const secondsUntilMidnight = getSecondsUntilMidnight()
       dailyChallengeCache = {
         data: dailyChallenge,
-        expiresAt: now + secondsUntilMidnight * 1000,
+        expiresAt: Date.now() + getSecondsUntilMidnight() * 1000,
       }
     }
 
-    const { rate } = dailyChallenge.interestRate
-    const rateNumber = rate.toNumber()
+    const rateNumber = dailyChallenge.interestRate.rate.toNumber()
     const result = arrowDecider(guess, rateNumber)
     console.log('Result:', result, 'Actual rate:', rateNumber)
 
-    await prisma.$transaction(async (tx) => {
-      const existingCategory = await tx.resultCategory.findFirst({
-        where: {
+    const isCorrect = result.amount === 0
+    const isComplete = isCorrect || guessCount === 6
+
+    const now = new Date()
+
+    let updatedCategory = await prisma.resultCategory.upsert({
+      where: {
+        resultId_category: {
           resultId,
           category: 'INTEREST_RATE',
         },
-      })
+      },
+      create: {
+        resultId,
+        category: 'INTEREST_RATE',
+        guess,
+        correct: isCorrect,
+        tries: guessCount,
+        completed: isComplete,
+        endTime: isComplete ? now : undefined,
+        startTime: now, // Set startTime for new entries
+      },
+      update: {
+        guess,
+        correct: isCorrect,
+        tries: guessCount,
+        completed: isComplete,
+        endTime: isComplete ? now : undefined,
+      },
+    })
 
-      if (existingCategory)
-        await tx.resultCategory.update({
-          where: { id: existingCategory.id },
-          data: {
-            guess,
-            correct: result.amount === 0,
-            tries: guessCount,
-          },
-        })
-      else
-        await tx.resultCategory.create({
-          data: {
-            resultId,
-            category: 'INTEREST_RATE',
-            guess,
-            correct: result.amount === 0,
-            tries: guessCount,
-          },
-        })
+    let timeTaken: number | undefined
 
-      await tx.result.update({
-        where: { id: resultId },
-        data: { date: dateOnly },
+    // If the guess is complete, calculate and update timeTaken
+    if (isComplete && updatedCategory.startTime) {
+      timeTaken = Math.round(
+        (now.getTime() - updatedCategory.startTime.getTime()) / 1000
+      )
+      updatedCategory = await prisma.resultCategory.update({
+        where: { id: updatedCategory.id },
+        data: { timeTaken },
       })
+    }
+
+    await prisma.result.update({
+      where: { id: resultId },
+      data: { date: dateOnly },
     })
 
     return NextResponse.json(
-      { direction: result.direction, amount: result.amount },
+      {
+        direction: result.direction,
+        amount: result.amount,
+        isComplete,
+        category: updatedCategory,
+        timeTaken: isComplete ? timeTaken : undefined,
+      },
       { status: 200 }
     )
   } catch (error: unknown) {
     console.error('Error in POST request:', error)
     if (error instanceof Error)
       return NextResponse.json({ message: error.message }, { status: 400 })
-
     return NextResponse.json(
       { message: 'An unexpected error occurred' },
       { status: 500 }
