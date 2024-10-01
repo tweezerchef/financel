@@ -25,7 +25,7 @@ export function Footer({ className = '' }: FooterProps) {
       key={link.label}
       href={link.link}
       onClick={(event) => event.preventDefault()}
-      size="sm"
+      size="xs"
     >
       {link.label}
     </Anchor>
@@ -33,8 +33,8 @@ export function Footer({ className = '' }: FooterProps) {
 
   return (
     <div className={classes.footer}>
-      <Container className={classes.inner}>
-        <Image src="/favicon.png" alt="Logo" width={60} height={60} />
+      <Container className={classes.inner} fluid>
+        <Image src="/favicon.png" alt="Logo" width={30} height={30} />
         <Group className={classes.links}>{items}</Group>
       </Container>
     </div>
