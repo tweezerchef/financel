@@ -90,7 +90,7 @@ export function InterestRateGuess() {
             )
           )
           setIsAnimating(false)
-        }, 1500)
+        }, 1000)
       } catch (error) {
         console.error('Submission failed:', error)
         setIsAnimating(false)

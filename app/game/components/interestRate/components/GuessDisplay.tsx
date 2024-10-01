@@ -17,27 +17,14 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
   isSpinning,
 }) => {
   const [wholePart, decimalPart] = guess.split('.')
-  const spinDuration = 1500 // 1.5 seconds of spinning
 
   return (
     <Box className={classes.container}>
       <Group className={classes.guessGroup}>
-        <SingleDisplay
-          value={wholePart || ''}
-          isSpinning={isSpinning}
-          spinDuration={spinDuration}
-        />
+        <SingleDisplay value={wholePart || ''} isSpinning={isSpinning} />
         <span className={classes.decimal}>.</span>
-        <SingleDisplay
-          value={decimalPart?.[0] || ''}
-          isSpinning={isSpinning}
-          spinDuration={spinDuration}
-        />
-        <SingleDisplay
-          value={decimalPart?.[1] || ''}
-          isSpinning={isSpinning}
-          spinDuration={spinDuration}
-        />
+        <SingleDisplay value={decimalPart?.[0] || ''} isSpinning={isSpinning} />
+        <SingleDisplay value={decimalPart?.[1] || ''} isSpinning={isSpinning} />
       </Group>
       <Group className={classes.resultGroup}>
         {Array(5)
@@ -53,7 +40,6 @@ export const GuessDisplay: React.FC<GuessDisplayProps> = ({
                   : ''
               }
               isSpinning={isSpinning}
-              spinDuration={spinDuration}
             />
           ))}
       </Group>
