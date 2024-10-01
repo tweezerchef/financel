@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-var */
 /* eslint-disable vars-on-top */
+// prisma.ts
 import { PrismaClient } from '@prisma/client'
 import { withOptimize } from '@prisma/extension-optimize'
 
