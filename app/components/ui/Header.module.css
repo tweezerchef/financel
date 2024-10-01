@@ -5,7 +5,7 @@
   padding-top: rem(30px);
   padding-bottom: rem(10px);
   max-width: 400px;
-  @media (max-width: $mantine-breakpoint-xs) {
+  @media (max-width: --mantine-breakpoint-xs) {
     padding-top: rem(1px);
   }
 }
@@ -28,7 +28,7 @@
     Greycliff CF,
     var(--mantine-font-family);
 
-  @media (max-width: $mantine-breakpoint-xs) {
+  @media (max-width: --mantine-breakpoint-xs) {
     font-size: rem(28px);
     text-align: center;
   }
@@ -42,7 +42,7 @@
   color: var(--mantine-color-gray-0);
   text-align: center;
 
-  @media (max-width: $mantine-breakpoint-xs) {
+  @media (max-width: --mantine-breakpoint-xs) {
     font-size: var(--mantine-font-size-lg);
     text-align: center;
   }
@@ -55,7 +55,7 @@
   padding-left: var(--mantine-spacing-md);
   padding-right: var(--mantine-spacing-md);
 
-  @media (max-width: $mantine-breakpoint-xs) {
+  @media (max-width: --mantine-breakpoint-xs) {
     flex-direction: column;
   }
 }
@@ -68,7 +68,7 @@
     margin-left: var(--mantine-spacing-md);
   }
 
-  @media (max-width: $mantine-breakpoint-xs) {
+  @media (max-width: --mantine-breakpoint-xs) {
     &:not(:first-of-type) {
       margin-top: var(--mantine-spacing-md);
       margin-left: 0;
