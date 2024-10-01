@@ -1,8 +1,10 @@
 /* ui/Footer.module.css */
 .footer {
-  border-top: rem(0.2px) solid;
+  border-top: 1px solid #333;
   background-color: black;
   color: #9ca3af;
+  height: min(70px, 7vh);
+  min-height: 30px;
 }
 
 .inner {
