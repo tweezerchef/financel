@@ -1,6 +1,6 @@
 # Financel
 
-Hello
+Hello please use the development branch "dev" for local development and operations.
 
 ### 1. Introduction
 
