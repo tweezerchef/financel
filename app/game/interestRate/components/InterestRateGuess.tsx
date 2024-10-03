@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { Keyboard } from '../keyboard/Keyboard'
+import { Keyboard } from '../../components/keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
 import { useUserContext } from '../../../context/user/UserContext'
 import classes from './ui/InterestRateGuess.module.css'
@@ -53,20 +53,17 @@ export function InterestRateGuess() {
       try {
         setIsAnimating(true)
         console.log('Submitting guess with resultId:', resultId)
-        const response = await fetch(
-          '/game/components/interestRate/api/guess/',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              guess: parseFloat(formattedGuess),
-              guessCount: currentGuessCount,
-              resultId,
-            }),
-          }
-        )
+        const response = await fetch('/game/interestRate/api/guess/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            guess: parseFloat(formattedGuess),
+            guessCount: currentGuessCount,
+            resultId,
+          }),
+        })
         guessCount.current += 1
         const result = await response.json()
 

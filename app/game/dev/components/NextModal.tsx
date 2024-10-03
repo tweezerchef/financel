@@ -1,3 +1,5 @@
+'use client'
+
 /* eslint-disable no-nested-ternary */
 import { Modal, Button, Text, Title } from '@mantine/core'
 import Link from 'next/link'
@@ -34,14 +36,13 @@ export function NextModal({
           ? 'final'
           : ''
   return (
-    <>
-      <Modal opened={opened} onClose={close} title="Authentication" centered />
+    <Modal opened={opened} onClose={close} title="Authentication" centered>
       <Title order={3}>{title}</Title>
       <Text>{subTitle}</Text>
       <Link href={`/${next}`} passHref>
         <Button component="a">Next</Button>
       </Link>
-    </>
+    </Modal>
   )
 }
 
