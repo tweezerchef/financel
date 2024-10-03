@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+
 import { InterestRateGuess } from './components/InterestRateGuess'
 import { InterestRateDayOf } from './components/InterestRateDayOf'
 import classes from '../ui/Game.module.css'
