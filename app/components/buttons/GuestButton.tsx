@@ -23,9 +23,15 @@ export const GuestButton = () => {
       if (response.ok) {
         console.log('Guest login successful, setting token')
         localStorage.setItem('guestToken', data.token)
-        setUser({ id: data.id, type: 'guest', resultId: data.resultId })
+        localStorage.setItem('nextCategory', data.nextCategory)
+        setUser({
+          id: data.id,
+          type: 'guest',
+          resultId: data.resultId,
+          nextCategory: data.nextCategory,
+        })
         console.log('Redirecting to game page')
-        router.push('/game')
+        router.push(`/game`)
       } else {
         console.error('Guest login failed:', data.message)
         alert(data.message)
