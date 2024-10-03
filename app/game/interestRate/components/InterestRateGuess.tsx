@@ -6,6 +6,7 @@ import { Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
+import { NextModal } from '../../components/NextModal'
 import { useUserContext } from '../../../context/user/UserContext'
 import classes from './ui/InterestRateGuess.module.css'
 
@@ -22,6 +23,26 @@ export function InterestRateGuess() {
   const [resultId, setResultId] = useState<string | null>(null)
   const guessCount = useRef(1)
   const { user } = useUserContext()
+
+  interface IRmodalProps {
+    opened: boolean
+    close: () => void
+    correct: boolean
+    actual: string
+    tries?: number
+    time?: number
+    type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
+  }
+
+  const mockProps: IRmodalProps = {
+    opened: true,
+    close: () => console.log('Modal closed'),
+    correct: Math.random() < 0.5, // Randomly set to true or false
+    actual: '3.25%',
+    tries: 3,
+    time: 45,
+    type: 'Interest Rate',
+  }
 
   const form = useForm({
     initialValues: {
@@ -132,6 +153,7 @@ export function InterestRateGuess() {
         )}
       </div>
       <div className={classes.guessBox}>
+        <NextModal {...mockProps} />
         {guesses.length < 6 ? (
           <form>
             <Keyboard
