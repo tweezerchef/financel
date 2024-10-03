@@ -1,3 +1,5 @@
+'use client'
+
 import { NextModal } from './components/NextModal'
 
 interface IRmodalProps {

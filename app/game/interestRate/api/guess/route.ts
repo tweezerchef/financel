@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Decimal } from '@prisma/client/runtime/library'
-import { arrowDecider } from '../../../../../lib/interestRate/arrowDecider'
-import prisma from '../../../../../lib/prisma/prisma'
+import { arrowDecider } from '../../../../lib/interestRate/arrowDecider'
+import prisma from '../../../../lib/prisma/prisma'
 
 type DailyChallenge = {
   challengeDate: Date
