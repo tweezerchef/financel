@@ -10,6 +10,26 @@ import { NextModal } from '../../components/NextModal'
 import { useUserContext } from '../../../context/user/UserContext'
 import classes from './ui/InterestRateGuess.module.css'
 
+interface IRmodalProps {
+  opened: boolean
+  close: () => void
+  correct: boolean
+  actual: string
+  tries?: number
+  time?: number
+  type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
+}
+
+const mockProps: IRmodalProps = {
+  opened: false,
+  close: () => console.log('Modal closed'),
+  correct: Math.random() < 0.5, // Randomly set to true or false
+  actual: '3.25%',
+  tries: 3,
+  time: 45,
+  type: 'Interest Rate',
+}
+
 interface Guess {
   id: string
   guess: string
@@ -23,26 +43,6 @@ export function InterestRateGuess() {
   const [resultId, setResultId] = useState<string | null>(null)
   const guessCount = useRef(1)
   const { user } = useUserContext()
-
-  interface IRmodalProps {
-    opened: boolean
-    close: () => void
-    correct: boolean
-    actual: string
-    tries?: number
-    time?: number
-    type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
-  }
-
-  const mockProps: IRmodalProps = {
-    opened: true,
-    close: () => console.log('Modal closed'),
-    correct: Math.random() < 0.5, // Randomly set to true or false
-    actual: '3.25%',
-    tries: 3,
-    time: 45,
-    type: 'Interest Rate',
-  }
 
   const form = useForm({
     initialValues: {
