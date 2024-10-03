@@ -13,17 +13,6 @@
   transition: transform 0.3s;
   transform-style: preserve-3d;
 }
-.flipBoxInner.spinning {
-  animation: spin 0.3s linear infinite;
-}
-@keyframes spin {
-  0% {
-    transform: rotateX(0deg);
-  }
-  100% {
-    transform: rotateX(360deg);
-  }
-}
 
 .flipBoxInner.flipped {
   transform: rotateX(180deg);

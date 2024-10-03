@@ -26,7 +26,7 @@ export function InterestRateDayOf({
   useEffect(() => {
     if (dayOfSlide === 'image') {
       const timeoutId = setTimeout(() => {
-        fetch('/game/components/interestRate/api/dailyChallenge/', {
+        fetch('/game/interestRate/api/dailyChallenge/', {
           method: 'GET',
         })
           .then((response) => response.json())

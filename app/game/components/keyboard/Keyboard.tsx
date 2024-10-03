@@ -26,7 +26,7 @@ export const Keyboard: React.FC<KeyboardProps> = ({
     if (value === '↵') {
       if (newValue.length === 3)
         form.onSubmit((values) => handleSubmit(values))()
-    } else if (value === 'Backspace') newValue = newValue.slice(0, -1)
+    } else if (value === '⌫') newValue = newValue.slice(0, -1)
     else if (value !== '.') if (newValue.length < 3) newValue += value
 
     form.setFieldValue(field, newValue)
