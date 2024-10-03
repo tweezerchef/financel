@@ -74,7 +74,12 @@ export function Login(props: PaperProps) {
       }
       if (response.ok && user.token) {
         localStorage.setItem('token', user.token)
-        setUser({ id: user.id, type: 'registered', resultId: user.resultId })
+        setUser({
+          id: user.id,
+          type: 'registered',
+          resultId: user.resultId,
+          nextCategory: user.nextCategory,
+        })
         router.push('/game')
       } else {
         console.error('Guest login failed:', user.message)

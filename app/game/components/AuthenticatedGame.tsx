@@ -1,26 +1,33 @@
 'use client'
 
-import { useState } from 'react'
-import { InterestRateGuess } from './interestRate/InterestRateGuess'
-import { InterestRateDayOf } from './interestRate/InterestRateDayOf'
-import classes from '../ui/Game.module.css'
-
-type DayOf = 'image' | 'day' | 'guess'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUserContext } from '../../context/user/UserContext'
 
 export function AuthenticatedGame() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
-  return (
-    <div className={classes.container}>
-      <div className={classes.dayOf}>
-        <InterestRateDayOf
-          dayOfSlide={dayOfSlide}
-          setDayOfSlide={setDayOfSlide}
-        />
-      </div>
-      <div className={classes.guess}>
-        <InterestRateGuess />
-      </div>
-    </div>
-  )
+  const { user } = useUserContext()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (user?.nextCategory) {
+      let path
+      switch (user.nextCategory) {
+        case 'INTEREST_RATE':
+          path = '/game/interestRate'
+          break
+        case 'CURRENCY':
+          path = '/game/currency'
+          break
+        case 'STOCK':
+          path = '/game/stock'
+          break
+        default:
+          path = '/game'
+      }
+      router.push(path)
+    }
+  }, [user, router])
+
+  // Render loading state or null while redirecting
+  return <div>Loading...</div>
 }

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Decimal } from '@prisma/client/runtime/library'
-import { arrowDecider } from '../../../../../lib/interestRate/arrowDecider'
-import prisma from '../../../../../lib/prisma/prisma'
-
-// Define types for the daily challenge data
+import { arrowDecider } from '../../../../lib/interestRate/arrowDecider'
+import prisma from '../../../../lib/prisma/prisma'
 
 type DailyChallenge = {
   challengeDate: Date
@@ -26,6 +24,19 @@ const getSecondsUntilMidnight = () => {
     now.getDate() + 1
   )
   return Math.floor((midnight.getTime() - now.getTime()) / 1000)
+}
+function compareGuessWithRate(guess: number, rate: number): [number, number][] {
+  const guessStr = guess.toFixed(2)
+  const rateStr = rate.toFixed(2)
+  const result: [number, number][] = []
+
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < guessStr.length; i++)
+    if (guessStr[i] !== '.')
+      if (guessStr[i] === rateStr[i])
+        result.push([i < 3 ? i + 1 : i, parseInt(guessStr[i], 10)])
+
+  return result
 }
 
 export async function GET() {
@@ -63,7 +74,7 @@ export async function POST(request: NextRequest) {
     const rateNumber = dailyChallenge.interestRate.rate.toNumber()
     const result = arrowDecider(guess, rateNumber)
     console.log('Result:', result, 'Actual rate:', rateNumber)
-
+    const correctDigits = compareGuessWithRate(guess, rateNumber)
     const isCorrect = result.amount === 0
     const isComplete = isCorrect || guessCount === 6
 
@@ -120,6 +131,7 @@ export async function POST(request: NextRequest) {
         isComplete,
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
+        correctDigits,
       },
       { status: 200 }
     )

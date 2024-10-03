@@ -10,11 +10,13 @@ import {
 } from 'react'
 
 type UserType = 'guest' | 'registered'
+type Category = 'INTEREST_RATE' | 'CURRENCY' | 'STOCK'
 
 interface UserData {
   id: string
   type: UserType
   resultId: string
+  nextCategory: Category | null
 }
 
 interface UserContextType {

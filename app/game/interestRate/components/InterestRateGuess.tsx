@@ -4,10 +4,31 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { Keyboard } from '../keyboard/Keyboard'
+import { Keyboard } from '../../components/keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
+import { NextModal } from '../../components/NextModal'
 import { useUserContext } from '../../../context/user/UserContext'
 import classes from './ui/InterestRateGuess.module.css'
+
+interface IRmodalProps {
+  opened: boolean
+  close: () => void
+  correct: boolean
+  actual: string
+  tries?: number
+  time?: number
+  type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
+}
+
+const mockProps: IRmodalProps = {
+  opened: false,
+  close: () => console.log('Modal closed'),
+  correct: Math.random() < 0.5, // Randomly set to true or false
+  actual: '3.25%',
+  tries: 3,
+  time: 45,
+  type: 'Interest Rate',
+}
 
 interface Guess {
   id: string
@@ -53,30 +74,24 @@ export function InterestRateGuess() {
       try {
         setIsAnimating(true)
         console.log('Submitting guess with resultId:', resultId)
-        const response = await fetch(
-          '/game/components/interestRate/api/guess/',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              guess: parseFloat(formattedGuess),
-              guessCount: currentGuessCount,
-              resultId,
-            }),
-          }
-        )
+        const response = await fetch('/game/interestRate/api/guess/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            guess: parseFloat(formattedGuess),
+            guessCount: currentGuessCount,
+            resultId,
+          }),
+        })
         guessCount.current += 1
         const result = await response.json()
 
         const newGuess: Guess = {
           id: uuidv4(),
           guess: formattedGuess,
-          result: {
-            amount: result.amount,
-            direction: result.direction,
-          },
+          result: null,
           isSpinning: true,
         }
 
@@ -86,11 +101,20 @@ export function InterestRateGuess() {
         setTimeout(() => {
           setGuesses((prevGuesses) =>
             prevGuesses.map((g) =>
-              g.id === newGuess.id ? { ...g, isSpinning: false } : g
+              g.id === newGuess.id
+                ? {
+                    ...g,
+                    isSpinning: false,
+                    result: {
+                      amount: result.amount,
+                      direction: result.direction,
+                    },
+                  }
+                : g
             )
           )
           setIsAnimating(false)
-        }, 1500)
+        }, 1000)
       } catch (error) {
         console.error('Submission failed:', error)
         setIsAnimating(false)
@@ -129,6 +153,7 @@ export function InterestRateGuess() {
         )}
       </div>
       <div className={classes.guessBox}>
+        <NextModal {...mockProps} />
         {guesses.length < 6 ? (
           <form>
             <Keyboard
