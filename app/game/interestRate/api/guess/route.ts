@@ -129,9 +129,11 @@ export async function POST(request: NextRequest) {
         direction: result.direction,
         amount: result.amount,
         isComplete,
+        correct: isCorrect,
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
         correctDigits,
+        rateNumber: isCorrect || isComplete ? rateNumber : undefined,
       },
       { status: 200 }
     )

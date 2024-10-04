@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
@@ -20,16 +21,6 @@ interface IRmodalProps {
   type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
 }
 
-const mockProps: IRmodalProps = {
-  opened: false,
-  close: () => console.log('Modal closed'),
-  correct: Math.random() < 0.5, // Randomly set to true or false
-  actual: '3.25%',
-  tries: 3,
-  time: 45,
-  type: 'Interest Rate',
-}
-
 interface Guess {
   id: string
   guess: string
@@ -41,6 +32,8 @@ export function InterestRateGuess() {
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [resultId, setResultId] = useState<string | null>(null)
+  const [modalProps, setModalProps] = useState<IRmodalProps | null>(null)
+  const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
   const { user } = useUserContext()
 
@@ -94,7 +87,16 @@ export function InterestRateGuess() {
           result: null,
           isSpinning: true,
         }
-
+        const {
+          direction,
+          amount,
+          isComplete,
+          correct,
+          timeTaken,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          correctDigits,
+          rateNumber,
+        } = result
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
         form.reset()
 
@@ -106,8 +108,8 @@ export function InterestRateGuess() {
                     ...g,
                     isSpinning: false,
                     result: {
-                      amount: result.amount,
-                      direction: result.direction,
+                      amount,
+                      direction,
                     },
                   }
                 : g
@@ -115,12 +117,37 @@ export function InterestRateGuess() {
           )
           setIsAnimating(false)
         }, 1000)
+        if (
+          (isComplete && !isAnimating) ||
+          (guessCount.current === 7 && !isAnimating)
+        )
+          setTimeout(() => {
+            setModalProps({
+              opened: true,
+              close: () => console.log('Modal closed'),
+              correct,
+              actual: `${rateNumber}%`,
+              tries: currentGuessCount,
+              time: timeTaken,
+              type: 'Interest Rate',
+            })
+            handlers.open()
+          }, 2500) // 2000 milliseconds = 2 seconds
       } catch (error) {
         console.error('Submission failed:', error)
         setIsAnimating(false)
       }
     },
-    [isAnimating, guesses.length, resultId, form, setGuesses, setIsAnimating]
+    [
+      isAnimating,
+      guesses.length,
+      resultId,
+      form,
+      setGuesses,
+      setIsAnimating,
+      setModalProps,
+      handlers,
+    ]
   )
   const memoizedHandleSubmit = useCallback(
     (values: { guess: string }) => {
@@ -153,7 +180,9 @@ export function InterestRateGuess() {
         )}
       </div>
       <div className={classes.guessBox}>
-        <NextModal {...mockProps} />
+        {opened !== undefined && modalProps && (
+          <NextModal {...modalProps} opened={opened} />
+        )}
         {guesses.length < 6 ? (
           <form>
             <Keyboard
