@@ -19,7 +19,9 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
   isSpinning,
 }) => {
   const [wholePart, decimalPart] = guess.split('.')
-  const [displayedResults, setDisplayedResults] = useState<string[]>([])
+  const [displayedResults, setDisplayedResults] = useState<
+    Array<{ id: string; value: string }>
+  >([])
 
   useEffect(() => {
     if (!isSpinning && result) {
@@ -30,7 +32,10 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
 
       const intervalID = setInterval(() => {
         if (currentIndex < resultArray.length) {
-          setDisplayedResults((prev) => [...prev, resultArray[currentIndex]])
+          setDisplayedResults((prev) => [
+            ...prev,
+            { id: uuidv4(), value: resultArray[currentIndex] },
+          ])
           currentIndex++
         } else clearInterval(intervalID)
       }, 200)
@@ -49,14 +54,13 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
         <SingleDisplay value={decimalPart?.[1] || ''} isSpinning={isSpinning} />
       </Group>
       <Group className={classes.resultGroup}>
-        {Array(5)
+        {displayedResults.map(({ id, value }) => (
+          <SingleDisplay key={id} value={value} isSpinning={false} />
+        ))}
+        {Array(5 - displayedResults.length)
           .fill(null)
-          .map((_, index) => (
-            <SingleDisplay
-              key={uuidv4()}
-              value={displayedResults[index] || ''}
-              isSpinning={isSpinning}
-            />
+          .map(() => (
+            <SingleDisplay key={uuidv4()} value="" isSpinning={isSpinning} />
           ))}
       </Group>
     </Box>
