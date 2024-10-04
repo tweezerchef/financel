@@ -1,0 +1,24 @@
+.nextModal {
+  position: relative;
+  z-index: 1000;
+}
+
+.nextModalContent {
+  max-width: 90%;
+  width: 400px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.modalRoot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto;
+  overflow: hidden;
+}
