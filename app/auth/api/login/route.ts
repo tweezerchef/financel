@@ -34,13 +34,40 @@ export async function POST(req: Req) {
       )
     const { id } = user
     let result = await prisma.result.findFirst({
-      where: { userId: id, date: dateOnly },
+      where: { userId: user.id, date: dateOnly },
+      include: {
+        categories: {
+          orderBy: {
+            category: 'asc',
+          },
+        },
+      },
     })
+
     if (!result)
       result = await prisma.result.create({
-        data: { userId: id, date: dateOnly },
+        data: { userId: user.id, date: dateOnly },
+        include: {
+          categories: {
+            orderBy: {
+              category: 'asc',
+            },
+          },
+        },
       })
+
     const resultId = result.id
+
+    // Determine the next uncompleted category
+    const categoryOrder = ['INTEREST_RATE', 'CURRENCY', 'STOCK']
+    const nextCategory =
+      categoryOrder.find((category) => {
+        const categoryResult = result.categories.find(
+          (c) => c.category === category
+        )
+        return !categoryResult || !categoryResult.completed
+      }) || null
+
     // Create a token
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
@@ -51,6 +78,7 @@ export async function POST(req: Req) {
       token,
       id,
       resultId,
+      nextCategory,
       message: 'Logged in successfully',
     })
   } catch (error) {
