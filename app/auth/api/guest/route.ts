@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
         data: { ip },
         include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
-    console.log(guest)
 
     let result = await prisma.result.findFirst({
       where: { guestId: guest.id, date: dateOnly },
