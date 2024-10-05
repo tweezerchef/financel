@@ -21,13 +21,11 @@ export async function POST(req: NextRequest) {
 
     let guest = await prisma.guest.findUnique({
       where: { ip },
-      include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
     })
 
     if (!guest)
       guest = await prisma.guest.create({
         data: { ip },
-        include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
       })
 
     let result = await prisma.result.findFirst({
@@ -52,10 +50,6 @@ export async function POST(req: NextRequest) {
           },
         },
       })
-
-    await prisma.guestPlay.create({
-      data: { guestId: guest.id },
-    })
 
     await prisma.guest.update({
       where: { id: guest.id },
