@@ -8,7 +8,6 @@ import {
   Group,
   TextInput,
   PasswordInput,
-  Text,
   Avatar,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
@@ -67,7 +66,7 @@ export default function Registration() {
 
   return (
     <div className={classes.main}>
-      <Stepper active={active} onStepClick={setActive}>
+      <Stepper active={active} size="sm" onStepClick={setActive}>
         <Stepper.Step label="Account" description="Create an account">
           <TextInput
             withAsterisk
@@ -103,22 +102,22 @@ export default function Registration() {
           >
             {(props) => <Button {...props}>Upload avatar</Button>}
           </FileButton>
-          {form.getInputProps('file') && (
-            <Text size="sm" ta="center" mt="sm">
-              Picked File: {form.getInputProps('file').value?.name}
-            </Text>
-          )}
 
-          {form.getInputProps('file').value && (
-            <Avatar
-              src={URL.createObjectURL(form.getInputProps('file').value)}
-              size={160}
-              radius={160}
-              onLoad={() =>
+          <Avatar
+            src={
+              form.getInputProps('file').value
+                ? URL.createObjectURL(form.getInputProps('file').value)
+                : null
+            }
+            alt="Avatar preview"
+            variant="filled"
+            radius="xl"
+            size="xl"
+            onLoad={() => {
+              if (form.getInputProps('file').value)
                 URL.revokeObjectURL(form.getInputProps('file').value)
-              }
-            />
-          )}
+            }}
+          />
         </Stepper.Step>
       </Stepper>
       <Group justify="flex-end" mt="xl">
