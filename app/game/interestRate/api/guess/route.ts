@@ -1,5 +1,8 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
 import { Decimal } from '@prisma/client/runtime/library'
+import { ResultCategory } from '@prisma/client'
 import { arrowDecider } from '../../../../lib/interestRate/arrowDecider'
 import prisma from '../../../../lib/prisma/prisma'
 
@@ -53,76 +56,36 @@ export async function POST(request: NextRequest) {
       today.getDate()
     )
     const { guess, resultId, guessCount } = await request.json()
-    console.log('Received guess:', guess)
 
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
     if (!resultId) throw new Error('resultId is required')
 
-    let dailyChallenge = dailyChallengeCache?.data
-    if (!dailyChallenge) {
-      dailyChallenge = await prisma.dailyChallenge.findUnique({
-        where: { challengeDate: dateOnly },
-        include: { interestRate: { select: { rate: true } } },
-      })
-      if (!dailyChallenge) throw new Error('Invalid daily challenge')
-      dailyChallengeCache = {
-        data: dailyChallenge,
-        expiresAt: Date.now() + getSecondsUntilMidnight() * 1000,
-      }
-    }
-
+    const dailyChallenge = await getDailyChallenge(dateOnly)
     const rateNumber = dailyChallenge.interestRate.rate.toNumber()
+    console.log('Rate Number:', rateNumber)
     const result = arrowDecider(guess, rateNumber)
-    console.log('Result:', result, 'Actual rate:', rateNumber)
     const correctDigits = compareGuessWithRate(guess, rateNumber)
     const isCorrect = result.amount === 0
     const isComplete = isCorrect || guessCount === 6
 
     const now = new Date()
 
-    let updatedCategory = await prisma.resultCategory.upsert({
-      where: {
-        resultId_category: {
-          resultId,
-          category: 'INTEREST_RATE',
-        },
-      },
-      create: {
+    const [updatedCategory, _] = await Promise.all([
+      updateResultCategory(
         resultId,
-        category: 'INTEREST_RATE',
         guess,
-        correct: isCorrect,
-        tries: guessCount,
-        completed: isComplete,
-        endTime: isComplete ? now : undefined,
-        startTime: now, // Set startTime for new entries
-      },
-      update: {
-        guess,
-        correct: isCorrect,
-        tries: guessCount,
-        completed: isComplete,
-        endTime: isComplete ? now : undefined,
-      },
-    })
+        isCorrect,
+        guessCount,
+        isComplete,
+        now
+      ),
+      prisma.result.update({
+        where: { id: resultId },
+        data: { date: dateOnly },
+      }),
+    ])
 
-    let timeTaken: number | undefined
-
-    // If the guess is complete, calculate and update timeTaken
-    if (isComplete && updatedCategory.startTime) {
-      timeTaken = Math.round(
-        (now.getTime() - updatedCategory.startTime.getTime()) / 1000
-      )
-      updatedCategory = await prisma.resultCategory.update({
-        where: { id: updatedCategory.id },
-        data: { timeTaken },
-      })
-    }
-
-    await prisma.result.update({
-      where: { id: resultId },
-      data: { date: dateOnly },
-    })
+    const timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
 
     return NextResponse.json(
       {
@@ -139,11 +102,84 @@ export async function POST(request: NextRequest) {
     )
   } catch (error: unknown) {
     console.error('Error in POST request:', error)
-    if (error instanceof Error)
-      return NextResponse.json({ message: error.message }, { status: 400 })
-    return NextResponse.json(
-      { message: 'An unexpected error occurred' },
-      { status: 500 }
-    )
+    return handleError(error)
   }
+}
+
+async function getDailyChallenge(dateOnly: Date) {
+  if (dailyChallengeCache?.data && Date.now() < dailyChallengeCache.expiresAt)
+    return dailyChallengeCache.data
+
+  const dailyChallenge = await prisma.dailyChallenge.findUnique({
+    where: { challengeDate: dateOnly },
+    include: { interestRate: { select: { rate: true } } },
+  })
+  if (!dailyChallenge) throw new Error('Invalid daily challenge')
+
+  dailyChallengeCache = {
+    data: dailyChallenge,
+    expiresAt: Date.now() + getSecondsUntilMidnight() * 1000,
+  }
+
+  return dailyChallenge
+}
+
+async function updateResultCategory(
+  resultId: string,
+  guess: number,
+  isCorrect: boolean,
+  guessCount: number,
+  isComplete: boolean,
+  now: Date
+) {
+  return prisma.resultCategory.upsert({
+    where: { resultId_category: { resultId, category: 'INTEREST_RATE' } },
+    create: {
+      resultId,
+      category: 'INTEREST_RATE',
+      guess,
+      correct: isCorrect,
+      tries: guessCount,
+      completed: isComplete,
+      endTime: isComplete ? now : undefined,
+      startTime: now,
+    },
+    update: {
+      guess,
+      correct: isCorrect,
+      tries: guessCount,
+      completed: isComplete,
+      endTime: isComplete ? now : undefined,
+    },
+  })
+}
+
+function calculateTimeTaken(
+  isComplete: boolean,
+  category: ResultCategory,
+  now: Date
+) {
+  if (isComplete && category.startTime) {
+    const timeTaken = Math.round(
+      (now.getTime() - category.startTime.getTime()) / 1000
+    )
+    prisma.resultCategory
+      .update({
+        where: { id: category.id },
+        data: { timeTaken },
+      })
+      .catch(console.error) // Fire and forget
+    return timeTaken
+  }
+  return undefined
+}
+
+function handleError(error: unknown) {
+  if (error instanceof Error)
+    return NextResponse.json({ message: error.message }, { status: 400 })
+
+  return NextResponse.json(
+    { message: 'An unexpected error occurred' },
+    { status: 500 }
+  )
 }
