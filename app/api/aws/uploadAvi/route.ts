@@ -1,63 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import prisma from '../../../lib/prisma/prisma'
+import { updateUserAvatar } from '../../../lib/dbFunctions/updateUserAvatar'
 
-const s3Client = new S3Client({
-  region: process.env.SERVER_AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.SERVER_AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.SERVER_AWS_SECRET_ACCESS_KEY!,
-  },
-})
+export const runtime = 'nodejs' // This line is crucial
 
-export const runtime = 'edge'
-
-export async function POST(req: NextRequest) {
-  const formData = await req.formData()
-  const file = formData.get('file') as File | null
-  const email = formData.get('email') as string | null
-
-  if (!file)
-    return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
-
-  if (!email)
-    return NextResponse.json({ error: 'No email provided' }, { status: 400 })
-
-  const fileName = `avatars/${Date.now()}-${file.name}`
-
-  const command = new PutObjectCommand({
-    Bucket: process.env.SERVER_AWS_S3_BUCKET_NAME,
-    Key: fileName,
-    Body: await file.arrayBuffer().then(Buffer.from),
-    ContentType: file.type,
-  })
-
-  const signedUrl = await getSignedUrl(s3Client, command, {
-    expiresIn: 3600,
-  })
-
+export async function POST(request: Request) {
   try {
-    // Upload file to S3
-    await s3Client.send(command)
+    const { filename, contentType, userId } = await request.json()
 
-    // Update user's avatar in the database
-    const updatedUser = await prisma.user.update({
-      where: { email },
-      data: { avatar: fileName },
+    const s3Client = new S3Client({
+      region: process.env.AWS_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      },
     })
 
-    if (!updatedUser)
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `avatars/${filename}`,
+      ContentType: contentType,
+    })
 
-    return NextResponse.json(
-      { url: signedUrl, avatar: fileName },
-      { status: 200 }
-    )
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+
+    // Update user's avatar in the database
+    const avatarUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/avatars/${filename}`
+    await updateUserAvatar(userId, avatarUrl)
+
+    return NextResponse.json({ url: signedUrl, avatarUrl })
   } catch (error) {
-    console.error('Error uploading file or updating user:', error)
+    console.error('Error in upload process:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to process upload' },
       { status: 500 }
     )
   }
