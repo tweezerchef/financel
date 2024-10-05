@@ -14,19 +14,39 @@ export async function POST(req: NextRequest) {
   const today = new Date()
   const startOfToday = new Date(today.setUTCHours(0, 0, 0, 0))
 
-  // Check if the user or guest has guessed all three categories for the day
-  const allCategoriesGuessed = await prisma.resultCategory.findMany({
-    where: {
-      result: {
-        date: startOfToday,
-        OR: [
-          { userId: userId || undefined },
-          { guestId: guestId || undefined },
-        ],
-      },
-    },
-    distinct: ['category'],
-  })
+  const [allCategoriesGuessed, categoryGuessCount, existingResult] =
+    await prisma.$transaction([
+      prisma.resultCategory.findMany({
+        where: {
+          result: {
+            date: startOfToday,
+            OR: [
+              { userId: userId || undefined },
+              { guestId: guestId || undefined },
+            ],
+          },
+        },
+        distinct: ['category'],
+      }),
+      prisma.resultCategory.count({
+        where: {
+          result: {
+            date: startOfToday,
+            OR: [
+              { userId: userId || undefined },
+              { guestId: guestId || undefined },
+            ],
+          },
+          category,
+        },
+      }),
+      prisma.result.findFirst({
+        where: {
+          date: startOfToday,
+          guestId: guestId || undefined,
+        },
+      }),
+    ])
 
   if (allCategoriesGuessed.length >= 3)
     return NextResponse.json(
@@ -34,68 +54,42 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     )
 
-  // Ensure the user or guest hasn't already made more than 6 guesses for this category today
-  const categoryGuessCount = await prisma.resultCategory.count({
-    where: {
-      result: {
-        date: startOfToday,
-        OR: [
-          { userId: userId || undefined },
-          { guestId: guestId || undefined },
-        ],
-      },
-      category,
-    },
-  })
-
   if (categoryGuessCount >= 6)
     return NextResponse.json(
       { message: 'Exceeded the maximum number of guesses for this category.' },
       { status: 400 }
     )
 
-  // Check if a result already exists for the guest for today
-  const existingResult = await prisma.result.findFirst({
+  await prisma.result.upsert({
     where: {
+      id: existingResult?.id || 'dummy-id',
+    },
+    update: {
+      categories: {
+        create: {
+          category,
+          guess,
+          correct: false, // Adjust based on your logic
+          tries: guessCount,
+          timeTaken: 0, // Adjust based on your logic
+        },
+      },
+    },
+    create: {
+      userId,
+      guestId,
       date: startOfToday,
-      guestId: guestId || undefined,
+      categories: {
+        create: {
+          category,
+          guess,
+          correct: false, // Adjust based on your logic
+          tries: guessCount,
+          timeTaken: 0, // Adjust based on your logic
+        },
+      },
     },
   })
-
-  if (existingResult)
-    // Update the existing result with the new guess
-    await prisma.result.update({
-      where: { id: existingResult.id },
-      data: {
-        categories: {
-          create: {
-            category,
-            guess,
-            correct: false, // Adjust based on your logic
-            tries: guessCount,
-            timeTaken: 0, // Adjust based on your logic
-          },
-        },
-      },
-    })
-  // Create a new result
-  else
-    await prisma.result.create({
-      data: {
-        userId,
-        guestId,
-        date: startOfToday,
-        categories: {
-          create: {
-            category,
-            guess,
-            correct: false, // Adjust based on your logic
-            tries: guessCount,
-            timeTaken: 0, // Adjust based on your logic
-          },
-        },
-      },
-    })
 
   return NextResponse.json({ message: 'Guess recorded successfully.' })
 }
