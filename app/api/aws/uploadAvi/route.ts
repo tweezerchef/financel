@@ -11,11 +11,7 @@ const s3Client = new S3Client({
   },
 })
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+export const runtime = 'edge'
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData()
