@@ -64,7 +64,7 @@ export function NextModal({
         {correct && <Confetti recycle numberOfPieces={200} />}
         <Title order={3}>{title}</Title>
         <Text>{subTitle}</Text>
-        <Link href={`/${next}`} passHref>
+        <Link href={`/game/${next}`} passHref>
           <Button component="a">Next</Button>
         </Link>
       </Modal>

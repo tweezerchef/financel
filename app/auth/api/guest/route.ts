@@ -19,51 +19,27 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
 
-    let guest = await prisma.guest.findUnique({
-      where: { ip },
-      include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
-    })
-
-    if (!guest)
-      guest = await prisma.guest.create({
-        data: { ip },
-        include: { plays: { orderBy: { playedAt: 'desc' }, take: 1 } },
+    // Combine guest find/create and result find/create operations
+    const [guest, result] = await prisma.$transaction(async (prisma) => {
+      const guest = await prisma.guest.upsert({
+        where: { ip },
+        update: { lastPlay: new Date() },
+        create: { ip, lastPlay: new Date() },
       })
 
-    let result = await prisma.result.findFirst({
-      where: { guestId: guest.id, date: dateOnly },
-      include: {
-        categories: {
-          orderBy: {
-            category: 'asc',
-          },
-        },
-      },
-    })
-
-    if (!result)
-      result = await prisma.result.create({
-        data: { guestId: guest.id, date: dateOnly },
+      const result = await prisma.result.upsert({
+        where: { guestId_date: { guestId: guest.id, date: dateOnly } },
+        update: {},
+        create: { guestId: guest.id, date: dateOnly },
         include: {
           categories: {
-            orderBy: {
-              category: 'asc',
-            },
+            orderBy: { category: 'asc' },
           },
         },
       })
 
-    await prisma.guestPlay.create({
-      data: { guestId: guest.id },
+      return [guest, result]
     })
-
-    await prisma.guest.update({
-      where: { id: guest.id },
-      data: { lastPlay: new Date() },
-    })
-
-    const { id } = guest
-    const resultId = result.id
 
     // Determine the next uncompleted category
     const categoryOrder = ['INTEREST_RATE', 'CURRENCY', 'STOCK']
@@ -77,14 +53,14 @@ export async function POST(req: NextRequest) {
 
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
-    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: guest.id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
 
     return NextResponse.json({
       token,
-      id,
-      resultId,
+      id: guest.id,
+      resultId: result.id,
       nextCategory,
       message: 'Logged in as guest successfully',
     })

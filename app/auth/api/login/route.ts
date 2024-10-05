@@ -19,22 +19,22 @@ export async function POST(req: Req) {
     // Check if the user exists
     const user = await prisma.user.findUnique({
       where: { email },
+      select: {
+        id: true,
+        password: true,
+      },
     })
-    if (!user)
+    if (!user || !(await bcrypt.compare(password, user.password)))
       return NextResponse.json(
-        { message: 'User does not exist with this email address.' },
+        { message: 'Invalid email or password.' },
         { status: 400 }
       )
-    // Check if the password is correct
-    const isPasswordCorrect = await bcrypt.compare(password, user.password)
-    if (!isPasswordCorrect)
-      return NextResponse.json(
-        { message: 'Password is incorrect.' },
-        { status: 400 }
-      )
+
     const { id } = user
-    let result = await prisma.result.findFirst({
-      where: { userId: user.id, date: dateOnly },
+    const result = await prisma.result.upsert({
+      where: { userId_date: { userId: user.id, date: dateOnly } },
+      update: {},
+      create: { userId: user.id, date: dateOnly },
       include: {
         categories: {
           orderBy: {
@@ -44,20 +44,7 @@ export async function POST(req: Req) {
       },
     })
 
-    if (!result)
-      result = await prisma.result.create({
-        data: { userId: user.id, date: dateOnly },
-        include: {
-          categories: {
-            orderBy: {
-              category: 'asc',
-            },
-          },
-        },
-      })
-
     const resultId = result.id
-
     // Determine the next uncompleted category
     const categoryOrder = ['INTEREST_RATE', 'CURRENCY', 'STOCK']
     const nextCategory =
