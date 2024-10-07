@@ -3,7 +3,9 @@ import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
 import { uuid } from 'uuidv4'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { v4 as uuidv4 } from 'uuid'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { getSignedAvatarUrl } from '../../lib/aws/getSignedAvatarUrl'
 import { updateUserAvatar } from '../../lib/dbFunctions/updateUserAvatar'
 
 import prisma from '../../lib/prisma/prisma'
@@ -16,10 +18,10 @@ export async function POST(req: NextRequest) {
   const avatar = formData.get('avatar') as File
 
   const s3Client = new S3Client({
-    region: process.env.AWS_REGION,
+    region: process.env.SERVER_AWS_REGION,
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      accessKeyId: process.env.SERVER_AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.SERVER_AWS_SECRET_ACCESS_KEY!,
     },
   })
   // Check if the user already exists
@@ -43,22 +45,38 @@ export async function POST(req: NextRequest) {
     },
   })
   const userId = newUser.id
-  const filename = `${userId}`
-  const command = new PutObjectCommand({
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: `avatars/${userId}`,
-    Body: new Uint8Array(await avatar.arrayBuffer()),
-    ContentType: avatar.type,
-  })
+  const fileExtension = avatar.name.split('.').pop()
+  const fileName = `${uuidv4()}.${fileExtension}`
+  const key = `avatars/${userId}/${fileName}`
 
-  const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+  try {
+    const arrayBuffer = await avatar.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
 
-  const avatarUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/avatars/${filename}`
+    const command = new PutObjectCommand({
+      Bucket: process.env.SERVER_AWS_S3_BUCKET_NAME,
+      Key: key,
+      Body: buffer,
+      ContentType: avatar.type,
+    })
 
-  const updatedUser = await updateUserAvatar(userId, avatarUrl)
+    await s3Client.send(command)
 
-  return NextResponse.json({
-    updatedUser,
-    message: 'User created successfully',
-  })
+    const avatarUrl = `https://${process.env.SERVER_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${key}`
+    const updatedUser = await updateUserAvatar(userId, avatarUrl)
+    const signedUrl = await getSignedAvatarUrl(key, avatar.type)
+
+    return NextResponse.json({
+      updatedUser,
+      avatarUrl,
+      signedUrl,
+      message: 'User created successfully and avatar uploaded',
+    })
+  } catch (error) {
+    console.error('Error uploading avatar:', error)
+    return NextResponse.json(
+      { message: 'Error uploading avatar' },
+      { status: 500 }
+    )
+  }
 }

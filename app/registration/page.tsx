@@ -77,7 +77,7 @@ export default function Registration() {
       formData.append('username', username)
       formData.append('avatar', file)
 
-      const response = await fetch('/api/registration', {
+      const response = await fetch('registration/api', {
         method: 'POST',
         body: formData,
       })
@@ -89,6 +89,7 @@ export default function Registration() {
 
       const data = await response.json()
       console.log('Registration successful:', data)
+      if (data.signedUrl) console.log(data.signedUrl)
 
       // Handle successful registration (e.g., redirect user)
       // You can add additional logic here if needed
