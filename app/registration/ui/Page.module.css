@@ -1,11 +1,49 @@
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically */
-  align-items: center; /* Center content horizontally */
-  height: 100vh;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
   width: 100%;
-  box-sizing: content-box;
-  padding: 1rem;
-  /* Add padding to prevent content from touching edges */
+  padding: 0.5rem;
+  box-sizing: border-box;
+  min-height: calc(100vh - 110px); /* Subtract header and footer height */
+}
+
+.stepperContainer {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.stepper {
+  width: 70vw;
+  margin-top: 0;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.contentContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.wideInput {
+  width: 70vw;
+}
+
+.navigationButtons {
+  margin-top: 2rem;
+  align-self: flex-end;
+  padding-bottom: 1rem; /* Add some padding at the bottom */
 }

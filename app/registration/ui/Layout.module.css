@@ -1,0 +1,45 @@
+.container {
+  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  max-width: 600;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.header {
+  height: 60px; /* Adjust height as needed */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #000000; /* Set your desired background color */
+  border-bottom: 2px solid #ccc; /* Bottom border */
+  border-radius: 0 0 10px 10px; /* Rounded bottom corners */
+  padding: 0 20px; /* Horizontal padding */
+  margin: 0;
+}
+
+.mainContent {
+  background-color: #f0f4f8;
+  color: #333333;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin-top: 3rem;
+}
+
+.footer {
+  overflow: hidden;
+  height: min(50px, 7vh);
+  min-height: 30px;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
