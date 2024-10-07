@@ -60,9 +60,42 @@ export default function Registration() {
 
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current))
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (form.validate().hasErrors) return
-    console.log('Form values:', form.values)
+
+    const { email, password, username, file } = form.values
+
+    if (!file) {
+      console.error('No file selected')
+      return
+    }
+
+    try {
+      const formData = new FormData()
+      formData.append('email', email)
+      formData.append('password', password)
+      formData.append('username', username)
+      formData.append('avatar', file)
+
+      const response = await fetch('/api/registration', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Registration failed')
+      }
+
+      const data = await response.json()
+      console.log('Registration successful:', data)
+
+      // Handle successful registration (e.g., redirect user)
+      // You can add additional logic here if needed
+    } catch (error) {
+      console.error('Registration error:', error)
+      // Handle error (e.g., show error message to user)
+    }
   }
 
   return (
