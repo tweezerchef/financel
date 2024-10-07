@@ -1,0 +1,25 @@
+/* ui/Footer.module.css */
+.footer {
+  border-top: 1px solid #333;
+  background-color: black;
+  color: #9ca3af;
+  height: min(70px, 7vh);
+  min-height: 30px;
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--mantine-spacing-xs);
+  padding-bottom: var(--mantine-spacing-xs);
+}
+
+.links {
+  color: #9ca3af;
+  margin: 0 10px;
+  text-decoration: none;
+  :hover {
+    text-decoration: underline;
+  }
+}

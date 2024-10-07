@@ -51,7 +51,6 @@ export function Login(props: PaperProps) {
 
   const formSubmit = async (values: FormProps) => {
     setIsLoading(true)
-    console.log({ ...values, type })
     const { email, password } = values
     try {
       const requestOptions = {
@@ -65,12 +64,10 @@ export function Login(props: PaperProps) {
         // login logic
         response = await fetch('auth/api/login', requestOptions)
         user = await response.json()
-        console.log(user)
       } else {
         // register logic
         response = await fetch('auth/api/register', requestOptions)
         user = await response.json()
-        console.log(user)
       }
       if (response.ok && user.token) {
         localStorage.setItem('token', user.token)
@@ -79,6 +76,9 @@ export function Login(props: PaperProps) {
           type: 'registered',
           resultId: user.resultId,
           nextCategory: user.nextCategory,
+          signedAvatarUrl: user.signedAvatarUrl,
+          signedAvatarExpiration: user.signedAvatarExpiration,
+          username: user.username,
         })
         router.push('/game')
       } else {

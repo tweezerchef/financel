@@ -1,0 +1,56 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  min-height: calc(100vh - 90px); /* Subtract header and footer height */
+}
+
+.stepper {
+  width: 100vw;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.contentContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.wideInput {
+  width: 70vw;
+}
+
+.navigationButtons {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  align-content: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  padding-bottom: 2vh;
+}
+
+.avatarContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
