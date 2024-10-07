@@ -24,8 +24,8 @@
 .rootContainer {
   padding: 0;
   width: 100%;
-  height: 100%;
   height: 100vh; /* Use the full viewport height */
-  min-width: 400px;
+  min-width: min(400px, 100%); /* Allows narrower screens */
   max-width: 800px; /* Maximum width for the content */
+  margin: 0 auto; /* Centers the container */
 }
