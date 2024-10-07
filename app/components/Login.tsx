@@ -79,7 +79,11 @@ export function Login(props: PaperProps) {
           type: 'registered',
           resultId: user.resultId,
           nextCategory: user.nextCategory,
+          signedAvatarUrl: user.signedAvatarUrl,
+          signedAvatarExpiration: user.signedAvatarExpiration,
+          username: user.username,
         })
+        console.log('signedUrl', user.signedAvatarUrl)
         router.push('/game')
       } else {
         console.error('Guest login failed:', user.message)
