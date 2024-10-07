@@ -29,6 +29,9 @@ export const GuestButton = () => {
           type: 'guest',
           resultId: data.resultId,
           nextCategory: data.nextCategory,
+          signedAvatarUrl: null,
+          signedAvatarExpiration: null,
+          username: null,
         })
         console.log('Redirecting to game page')
         router.push(`/game`)

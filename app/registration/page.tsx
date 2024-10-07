@@ -9,10 +9,12 @@ import {
   PasswordInput,
   Avatar,
 } from '@mantine/core'
+import { useRouter } from 'next/navigation'
 import { useForm } from '@mantine/form'
 import classes from './ui/Page.module.css'
 
 export default function Registration() {
+  const router = useRouter()
   const [active, setActive] = useState(0)
   const form = useForm({
     initialValues: {
@@ -92,6 +94,7 @@ export default function Registration() {
       if (data.signedUrl) console.log(data.signedUrl)
 
       // Handle successful registration (e.g., redirect user)
+      router.push('/')
       // You can add additional logic here if needed
     } catch (error) {
       console.error('Registration error:', error)
