@@ -1,13 +1,15 @@
 'use client'
 
-import { Group, UnstyledButton } from '@mantine/core'
+import { Group, UnstyledButton, Avatar } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import Image from 'next/image'
+import { useUserContext } from '../../../context/user/UserContext'
 import classes from './ui/Navbar.module.css'
 
 export function Navbar() {
   const [opened, { toggle }] = useDisclosure()
-
+  const { user } = useUserContext()
+  const avatarUrl = user?.signedAvatarUrl
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault() // Prevent default action for space key
@@ -36,6 +38,7 @@ export function Navbar() {
       <div className={classes.titleContainer}>
         <span className={classes.title}>Financle</span>
       </div>
+      {avatarUrl && <Avatar src={avatarUrl} size={32} radius="xl" />}
       <Group
         className={opened ? classes.menuVisible : classes.menuHidden}
         style={{
