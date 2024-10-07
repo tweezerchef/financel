@@ -17,7 +17,7 @@
   background-color: #000000; /* Set your desired background color */
   border-bottom: 2px solid #ccc; /* Bottom border */
   border-radius: 0 0 10px 10px; /* Rounded bottom corners */
-  padding: 0 20px; /* Horizontal padding */
+  padding: 0; /* Horizontal padding */
   margin: 0;
 }
 
@@ -28,7 +28,7 @@
   height: 100%;
   width: 100%;
   padding: 0;
-  margin-top: 3rem;
+  margin-top: 0;
 }
 
 .footer {

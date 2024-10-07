@@ -5,11 +5,9 @@ import {
   Stepper,
   FileButton,
   Button,
-  Group,
   TextInput,
   PasswordInput,
   Avatar,
-  Flex,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import classes from './ui/Page.module.css'
@@ -69,84 +67,97 @@ export default function Registration() {
 
   return (
     <div className={classes.main}>
-      <div className={classes.stepperContainer}>
+      <div>
         <Stepper
           active={active}
-          size="sm"
+          size="xs"
           onStepClick={setActive}
-          className={classes.stepper}
+          styles={{
+            separator: {
+              width: '0px',
+              margin: '0',
+              padding: '0',
+              justifySelf: 'flex-start',
+            },
+          }}
         >
-          <Stepper.Step label="Account" description="Create an account">
-            <Flex className={classes.inputContainer}>
-              <TextInput
-                withAsterisk
-                label="Email"
-                placeholder="your@email.com"
-                {...form.getInputProps('email')}
-                className={classes.wideInput}
-              />
-              <TextInput
-                withAsterisk
-                label="Confirm Email"
-                placeholder="your@email.com"
-                {...form.getInputProps('confirmEmail')}
-                className={classes.wideInput}
-              />
-              <PasswordInput
-                withAsterisk
-                label="Password"
-                placeholder="Password"
-                {...form.getInputProps('password')}
-                className={classes.wideInput}
-              />
-              <PasswordInput
-                withAsterisk
-                label="Confirm Password"
-                placeholder="Password"
-                {...form.getInputProps('confirmPassword')}
-                className={classes.wideInput}
-              />
-            </Flex>
+          <Stepper.Step label="Account">
+            <div className={classes.contentContainer}>
+              <form className={classes.form}>
+                <TextInput
+                  withAsterisk
+                  label="Email"
+                  placeholder="your@email.com"
+                  {...form.getInputProps('email')}
+                  className={classes.wideInput}
+                />
+                <TextInput
+                  withAsterisk
+                  label="Confirm Email"
+                  placeholder="your@email.com"
+                  {...form.getInputProps('confirmEmail')}
+                  className={classes.wideInput}
+                />
+                <PasswordInput
+                  withAsterisk
+                  label="Password"
+                  placeholder="Password"
+                  {...form.getInputProps('password')}
+                  className={classes.wideInput}
+                />
+                <PasswordInput
+                  withAsterisk
+                  label="Confirm Password"
+                  placeholder="Password"
+                  {...form.getInputProps('confirmPassword')}
+                  className={classes.wideInput}
+                />
+              </form>
+            </div>
           </Stepper.Step>
 
-          <Stepper.Step label="Avatar" description="Add an avatar">
-            <Flex className={classes.inputContainer}>
-              <TextInput
-                withAsterisk
-                label="Username"
-                placeholder="Username"
-                {...form.getInputProps('username')}
-                className={classes.wideInput}
-              />
-              <Avatar
-                src={
-                  form.getInputProps('file').value
-                    ? URL.createObjectURL(form.getInputProps('file').value)
-                    : null
-                }
-                alt="Avatar preview"
-                variant="filled"
-                radius="xl"
-                size="xl"
-                onLoad={() => {
-                  if (form.getInputProps('file').value)
-                    URL.revokeObjectURL(form.getInputProps('file').value)
-                }}
-              />
-              <FileButton
-                accept="image/png,image/jpeg"
-                onChange={(file: File | null) => {
-                  form.setFieldValue('file', file)
-                }}
-              >
-                {(props) => <Button {...props}>Upload avatar</Button>}
-              </FileButton>
-            </Flex>
+          <Stepper.Step label="Avatar">
+            <div className={classes.contentContainer}>
+              <form className={classes.form}>
+                <TextInput
+                  withAsterisk
+                  label="Username"
+                  placeholder="Username"
+                  {...form.getInputProps('username')}
+                  className={classes.wideInput}
+                />
+                <div className={classes.avatarContainer}>
+                  <Avatar
+                    src={
+                      form.getInputProps('file').value
+                        ? URL.createObjectURL(form.getInputProps('file').value)
+                        : null
+                    }
+                    alt="Avatar preview"
+                    variant="filled"
+                    radius="xl"
+                    size="xl"
+                    onLoad={() => {
+                      if (form.getInputProps('file').value)
+                        URL.revokeObjectURL(form.getInputProps('file').value)
+                    }}
+                  />
+                  <FileButton
+                    accept="image/png,image/jpeg"
+                    onChange={(file: File | null) => {
+                      form.setFieldValue('file', file)
+                    }}
+                  >
+                    {(props) => <Button {...props}>Upload avatar</Button>}
+                  </FileButton>
+                </div>
+              </form>
+            </div>
           </Stepper.Step>
         </Stepper>
       </div>
 
-      <Group justify="flex-end" mt="xl" mb="xl">
+      <div className={classes.navigationButtons}>
         {active !== 0 && (
           <Button variant="default" onClick={prevStep}>
             Back
@@ -157,7 +168,7 @@ export default function Registration() {
         ) : (
           <Button onClick={handleRegister}>Register</Button>
         )}
-      </Group>
+      </div>
     </div>
   )
 }
