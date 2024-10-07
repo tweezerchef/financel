@@ -22,12 +22,6 @@ export default function Game() {
   const { setUser } = useUserContext()
 
   useEffect(() => {
-    console.log('Game component mounted')
-    console.log('Regular token:', token)
-    console.log('Guest token:', guestToken)
-    console.log('Token loading:', tokenIsLoading)
-    console.log('Guest token loading:', guestTokenIsLoading)
-
     const validateToken = async () => {
       if (tokenIsLoading || guestTokenIsLoading) {
         console.log('Tokens still loading, waiting...')
@@ -41,7 +35,6 @@ export default function Game() {
       }
 
       const activeToken = token || guestToken
-      console.log('Active token:', activeToken)
 
       try {
         // Here you would typically make an API call to validate the token
@@ -70,16 +63,12 @@ export default function Game() {
     validateToken()
   }, [token, guestToken, tokenIsLoading, guestTokenIsLoading, router, setUser])
 
-  if (tokenIsLoading || guestTokenIsLoading) {
-    console.log('Still loading tokens...')
-    return <div>Loading...</div>
-  }
+  if (tokenIsLoading || guestTokenIsLoading) return <div>Loading...</div>
 
   if (!isAuthenticated) {
     console.log('Not authenticated, component will return null')
     return null
   }
 
-  console.log('Rendering AuthenticatedGame')
   return <AuthenticatedGame />
 }
