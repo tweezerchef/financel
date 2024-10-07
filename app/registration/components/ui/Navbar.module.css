@@ -1,0 +1,76 @@
+.navbarContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  color: #ffffff;
+  position: relative; /* Ensure it can be used for absolute positioning */
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  cursor: pointer; /* Make the logo clickable */
+}
+
+.titleContainer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  width: 100%; /* Ensure it spans the full width */
+}
+
+.title {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 0, 1) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  background-clip: text;
+}
+
+.navContent {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center; /* Center the title */
+}
+
+.menuHidden {
+  display: none;
+}
+
+.menuVisible {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-opaque background */
+  padding: 10px 0;
+  position: absolute;
+  max-width: 30vw;
+  top: 60px; /* adjust this value based on the actual height of the header */
+  width: 100%; /* ensure it spans the full width of the container */
+  box-sizing: border-box; /* ensures padding does not affect width */
+  z-index: 1000; /* ensure it appears on top */
+}
+
+.control {
+  display: block;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  border-radius: var(--mantine-radius-md);
+  font-weight: 500;
+  color: white; /* ensures visibility against the semi-opaque background */
+  width: 100%; /* full width for better touch targets */
+}
+
+.control:hover {
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-6)
+  );
+}
