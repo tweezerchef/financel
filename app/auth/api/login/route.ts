@@ -22,6 +22,8 @@ export async function POST(req: Req) {
       select: {
         id: true,
         password: true,
+        avatar: true,
+        username: true,
       },
     })
     if (!user || !(await bcrypt.compare(password, user.password)))
@@ -30,7 +32,7 @@ export async function POST(req: Req) {
         { status: 400 }
       )
 
-    const { id } = user
+    const { id, avatar, username } = user
     const result = await prisma.result.upsert({
       where: { userId_date: { userId: user.id, date: dateOnly } },
       update: {},
@@ -66,6 +68,8 @@ export async function POST(req: Req) {
       id,
       resultId,
       nextCategory,
+      avatar,
+      username,
       message: 'Logged in successfully',
     })
   } catch (error) {
