@@ -1,23 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { useToggle, upperFirst } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
 import {
   TextInput,
   PasswordInput,
-  Text,
   Paper,
-  Group,
+  Center,
   PaperProps,
   Button,
   Divider,
-  Anchor,
   Stack,
 } from '@mantine/core'
 import { useRouter } from 'next/navigation'
-import { GoogleButton } from './buttons/GoogleButton'
-import { TwitterButton } from './buttons/TwitterButton'
+import { RegisterButton } from './buttons/RegisterButton'
 import classes from './ui/Login.module.css'
 import { useUserContext } from '../context/user/UserContext'
 
@@ -28,7 +24,6 @@ type FormProps = {
 }
 
 export function Login(props: PaperProps) {
-  const [type, toggle] = useToggle(['login', 'register'])
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
@@ -58,17 +53,11 @@ export function Login(props: PaperProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       }
-      let response
-      let user
-      if (type === 'login') {
-        // login logic
-        response = await fetch('auth/api/login', requestOptions)
-        user = await response.json()
-      } else {
-        // register logic
-        response = await fetch('auth/api/register', requestOptions)
-        user = await response.json()
-      }
+
+      // login logic
+      const response = await fetch('auth/api/login', requestOptions)
+      const user = await response.json()
+
       if (response.ok && user.token) {
         localStorage.setItem('token', user.token)
         setUser({
@@ -94,31 +83,14 @@ export function Login(props: PaperProps) {
   }
   return (
     <Paper p="md" {...props} className={classes.login}>
-      <Text size="lg" fw={500}>
-        To truly compete, {type} with
-      </Text>
-
-      <Group grow mb="md" mt="md">
-        <GoogleButton radius="xl">Google</GoogleButton>
-        <TwitterButton radius="xl">Twitter</TwitterButton>
-      </Group>
+      <Center mt="sm">
+        <RegisterButton />
+      </Center>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
       <form onSubmit={form.onSubmit((values) => formSubmit(values))}>
         <Stack>
-          {type === 'register' && (
-            <TextInput
-              label="Username"
-              placeholder="Your Username"
-              value={form.values.username}
-              onChange={(event) =>
-                form.setFieldValue('username', event.currentTarget.value)
-              }
-              radius="md"
-            />
-          )}
-
           <TextInput
             required
             label="Email"
@@ -147,22 +119,11 @@ export function Login(props: PaperProps) {
           />
         </Stack>
 
-        <Group mt="xl" gap="xs">
-          <Anchor
-            component="button"
-            type="button"
-            c="dimmed"
-            onClick={() => toggle()}
-            size="xs"
-          >
-            {type === 'register'
-              ? 'Already have an account? Login'
-              : "Don't have an account? Register"}
-          </Anchor>
+        <Center mt="xl">
           <Button type="submit" radius="xl" disabled={isLoading}>
-            {upperFirst(type)}
+            Login
           </Button>
-        </Group>
+        </Center>
       </form>
     </Paper>
   )
