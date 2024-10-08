@@ -18,6 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.665.0",
     "@aws-sdk/s3-request-presigner": "^3.665.0",
+    "@mantine/charts": "^7.13.2",
     "@mantine/core": "^7.9.0",
     "@mantine/form": "^7.9.0",
     "@mantine/hooks": "^7.9.0",
@@ -31,6 +32,7 @@
     "@vercel/speed-insights": "^1.0.10",
     "babel-plugin-react-compiler": "^0.0.0-experimental-c23de8d-20240515",
     "bcrypt": "^5.1.1",
+    "chart.js": "^4.4.4",
     "clsx": "^2.1.1",
     "csv-parse": "^5.5.6",
     "eslint-plugin-react-compiler": "^0.0.0-experimental-53bb89e-20240515",
@@ -40,8 +42,10 @@
     "next-auth": "^4.24.7",
     "node-cron": "^3.0.3",
     "react": "19.0.0-rc-f2df5694-20240916",
+    "react-chartjs-2": "^5.2.0",
     "react-confetti": "^6.1.0",
     "react-dom": "19.0.0-rc-f2df5694-20240916",
+    "recharts": "^2.12.7",
     "sharp": "^0.33.3",
     "uuid": "^10.0.0",
     "uuidv4": "^6.2.13"
