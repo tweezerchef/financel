@@ -62,19 +62,35 @@ model Guest {
 }
 
 model DailyChallenge {
-  id              String            @id @default(uuid())
-  challengeDate   DateTime          @unique @db.Date
-  dateId          String
-  date            Dates             @relation(fields: [dateId], references: [id])
-  interestRateId  String
-  interestRate    InterestRatePrice @relation(fields: [interestRateId], references: [id])
-  stockPriceId    String?
-  stockPrice      StockPrice?       @relation(fields: [stockPriceId], references: [id])
-  currencyValueId String?
-  currencyValue   CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
-  Result          Result[]
+  id                     String            @id @default(uuid())
+  challengeDate          DateTime          @unique @db.Date
+  dateId                 String
+  date                   Dates             @relation(fields: [dateId], references: [id])
+  interestRateId         String
+  interestRate           InterestRatePrice @relation(fields: [interestRateId], references: [id])
+  stockPriceId           String?
+  stockPrice             StockPrice?       @relation(fields: [stockPriceId], references: [id])
+  currencyValueId        String?
+  currencyValue          CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
+  interestRateYearDataId String?           @unique
+  interestRateYearData   YearData?         @relation("InterestRateYearData", fields: [interestRateYearDataId], references: [id])
+  stockYearDataId        String?           @unique
+  stockYearData          YearData?         @relation("StockYearData", fields: [stockYearDataId], references: [id])
+  currencyYearDataId     String?           @unique
+  currencyYearData       YearData?         @relation("CurrencyYearData", fields: [currencyYearDataId], references: [id])
+  Result                 Result[]
 
   @@index([challengeDate])
+}
+
+model YearData {
+  id                         String          @id @default(uuid())
+  startDate                  DateTime        @db.Date
+  endDate                    DateTime        @db.Date
+  dataPoints                 Json
+  dailyChallengeInterestRate DailyChallenge? @relation("InterestRateYearData")
+  dailyChallengeStock        DailyChallenge? @relation("StockYearData")
+  dailyChallengeCurrency     DailyChallenge? @relation("CurrencyYearData")
 }
 
 // daily challenge share table?

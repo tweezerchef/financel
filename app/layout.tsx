@@ -10,6 +10,7 @@ import {
 import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
+import '@mantine/charts/styles.css'
 import { UserProvider } from './context/user/UserContext'
 
 const myColor: MantineColorsTuple = [
