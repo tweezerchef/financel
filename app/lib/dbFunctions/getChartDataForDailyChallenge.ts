@@ -1,5 +1,8 @@
 /* eslint-disable no-use-before-define */
+
 import prisma from '../prisma/prisma'
+
+// Add this import
 
 interface ChartDataPoint {
   date: string
@@ -7,17 +10,16 @@ interface ChartDataPoint {
 }
 
 export async function getChartDataForDailyChallenge() {
-  const challengeDate = await fetch('/game/interestRate/api/dailyChallenge/', {
-    method: 'GET',
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      const { date } = data // Destructure directly from data
-      return date // Update this line
-    })
-  // Find the daily challenge for the given date
-  const dailyChallenge = await prisma.dailyChallenge.findUnique({
-    where: { challengeDate },
+  // Find the most recent daily challenge
+  const mostRecentChallenge = await prisma.dailyChallenge.findFirst({
+    where: {
+      challengeDate: {
+        lte: new Date(), // Less than or equal to today
+      },
+    },
+    orderBy: {
+      challengeDate: 'desc',
+    },
     include: {
       interestRateYearData: true,
       interestRate: {
@@ -28,11 +30,11 @@ export async function getChartDataForDailyChallenge() {
     },
   })
 
-  if (!dailyChallenge || !dailyChallenge.interestRateYearData)
-    throw new Error('No data found for the given date')
+  if (!mostRecentChallenge || !mostRecentChallenge.interestRateYearData)
+    throw new Error('No recent daily challenge found')
 
   // Extract and parse the data points
-  const dataPoints = dailyChallenge.interestRateYearData.dataPoints as {
+  const dataPoints = mostRecentChallenge.interestRateYearData.dataPoints as {
     date: string
     rate: number
   }[]
