@@ -5,10 +5,9 @@ function calculateArrowAmount(difference: number): ResponseNumbers {
   if (difference <= 0.25) return 1
   if (difference <= 0.75) return 2
   if (difference <= 1.25) return 3
-  if (difference <= 1.75) return 4
+  if (difference <= 2.5) return 4
   return 5
 }
-
 export function arrowDecider(
   guess: number,
   actual: number

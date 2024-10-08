@@ -6,7 +6,7 @@
     margin-left: var(--mantine-spacing-md);
   }
 
-  @media (max-width: $mantine-breakpoint-xs) {
+  @media (max-width: --mantine-breakpoint-xs) {
     &:not(:first-of-type) {
       margin-top: var(--mantine-spacing-md);
       margin-left: 0;
