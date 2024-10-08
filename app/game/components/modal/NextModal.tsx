@@ -17,6 +17,8 @@ interface NextModalProps {
   actual: string
   tries?: number
   time?: number
+  challengeDate: string
+  finalGuess: number | undefined
   type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
   initialData?: Array<{ date: string; interestRate: number }>
 }
@@ -28,6 +30,8 @@ export function NextModal({
   actual,
   tries,
   time,
+  challengeDate,
+  finalGuess,
   type,
   initialData,
 }: NextModalProps) {
@@ -70,8 +74,8 @@ export function NextModal({
         <Link href={`/game/${next}`} passHref>
           {type === 'Interest Rate' && initialData && (
             <InterestRateChartClient
-              date="Jan 25"
-              guess={3.4}
+              date={challengeDate}
+              guess={finalGuess}
               initialData={initialData}
             />
           )}

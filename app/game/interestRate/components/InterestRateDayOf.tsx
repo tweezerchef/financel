@@ -9,13 +9,12 @@ import classes from './ui/InterestRateDayOf.module.css'
 import { DayOfInfo } from './components/DayOfInfo'
 
 interface InterestRateDayOfProps {
-  dayOfSlide: 'image' | 'day' | 'guess'
-  // eslint-disable-next-line react/no-unused-prop-types
-  setDayOfSlide: Dispatch<SetStateAction<'image' | 'day' | 'guess'>>
+  setChallengeDate: Dispatch<SetStateAction<'image' | 'day' | 'guess'>>
   setInitialData: Dispatch<
     SetStateAction<Array<{ date: string; interestRate: number }>>
   >
 }
+type DayOf = 'image' | 'day' | 'guess'
 interface DayOfInfo {
   date: string
   category: string
@@ -23,11 +22,11 @@ interface DayOfInfo {
 }
 
 export function InterestRateDayOf({
-  dayOfSlide,
-  setDayOfSlide,
+  setChallengeDate,
   setInitialData,
 }: InterestRateDayOfProps) {
   const [dayOfInfo, setDayOfInfo] = useState<DayOfInfo | null>(null)
+  const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
   useEffect(() => {
     if (dayOfSlide === 'image') {
       const timeoutId = setTimeout(() => {
@@ -40,6 +39,7 @@ export function InterestRateDayOf({
             console.log(date, category, chartData)
             setDayOfInfo({ date, category, chartData })
             setInitialData(chartData)
+            setChallengeDate(date)
           })
           .then(() => {
             setDayOfSlide('day')
@@ -51,7 +51,7 @@ export function InterestRateDayOf({
 
       return () => clearTimeout(timeoutId)
     }
-  }, [dayOfSlide, setDayOfSlide, setInitialData])
+  }, [dayOfSlide, setChallengeDate, setDayOfSlide, setInitialData])
   return (
     <Container className={classes.dayOfContainer}>
       <div className={classes.slideWrapper}>
