@@ -62,18 +62,35 @@ model Guest {
 }
 
 model DailyChallenge {
-  id              String            @id @default(uuid())
-  challengeDate   DateTime          @unique @db.Date
-  dateId          String
-  date            Dates             @relation(fields: [dateId], references: [id])
-  interestRateId  String
-  interestRate    InterestRatePrice @relation(fields: [interestRateId], references: [id])
-  stockPriceId    String?
-  stockPrice      StockPrice?       @relation(fields: [stockPriceId], references: [id])
-  currencyValueId String?
-  currencyValue   CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
+  id                     String            @id @default(uuid())
+  challengeDate          DateTime          @unique @db.Date
+  dateId                 String
+  date                   Dates             @relation(fields: [dateId], references: [id])
+  interestRateId         String
+  interestRate           InterestRatePrice @relation(fields: [interestRateId], references: [id])
+  stockPriceId           String?
+  stockPrice             StockPrice?       @relation(fields: [stockPriceId], references: [id])
+  currencyValueId        String?
+  currencyValue          CurrencyValue?    @relation(fields: [currencyValueId], references: [id])
+  interestRateYearDataId String?           @unique
+  interestRateYearData   YearData?         @relation("InterestRateYearData", fields: [interestRateYearDataId], references: [id])
+  stockYearDataId        String?           @unique
+  stockYearData          YearData?         @relation("StockYearData", fields: [stockYearDataId], references: [id])
+  currencyYearDataId     String?           @unique
+  currencyYearData       YearData?         @relation("CurrencyYearData", fields: [currencyYearDataId], references: [id])
+  Result                 Result[]
 
   @@index([challengeDate])
+}
+
+model YearData {
+  id                         String          @id @default(uuid())
+  startDate                  DateTime        @db.Date
+  endDate                    DateTime        @db.Date
+  dataPoints                 Json
+  dailyChallengeInterestRate DailyChallenge? @relation("InterestRateYearData")
+  dailyChallengeStock        DailyChallenge? @relation("StockYearData")
+  dailyChallengeCurrency     DailyChallenge? @relation("CurrencyYearData")
 }
 
 // daily challenge share table?
@@ -89,10 +106,14 @@ model Dates {
 }
 
 model Stock {
-  id     String       @id @default(uuid())
-  name   String       @unique
-  market String?
-  prices StockPrice[]
+  id           String       @id @default(uuid())
+  name         String       @unique
+  market       String?
+  prices       StockPrice[]
+  lowestPrice  Decimal      @default(0) @db.Decimal(10, 2)
+  highestPrice Decimal      @default(0) @db.Decimal(10, 2)
+
+  @@index([name])
 }
 
 model StockPrice {
@@ -122,9 +143,11 @@ model InterestRatePrice {
 }
 
 model Currency {
-  id     String          @id @default(uuid())
-  name   String          @unique
-  values CurrencyValue[]
+  id           String          @id @default(uuid())
+  name         String          @unique
+  values       CurrencyValue[]
+  lowestValue  Decimal         @default(0) @db.Decimal(10, 4)
+  highestValue Decimal         @default(0) @db.Decimal(10, 4)
 }
 
 model CurrencyValue {
@@ -138,13 +161,15 @@ model CurrencyValue {
 }
 
 model Result {
-  id         String           @id @default(uuid())
-  userId     String?
-  guestId    String?
-  date       DateTime         @db.Date
-  user       User?            @relation(fields: [userId], references: [id])
-  guest      Guest?           @relation(fields: [guestId], references: [id])
-  categories ResultCategory[]
+  id             String           @id @default(uuid())
+  userId         String?
+  guestId        String?
+  date           DateTime         @db.Date
+  user           User?            @relation(fields: [userId], references: [id])
+  guest          Guest?           @relation(fields: [guestId], references: [id])
+  categories     ResultCategory[]
+  score          Decimal          @default(0)
+  DailyChallenge DailyChallenge[]
 
   @@unique([guestId, date])
   @@unique([userId, date])
