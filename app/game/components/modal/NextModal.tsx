@@ -4,6 +4,7 @@
 import { Modal, Button, Text, Title } from '@mantine/core'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import { InterestRateChartClient } from './charts/interestRate/InterestRateChartClient'
 
 import classes from './ui/NextModal.module.css'
 
@@ -17,6 +18,7 @@ interface NextModalProps {
   tries?: number
   time?: number
   type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
+  initialData?: Array<{ date: string; interestRate: number }>
 }
 
 export function NextModal({
@@ -27,6 +29,7 @@ export function NextModal({
   tries,
   time,
   type,
+  initialData,
 }: NextModalProps) {
   const title = correct ? 'Correct!' : `Wrong!`
 
@@ -65,6 +68,13 @@ export function NextModal({
         <Title order={3}>{title}</Title>
         <Text>{subTitle}</Text>
         <Link href={`/game/${next}`} passHref>
+          {type === 'Interest Rate' && initialData && (
+            <InterestRateChartClient
+              date="Jan 25"
+              guess={3.4}
+              initialData={initialData}
+            />
+          )}
           <Button component="a">Next</Button>
         </Link>
       </Modal>

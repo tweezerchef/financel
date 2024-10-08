@@ -7,7 +7,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
-import { NextModal } from '../../components/NextModal'
+import { NextModal } from '../../components/modal/NextModal'
 import { useUserContext } from '../../../context/user/UserContext'
 import classes from './ui/InterestRateGuess.module.css'
 
@@ -28,7 +28,11 @@ interface Guess {
   isSpinning: boolean
 }
 
-export function InterestRateGuess() {
+interface InterestRateGuessProps {
+  initialData: Array<{ date: string; interestRate: number }>
+}
+
+export function InterestRateGuess({ initialData }: InterestRateGuessProps) {
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [resultId, setResultId] = useState<string | null>(null)
@@ -181,7 +185,11 @@ export function InterestRateGuess() {
       </div>
       <div className={classes.guessBox}>
         {opened !== undefined && modalProps && (
-          <NextModal {...modalProps} opened={opened} />
+          <NextModal
+            {...modalProps}
+            opened={opened}
+            initialData={initialData}
+          />
         )}
         {guesses.length < 6 ? (
           <form>
