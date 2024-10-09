@@ -1,4 +1,11 @@
-import { Title, Text, Container, Overlay } from '@mantine/core'
+import {
+  Title,
+  Text,
+  Container,
+  Overlay,
+  Center,
+  AspectRatio,
+} from '@mantine/core'
 import Image from 'next/image'
 import { GuestButton } from './buttons/GuestButton'
 import classes from './ui/Header.module.css'
@@ -6,14 +13,15 @@ import classes from './ui/Header.module.css'
 export function Header() {
   return (
     <div className={classes.wrapper}>
-      <Image
-        src="/loginHeader.webp"
-        alt="Financel"
-        fill
-        sizes="max-width: 400px max-height: 300px"
-        quality={100}
-        priority
-      />
+      <AspectRatio ratio={500 / 309}>
+        <Image
+          src="/loginHeader.webp"
+          alt="Financel"
+          fill
+          quality={100}
+          priority
+        />
+      </AspectRatio>
       <Overlay color="#000" opacity={0.65} zIndex={1} />
 
       <div className={classes.inner}>
@@ -25,9 +33,11 @@ export function Header() {
             together to prove their worth.
           </Text>
         </Container>
-        <div className={classes.control}>
-          <GuestButton />
-        </div>
+        <Center>
+          <div>
+            <GuestButton />
+          </div>
+        </Center>
       </div>
     </div>
   )
