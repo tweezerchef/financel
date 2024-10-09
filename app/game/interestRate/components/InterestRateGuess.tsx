@@ -95,9 +95,7 @@ export function InterestRateGuess({
   }, [user])
 
   useEffect(() => {
-    console.log('Original challenge date:', challengeDate)
     const formattedDate = formatDateForChart(challengeDate)
-    console.log('Formatted challenge date:', formattedDate)
     setFormattedChallengeDate(formattedDate)
   }, [challengeDate])
 
@@ -110,7 +108,6 @@ export function InterestRateGuess({
 
       try {
         setIsAnimating(true)
-        console.log('Submitting guess with resultId:', resultId)
         const response = await fetch('/game/interestRate/api/guess/', {
           method: 'POST',
           headers: {
