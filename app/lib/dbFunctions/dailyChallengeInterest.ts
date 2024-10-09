@@ -160,8 +160,8 @@ export async function createDailyChallenge() {
     JSON.stringify(
       {
         id: typedChallenge.id,
-        challengeDate: typedChallenge.challengeDate.toISOString().split('T')[0],
-        historicalDate: typedChallenge.date.date.toISOString().split('T')[0],
+        challengeDate: typedChallenge.challengeDate.toISOString(),
+        historicalDate: typedChallenge.date.date.toISOString(),
         interestRateCategory: typedChallenge.interestRate.rateType.category,
         interestRate: typedChallenge.interestRate.rate,
         yearDataId: typedChallenge.interestRateYearData?.id,

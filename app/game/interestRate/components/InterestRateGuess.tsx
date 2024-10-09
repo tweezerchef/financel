@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
 import { NextModal } from '../../components/modal/NextModal'
@@ -15,7 +15,7 @@ import classes from './ui/InterestRateGuess.module.css'
 // Add this helper function at the top of the file, outside the component
 function formatDateForChart(date: string): string {
   try {
-    const parsedDate = new Date(date)
+    const parsedDate = parseISO(date)
     return format(parsedDate, 'MMM dd')
   } catch (error) {
     console.error('Error formatting date:', error)
