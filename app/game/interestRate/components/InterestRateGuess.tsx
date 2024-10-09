@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
-import { format } from 'date-fns'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
 import { NextModal } from '../../components/modal/NextModal'
@@ -15,8 +14,23 @@ import classes from './ui/InterestRateGuess.module.css'
 // Add this helper function at the top of the file, outside the component
 function formatDateForChart(date: string): string {
   try {
-    const parsedDate = new Date(date)
-    return format(parsedDate, 'MMM dd')
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [year, month, day] = date.split('-')
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ]
+    return `${monthNames[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`
   } catch (error) {
     console.error('Error formatting date:', error)
     return date // Return original string if parsing fails
