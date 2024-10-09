@@ -26,9 +26,7 @@ export async function createDailyChallenge() {
 
   const today = new Date()
   const dateOnly = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
   )
   console.log(`Today's date: ${dateOnly.toISOString().split('T')[0]}`)
 
