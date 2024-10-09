@@ -48,19 +48,41 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
   return (
     <Box className={classes.container}>
       <Group className={classes.guessGroup}>
-        <SingleDisplay value={wholePart || ''} isSpinning={isSpinning} />
+        <SingleDisplay
+          value={wholePart || ''}
+          isSpinning={isSpinning}
+          isNumber
+        />
         <span className={classes.decimal}>.</span>
-        <SingleDisplay value={decimalPart?.[0] || ''} isSpinning={isSpinning} />
-        <SingleDisplay value={decimalPart?.[1] || ''} isSpinning={isSpinning} />
+        <SingleDisplay
+          value={decimalPart?.[0] || ''}
+          isSpinning={isSpinning}
+          isNumber
+        />
+        <SingleDisplay
+          value={decimalPart?.[1] || ''}
+          isSpinning={isSpinning}
+          isNumber
+        />
       </Group>
       <Group className={classes.resultGroup}>
         {displayedResults.map(({ id, value }) => (
-          <SingleDisplay key={id} value={value} isSpinning={false} />
+          <SingleDisplay
+            key={id}
+            value={value}
+            isSpinning={false}
+            isNumber={false}
+          />
         ))}
         {Array(5 - displayedResults.length)
           .fill(null)
           .map(() => (
-            <SingleDisplay key={uuidv4()} value="" isSpinning={isSpinning} />
+            <SingleDisplay
+              key={uuidv4()}
+              value=""
+              isSpinning={isSpinning}
+              isNumber={false}
+            />
           ))}
       </Group>
     </Box>
