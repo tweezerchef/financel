@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Currency" ADD COLUMN     "highestValue" DECIMAL(10,4) NOT NULL DEFAULT 0,
+ADD COLUMN     "lowestValue" DECIMAL(10,4) NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "Stock" ADD COLUMN     "highestPrice" DECIMAL(10,2) NOT NULL DEFAULT 0,
+ADD COLUMN     "lowestPrice" DECIMAL(10,2) NOT NULL DEFAULT 0;
