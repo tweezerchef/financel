@@ -16,6 +16,7 @@ import classes from './ui/Page.module.css'
 export default function Registration() {
   const router = useRouter()
   const [active, setActive] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
   const form = useForm({
     initialValues: {
       email: '',
@@ -65,6 +66,8 @@ export default function Registration() {
   const handleRegister = async () => {
     if (form.validate().hasErrors) return
 
+    setIsLoading(true)
+
     const { email, password, username, file } = form.values
 
     if (!file) {
@@ -86,7 +89,10 @@ export default function Registration() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Registration failed')
+        console.error(
+          'Registration error:',
+          errorData.message || 'Registration failed'
+        )
       }
 
       const data = await response.json()
@@ -99,6 +105,8 @@ export default function Registration() {
     } catch (error) {
       console.error('Registration error:', error)
       // Handle error (e.g., show error message to user)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -196,14 +204,25 @@ export default function Registration() {
 
       <div className={classes.navigationButtons}>
         {active !== 0 && (
-          <Button variant="default" onClick={prevStep}>
+          <Button variant="filled" size="md" radius="xl" onClick={prevStep}>
             Back
           </Button>
         )}
         {active === 0 ? (
-          <Button onClick={nextStep}>Next step</Button>
+          <Button variant="filled" size="md" radius="xl" onClick={nextStep}>
+            Next step
+          </Button>
         ) : (
-          <Button onClick={handleRegister}>Register</Button>
+          <Button
+            onClick={handleRegister}
+            loading={isLoading}
+            variant="filled"
+            size="md"
+            radius="xl"
+            loaderProps={{ type: 'bars' }}
+          >
+            Register
+          </Button>
         )}
       </div>
     </div>
