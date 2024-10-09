@@ -27,6 +27,7 @@ export function InterestRateDayOf({
 }: InterestRateDayOfProps) {
   const [dayOfInfo, setDayOfInfo] = useState<DayOfInfo | null>(null)
   const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
+
   useEffect(() => {
     if (dayOfSlide === 'image') {
       const timeoutId = setTimeout(() => {
@@ -36,7 +37,7 @@ export function InterestRateDayOf({
           .then((response) => response.json())
           .then((data) => {
             const { date, category, chartData } = data
-            console.log(date, category, chartData)
+            console.log('Challenge date:', date)
             setDayOfInfo({ date, category, chartData })
             setInitialData(chartData)
             setChallengeDate(date)
@@ -52,6 +53,7 @@ export function InterestRateDayOf({
       return () => clearTimeout(timeoutId)
     }
   }, [dayOfSlide, setChallengeDate, setDayOfSlide, setInitialData])
+
   return (
     <Container className={classes.dayOfContainer}>
       <div className={classes.slideWrapper}>
