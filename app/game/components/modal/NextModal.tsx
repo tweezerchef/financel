@@ -2,6 +2,8 @@
 
 /* eslint-disable no-nested-ternary */
 import { Modal, Button, Text, Title, Center } from '@mantine/core'
+import { useReward } from 'react-rewards'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { InterestRateChartClient } from './charts/interestRate/InterestRateChartClient'
@@ -35,6 +37,26 @@ export function NextModal({
   type,
   initialData,
 }: NextModalProps) {
+  const rewardRef = useRef<HTMLDivElement>(null)
+  const { reward, isAnimating } = useReward('wrongAnswerReward', 'emoji', {
+    emoji: ['💩'],
+    elementCount: 20,
+    elementSize: 30,
+    spread: 40,
+  })
+
+  const animationCountRef = useRef(0)
+
+  useEffect(() => {
+    if (opened && !correct && !isAnimating && animationCountRef.current < 2) {
+      const timer = setTimeout(() => {
+        reward()
+        animationCountRef.current += 1
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [opened, correct, reward, isAnimating])
+
   const title = correct ? 'Correct!' : `Wrong!`
 
   let timeString: string
@@ -69,7 +91,19 @@ export function NextModal({
         classNames={{ root: classes.modalRoot, content: classes.modalContent }}
       >
         <div className={classes.modalInner}>
+          <div
+            ref={rewardRef}
+            id="wrongAnswerReward"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          />
+
           {correct && <Confetti recycle numberOfPieces={200} />}
+
           <Center>
             <Title order={3} className={classes.modalTitle}>
               {title}
@@ -86,17 +120,14 @@ export function NextModal({
               initialData={initialData}
             />
           )}
-          <Link
-            href={`/game/${next}`}
-            style={{ textDecoration: 'none' }}
-            passHref
-          >
-            <Center>
+
+          <Center>
+            <Link href={`/game/${next}`} passHref legacyBehavior>
               <Button component="a" className={classes.nextButton}>
                 Next
               </Button>
-            </Center>
-          </Link>
+            </Link>
+          </Center>
         </div>
       </Modal>
     </div>
