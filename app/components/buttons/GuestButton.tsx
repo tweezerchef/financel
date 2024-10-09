@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@mantine/core'
-import classes from './ui/GoogleButton.module.css'
+import classes from './ui/GuestButton.module.css'
 import { useUserContext } from '../../context/user/UserContext'
 
 export const GuestButton = () => {
@@ -50,7 +50,7 @@ export const GuestButton = () => {
   return (
     <Button
       className={classes.control}
-      variant="white"
+      variant="blue"
       size="lg"
       onClick={handleGuestLogin}
       disabled={isLoading}
