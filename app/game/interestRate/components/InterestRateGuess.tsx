@@ -33,7 +33,7 @@ function formatDateForChart(date: string): string {
     return `${monthNames[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`
   } catch (error) {
     console.error('Error formatting date:', error)
-    return date // Return original string if parsing fails
+    return date
   }
 }
 
