@@ -1,7 +1,7 @@
 'use client'
 
 /* eslint-disable no-nested-ternary */
-import { Modal, Button, Text, Title } from '@mantine/core'
+import { Modal, Button, Text, Title, Center } from '@mantine/core'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { InterestRateChartClient } from './charts/interestRate/InterestRateChartClient'
@@ -68,10 +68,17 @@ export function NextModal({
         withCloseButton={false}
         classNames={{ root: classes.modalRoot, content: classes.modalContent }}
       >
-        {correct && <Confetti recycle numberOfPieces={200} />}
-        <Title order={3}>{title}</Title>
-        <Text>{subTitle}</Text>
-        <Link href={`/game/${next}`} passHref>
+        <div className={classes.modalInner}>
+          {correct && <Confetti recycle numberOfPieces={200} />}
+          <Center>
+            <Title order={3} className={classes.modalTitle}>
+              {title}
+            </Title>
+          </Center>
+          <Center>
+            <Text className={classes.modalText}>{subTitle}</Text>
+          </Center>
+
           {type === 'Interest Rate' && initialData && (
             <InterestRateChartClient
               date={challengeDate}
@@ -79,8 +86,18 @@ export function NextModal({
               initialData={initialData}
             />
           )}
-          <Button component="a">Next</Button>
-        </Link>
+          <Link
+            href={`/game/${next}`}
+            style={{ textDecoration: 'none' }}
+            passHref
+          >
+            <Center>
+              <Button component="a" className={classes.nextButton}>
+                Next
+              </Button>
+            </Center>
+          </Link>
+        </div>
       </Modal>
     </div>
   )
