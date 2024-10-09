@@ -2,14 +2,14 @@
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
-  padding: 1;
+  padding: 1rem;
   box-sizing: border-box;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 @media (max-width: 600px) {
   .login {
-    padding: 1;
     max-width: 90%;
+    padding: 1rem;
   }
 }

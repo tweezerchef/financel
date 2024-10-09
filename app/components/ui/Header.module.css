@@ -2,17 +2,34 @@
 
 .wrapper {
   position: relative;
-  padding-top: rem(30px);
-  padding-bottom: rem(10px);
+  width: 100%;
   max-width: 400px;
-  @media (max-width: --mantine-breakpoint-xs) {
-    padding-top: rem(1px);
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  height: 40vh; /* Default height for taller screens */
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+    max-width: 90%;
+    padding: 1rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .wrapper {
+    height: 30vh; /* Reduced height for shorter screens */
   }
 }
 
 .inner {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 }
 
 .title {
