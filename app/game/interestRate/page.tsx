@@ -6,7 +6,9 @@ import { InterestRateGuess } from './components/InterestRateGuess'
 import { InterestRateDayOf } from './components/InterestRateDayOf'
 import classes from '../ui/Game.module.css'
 
+
 type DayOf = 'image' | 'day'
+
 
 export default function InterestRatePage() {
   const [initialData, setInitialData] = useState<
