@@ -8,8 +8,8 @@
   align-items: center;
   justify-content: center;
   border-radius: calc(0.5vh + 2px);
-  background-color: #2f3336;
-  color: #71d4fe;
+  background-color: #020202;
+  color: #fffb00;
   cursor: pointer;
   transition: all 0.1s ease;
   position: relative;

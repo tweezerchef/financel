@@ -31,12 +31,13 @@
   left: 0;
   right: 0;
   background-color: #000;
-  color: #fff;
+  color: #fffb00;
   padding: 10px 0;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   text-align: center;
+  font-family: tickerFont;
 }
 
 /* Media queries for responsive font sizing and layout */
