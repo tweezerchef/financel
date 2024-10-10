@@ -9,12 +9,12 @@ import classes from './ui/InterestRateDayOf.module.css'
 import { DayOfInfo } from './components/DayOfInfo'
 
 interface InterestRateDayOfProps {
-  setChallengeDate: Dispatch<SetStateAction<'image' | 'day' | 'guess'>>
+  setChallengeDate: Dispatch<SetStateAction<'image' | 'day'>>
   setInitialData: Dispatch<
     SetStateAction<Array<{ date: string; interestRate: number }>>
   >
 }
-type DayOf = 'image' | 'day' | 'guess'
+type DayOf = 'image' | 'day'
 interface DayOfInfo {
   date: string
   category: string
@@ -27,6 +27,8 @@ export function InterestRateDayOf({
 }: InterestRateDayOfProps) {
   const [dayOfInfo, setDayOfInfo] = useState<DayOfInfo | null>(null)
   const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
+  const amountAway = '2.5'
+  const guessLeft = '5'
 
   useEffect(() => {
     if (dayOfSlide === 'image') {
@@ -87,6 +89,15 @@ export function InterestRateDayOf({
             </div>
           )}
         </Transition>
+        {amountAway && guessLeft && (
+          <div className={classes.legend}>
+            <span>
+              {parseFloat(amountAway) >= 5 ? 'Greater Than' : 'Less Than'}:{' '}
+              {amountAway} Points Away
+            </span>
+            <span> Guesses Left: {guessLeft}</span>
+          </div>
+        )}
       </div>
     </Container>
   )
