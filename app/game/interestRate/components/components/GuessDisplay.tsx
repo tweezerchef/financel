@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-nested-ternary */
-import { FC, useState, useEffect } from 'react'
+import React, { FC, useState, useEffect, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from './SingleDisplay'
@@ -22,6 +22,26 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
   const [displayedResults, setDisplayedResults] = useState<
     Array<{ id: string; value: string }>
   >([])
+  const [staggeredSpinning, setStaggeredSpinning] = useState<boolean[]>(
+    Array(8).fill(false)
+  )
+
+  const staggerSpinning = useCallback((spinning: boolean) => {
+    const delay = spinning ? 50 : 100 // Faster start, slower stop
+    for (let i = 0; i < 8; i++)
+      setTimeout(() => {
+        setStaggeredSpinning((prev) => {
+          const newState = [...prev]
+          newState[i] = spinning
+          return newState
+        })
+      }, i * delay)
+  }, [])
+
+  useEffect(() => {
+    if (isSpinning) staggerSpinning(true)
+    else setTimeout(() => staggerSpinning(false), 500) // Delay stopping the animation
+  }, [isSpinning, staggerSpinning])
 
   useEffect(() => {
     if (!isSpinning && result) {
@@ -50,37 +70,39 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
       <Group className={classes.guessGroup}>
         <SingleDisplay
           value={wholePart || ''}
-          isSpinning={isSpinning}
+          isSpinning={staggeredSpinning[0]}
           isNumber
         />
         <span className={classes.decimal}>.</span>
         <SingleDisplay
           value={decimalPart?.[0] || ''}
-          isSpinning={isSpinning}
+          isSpinning={staggeredSpinning[1]}
           isNumber
         />
         <SingleDisplay
           value={decimalPart?.[1] || ''}
-          isSpinning={isSpinning}
+          isSpinning={staggeredSpinning[2]}
           isNumber
         />
       </Group>
       <Group className={classes.resultGroup}>
-        {displayedResults.map(({ id, value }) => (
+        {displayedResults.map(({ id, value }, index) => (
           <SingleDisplay
             key={id}
             value={value}
-            isSpinning={false}
+            isSpinning={staggeredSpinning[index + 3]}
             isNumber={false}
           />
         ))}
         {Array(5 - displayedResults.length)
           .fill(null)
-          .map(() => (
+          .map((_, index) => (
             <SingleDisplay
               key={uuidv4()}
               value=""
-              isSpinning={isSpinning}
+              isSpinning={
+                staggeredSpinning[index + 3 + displayedResults.length]
+              }
               isNumber={false}
             />
           ))}
