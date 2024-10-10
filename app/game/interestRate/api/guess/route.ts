@@ -105,12 +105,8 @@ async function getDailyChallenge(dateOnly: Date) {
       date: { select: { date: true } },
     },
   })
-  console.log('Daily Challenge:', JSON.stringify(dailyChallenge, null, 2))
-  if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
-  console.log('Challenge Date:', dailyChallenge.date.date)
-  console.log('Interest Rate Date:', dailyChallenge.interestRate.date.date)
-  console.log('Interest Rate:', dailyChallenge.interestRate.rate)
+  if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
   return dailyChallenge
 }
