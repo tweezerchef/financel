@@ -1,4 +1,3 @@
-
 /* eslint-disable react/jsx-no-duplicate-props */
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
@@ -55,7 +54,6 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-
     <html lang="en" className={`${classes.html} ${tickerFont.className}`}>
       <head>
         <ColorSchemeScript />

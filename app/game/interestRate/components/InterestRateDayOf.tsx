@@ -9,7 +9,6 @@ import classes from './ui/InterestRateDayOf.module.css'
 import { DayOfInfo } from './components/DayOfInfo'
 
 interface InterestRateDayOfProps {
-
   setChallengeDate: Dispatch<SetStateAction<'image' | 'day'>>
 
   setInitialData: Dispatch<
@@ -104,7 +103,6 @@ export function InterestRateDayOf({
             <span> Guesses Left: {guessLeft}</span>
           </div>
         )}
-
       </div>
     </Container>
   )
