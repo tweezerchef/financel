@@ -13,6 +13,8 @@ export default function InterestRatePage() {
     Array<{ date: string; interestRate: number }>
   >([])
   const [challengeDate, setChallengeDate] = useState<DayOf>('image')
+  const [amountAway, setAmountAway] = useState<string | null>(null)
+  const [guessCount, setGuessCount] = useState<number | null>(null)
 
   return (
     <>
@@ -20,12 +22,16 @@ export default function InterestRatePage() {
         <InterestRateDayOf
           setChallengeDate={setChallengeDate}
           setInitialData={setInitialData}
+          amountAway={amountAway}
+          guessCount={guessCount}
         />
       </div>
       <div className={classes.guess}>
         <InterestRateGuess
           initialData={initialData}
           challengeDate={challengeDate}
+          setAmountAway={setAmountAway}
+          setGuessCount={setGuessCount}
         />
       </div>
     </>

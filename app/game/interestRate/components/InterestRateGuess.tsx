@@ -1,6 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
@@ -57,11 +64,15 @@ interface Guess {
 interface InterestRateGuessProps {
   initialData: Array<{ date: string; interestRate: number }>
   challengeDate: string
+  setAmountAway: Dispatch<SetStateAction<string | null>>
+  setGuessCount: Dispatch<SetStateAction<number | null>>
 }
 
 export function InterestRateGuess({
   initialData,
   challengeDate,
+  setAmountAway,
+  setGuessCount,
 }: InterestRateGuessProps) {
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
@@ -134,7 +145,7 @@ export function InterestRateGuess({
           isComplete,
           correct,
           timeTaken,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          difference,
           correctDigits,
           rateNumber,
         } = result
@@ -158,6 +169,8 @@ export function InterestRateGuess({
             )
           )
           setIsAnimating(false)
+          setAmountAway(difference)
+          setGuessCount(6 - currentGuessCount)
         }, 1000)
         if (
           (isComplete && !isAnimating) ||
