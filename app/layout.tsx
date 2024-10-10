@@ -1,4 +1,7 @@
+
+/* eslint-disable react/jsx-no-duplicate-props */
 import type { Metadata } from 'next'
+import localFont from 'next/font/local'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import {
   Center,
@@ -25,6 +28,11 @@ const myColor: MantineColorsTuple = [
   '#007cb5',
 ]
 
+const tickerFont = localFont({
+  src: './SUBWT___.ttf',
+  display: 'swap',
+})
+
 const theme = createTheme({
   colors: {
     myColor,
@@ -47,7 +55,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={classes.html}>
+
+    <html lang="en" className={`${classes.html} ${tickerFont.className}`}>
       <head>
         <ColorSchemeScript />
       </head>
