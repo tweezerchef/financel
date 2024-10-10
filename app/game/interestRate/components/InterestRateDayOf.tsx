@@ -14,6 +14,8 @@ interface InterestRateDayOfProps {
   setInitialData: Dispatch<
     SetStateAction<Array<{ date: string; interestRate: number }>>
   >
+  amountAway: string | null
+  guessCount: number | null
 }
 
 type DayOf = 'image' | 'day'
@@ -27,12 +29,11 @@ interface DayOfInfo {
 export function InterestRateDayOf({
   setChallengeDate,
   setInitialData,
+  amountAway,
+  guessCount,
 }: InterestRateDayOfProps) {
   const [dayOfInfo, setDayOfInfo] = useState<DayOfInfo | null>(null)
   const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
-
-  const amountAway = '2.5'
-  const guessLeft = '5'
 
   useEffect(() => {
     if (dayOfSlide === 'image') {
@@ -94,15 +95,27 @@ export function InterestRateDayOf({
           )}
         </Transition>
 
-        {amountAway && guessLeft && (
-          <div className={classes.legend}>
-            <span>
-              {parseFloat(amountAway) >= 5 ? 'Greater Than' : 'Less Than'}:{' '}
-              {amountAway} Points Away
-            </span>
-            <span> Guesses Left: {guessLeft}</span>
-          </div>
-        )}
+        <div className={classes.legend}>
+          <Transition
+            mounted={!!amountAway && !!guessCount}
+            transition="slide-up"
+            duration={400}
+            timingFunction="ease"
+          >
+            {(styles) => (
+              <div style={styles} className={classes.legendContent}>
+                <span>
+                  {parseFloat(amountAway!) >= 2.51
+                    ? 'Greater Than'
+                    : 'Less Than'}
+                  : {parseFloat(amountAway!) >= 2.51 ? '2.5' : amountAway}{' '}
+                  Points Away
+                </span>
+                <span> Guesses Left: {guessCount}</span>
+              </div>
+            )}
+          </Transition>
+        </div>
       </div>
     </Container>
   )

@@ -7,13 +7,6 @@ import { ResultCategory } from '@prisma/client'
 import { arrowDecider } from '../../../../lib/interestRate/arrowDecider'
 import prisma from '../../../../lib/prisma/prisma'
 
-type DailyChallenge = {
-  challengeDate: Date
-  interestRate: {
-    rate: Decimal
-  }
-} | null
-
 function compareGuessWithRate(guess: number, rate: number): [number, number][] {
   const guessStr = guess.toFixed(2).replace('.', '')
   const rateStr = rate.toFixed(2).replace('.', '')
@@ -75,6 +68,7 @@ export async function POST(request: NextRequest) {
       {
         direction: result.direction,
         amount: result.amount,
+        difference: result.difference,
         isComplete,
         correct: isCorrect,
         category: updatedCategory,

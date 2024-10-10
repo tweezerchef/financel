@@ -1,30 +1,62 @@
-function calculateArrowAmount(difference: number): ResponseNumbers {
-  // This function determines the number of arrows based on the difference
-  // Here, you define what difference corresponds to 1, 2, 3, 4, or 5 arrows
-  // Example thresholds could be set as follows (this is adjustable):
-  if (difference <= 0.25) return 1
-  if (difference <= 0.75) return 2
-  if (difference <= 1.25) return 3
-  if (difference <= 2.5) return 4
-  return 5
+interface ArrowDeciderReturn {
+  amount: number
+  difference: number
+  direction: 'up' | 'down' | 'same'
 }
+
+function calculateArrowAmount(difference: number): {
+  arrows: ResponseNumbers
+  difference: number
+} {
+  let arrows: ResponseNumbers
+  let newDifference: number
+  if (difference <= 0.25) {
+    arrows = 1
+    newDifference = 0.25
+  } else if (difference <= 0.75) {
+    arrows = 2
+    newDifference = 0.75
+  } else if (difference <= 1.25) {
+    arrows = 3
+    newDifference = 1.25
+  } else if (difference <= 2.5) {
+    arrows = 4
+    newDifference = 2.5
+  } else {
+    arrows = 5
+    newDifference = 2.51
+  }
+
+  return { arrows, difference: newDifference }
+}
+
 export function arrowDecider(
   guess: number,
   actual: number
 ): ArrowDeciderReturn {
   if (guess === actual)
     return {
+      difference: 0,
       direction: 'same',
       amount: 0,
     }
 
   const difference = Math.abs(guess - actual)
-  const amount: ResponseNumbers = calculateArrowAmount(difference)
+  const result = calculateArrowAmount(difference)
 
   const direction = guess > actual ? 'up' : 'down'
 
+  // Handle the new return type from calculateArrowAmount
+  if (typeof result === 'object')
+    return {
+      direction,
+      amount: result.arrows,
+      difference: result.difference,
+    }
+
   return {
+    difference: result,
     direction,
-    amount,
+    amount: result,
   }
 }
