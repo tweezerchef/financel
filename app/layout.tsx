@@ -1,3 +1,4 @@
+
 /* eslint-disable react/jsx-no-duplicate-props */
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
@@ -26,10 +27,12 @@ const myColor: MantineColorsTuple = [
   '#0090cd',
   '#007cb5',
 ]
+
 const tickerFont = localFont({
   src: './SUBWT___.ttf',
   display: 'swap',
 })
+
 const theme = createTheme({
   colors: {
     myColor,
@@ -52,6 +55,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
+
     <html lang="en" className={`${classes.html} ${tickerFont.className}`}>
       <head>
         <ColorSchemeScript />

@@ -36,12 +36,16 @@
 
 .flipBoxFront {
   background-color: #000000;
+
   color: #fffb00;
 }
 
 .flipBoxBack {
   background-color: #000000;
   color: #fffb00;
+=======
+  color: white;
+}
   transform: rotateX(180deg);
 }
 
@@ -94,10 +98,14 @@
 
 .flipBoxFront .topHalfVisible,
 .flipBoxFront .bottomHalfVisible {
+
   color: #fffb00;
+
 }
 
 .flipBoxBack .topHalfVisible,
 .flipBoxBack .bottomHalfVisible {
+
   color: #fffb00;
+
 }
