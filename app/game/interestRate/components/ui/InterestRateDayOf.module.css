@@ -22,4 +22,45 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-bottom: 17px;
+}
+
+.legend {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #000;
+  color: #fffb00;
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  text-align: center;
+  font-family: tickerFont;
+}
+
+/* Media queries for responsive font sizing and layout */
+@media (max-width: 1200px) {
+  .legend {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .legend {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .legend {
+    font-size: 15px;
+    padding: 3px 0;
+  }
+
+  .legend span {
+    margin: 2px 0;
+  }
+
 }
