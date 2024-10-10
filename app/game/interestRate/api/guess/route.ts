@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
@@ -13,31 +14,13 @@ type DailyChallenge = {
   }
 } | null
 
-// In-memory cache with proper typing
-let dailyChallengeCache: {
-  data: DailyChallenge
-  expiresAt: number
-} | null = null
-
-const getSecondsUntilMidnight = () => {
-  const now = new Date()
-  const midnight = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 1
-  )
-  return Math.floor((midnight.getTime() - now.getTime()) / 1000)
-}
 function compareGuessWithRate(guess: number, rate: number): [number, number][] {
-  const guessStr = guess.toFixed(2)
-  const rateStr = rate.toFixed(2)
+  const guessStr = guess.toFixed(2).replace('.', '')
+  const rateStr = rate.toFixed(2).replace('.', '')
   const result: [number, number][] = []
 
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < guessStr.length; i++)
-    if (guessStr[i] !== '.')
-      if (guessStr[i] === rateStr[i])
-        result.push([i < 3 ? i + 1 : i, parseInt(guessStr[i], 10)])
+  for (let i = 0; i < 3; i++)
+    if (guessStr[i] === rateStr[i]) result.push([i, parseInt(guessStr[i], 10)])
 
   return result
 }
@@ -61,11 +44,12 @@ export async function POST(request: NextRequest) {
     if (!resultId) throw new Error('resultId is required')
 
     const dailyChallenge = await getDailyChallenge(dateOnly)
+    console.log('Daily Challenge:', dailyChallenge.interestRate.rate)
     const rateNumber = dailyChallenge.interestRate.rate.toNumber()
     console.log('Rate Number:', rateNumber)
     const result = arrowDecider(guess, rateNumber)
     const correctDigits = compareGuessWithRate(guess, rateNumber)
-    const isCorrect = result.amount === 0
+    const isCorrect = correctDigits.length === 3 && guess === rateNumber
     const isComplete = isCorrect || guessCount === 6
 
     const now = new Date()
@@ -107,19 +91,22 @@ export async function POST(request: NextRequest) {
 }
 
 async function getDailyChallenge(dateOnly: Date) {
-  if (dailyChallengeCache?.data && Date.now() < dailyChallengeCache.expiresAt)
-    return dailyChallengeCache.data
-
   const dailyChallenge = await prisma.dailyChallenge.findUnique({
     where: { challengeDate: dateOnly },
-    include: { interestRate: { select: { rate: true } } },
+    include: {
+      interestRate: {
+        select: {
+          rate: true,
+          date: {
+            select: { date: true },
+          },
+        },
+      },
+      date: { select: { date: true } },
+    },
   })
-  if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
-  dailyChallengeCache = {
-    data: dailyChallenge,
-    expiresAt: Date.now() + getSecondsUntilMidnight() * 1000,
-  }
+  if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
   return dailyChallenge
 }
