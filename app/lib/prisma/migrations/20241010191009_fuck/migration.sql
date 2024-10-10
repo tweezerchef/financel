@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "Currency" ALTER COLUMN "highestValue" SET DATA TYPE DECIMAL(65,30),
+ALTER COLUMN "lowestValue" SET DATA TYPE DECIMAL(65,30);
+
+-- AlterTable
+ALTER TABLE "CurrencyValue" ALTER COLUMN "value" SET DATA TYPE DECIMAL(65,30);

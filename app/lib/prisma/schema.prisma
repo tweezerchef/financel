@@ -4,10 +4,10 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  //url      = env("DATABASE_URL")
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 enum Category {
@@ -146,14 +146,14 @@ model Currency {
   id           String          @id @default(uuid())
   name         String          @unique
   values       CurrencyValue[]
-  lowestValue  Decimal         @default(0) @db.Decimal(10, 4)
-  highestValue Decimal         @default(0) @db.Decimal(10, 4)
+  lowestValue  Decimal         @default(0) @db.Decimal(65, 30)
+  highestValue Decimal         @default(0) @db.Decimal(65, 30)
 }
 
 model CurrencyValue {
   id             String           @id @default(uuid())
   currencyId     String
-  value          Decimal          @db.Decimal(10, 4)
+  value          Decimal          @db.Decimal(65, 30)
   dateId         String
   currency       Currency         @relation(fields: [currencyId], references: [id])
   date           Dates            @relation(fields: [dateId], references: [id])
