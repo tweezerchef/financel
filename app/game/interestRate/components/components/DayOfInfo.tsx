@@ -61,8 +61,9 @@ const addOrdinalSuffix = (day: number): string => {
 
 export function DayOfInfo({ date, category }: DayOfInfoProps) {
   const duration = getDuration(category)
-
+  console.log('original date', date)
   const formattedDate = formatDate(date)
+  console.log('formatted date', formattedDate)
   const [month, dayWithComma, year] = formattedDate.split(' ')
   const day = parseInt(dayWithComma, 10)
   const dayWithSuffix = addOrdinalSuffix(day)
