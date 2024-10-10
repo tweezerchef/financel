@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import { importInterestRatesChunk } from './importInterestRatesChunks'
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const offset = parseInt(searchParams.get('offset') || '0', 10)
-  const limit = parseInt(searchParams.get('limit') || '100', 10)
+export async function GET() {
+  // const { searchParams } = new URL(request.url)
+  // const offset = parseInt(searchParams.get('offset') || '0', 10)
+  // const limit = parseInt(searchParams.get('limit') || '100', 10)
 
   try {
-    const result = await importInterestRatesChunk(offset, limit)
+    const result = await importInterestRatesChunk(0, 10000)
     return NextResponse.json(result)
   } catch (error) {
     return NextResponse.json(
