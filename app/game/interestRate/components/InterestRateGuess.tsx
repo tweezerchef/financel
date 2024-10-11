@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 'use client'
 
 import {
@@ -21,8 +23,7 @@ import classes from './ui/InterestRateGuess.module.css'
 // Add this helper function at the top of the file, outside the component
 function formatDateForChart(date: string): string {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [year, month, day] = date.split('-')
+    const [year, month, day] = date.split('T')[0].split('-')
     const monthNames = [
       'Jan',
       'Feb',
