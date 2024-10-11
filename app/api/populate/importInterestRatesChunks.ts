@@ -8,6 +8,12 @@ import path from 'path'
 import prisma from '../../lib/prisma/prisma'
 
 type IRCategory = 'T_1' | 'T_5' | 'T_10' | 'T_20' | 'T_30'
+
+function createDateOnly(dateString: string): Date {
+  const [month, day, year] = dateString.split('/').map(Number)
+  return new Date(Date.UTC(year, month - 1, day))
+}
+
 export async function importInterestRatesChunk(offset: number, limit: number) {
   const csvFilePath = path.resolve(process.cwd(), 'public/InterestRates.csv')
   const csvData = fs.readFileSync(csvFilePath, 'utf8')
@@ -21,8 +27,7 @@ export async function importInterestRatesChunk(offset: number, limit: number) {
   let importedCount = 0
 
   for (const record of chunk) {
-    // Parse the date from the CSV
-    const date = new Date(record.Date)
+    const date = createDateOnly(record.Date)
 
     if (Number.isNaN(date.getTime())) {
       console.error(`Invalid date format for row: ${record.Date}`)

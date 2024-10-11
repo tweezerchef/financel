@@ -10,6 +10,11 @@ import path from 'path'
 import { Decimal } from '@prisma/client/runtime/library'
 import prisma from '../../../../lib/prisma/prisma'
 
+function createDateOnly(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, day))
+}
+
 export async function importCurrencyDataChunk(offset: number, limit: number) {
   const csvFiles = [
     path.resolve(process.cwd(), 'public/1990-1999_FRB_H10.csv'),
@@ -40,7 +45,7 @@ export async function importCurrencyDataChunk(offset: number, limit: number) {
       continue
     }
 
-    const date = new Date(dateStr)
+    const date = createDateOnly(dateStr)
     if (Number.isNaN(date.getTime())) {
       console.error(`Invalid date format for row: ${dateStr}`)
       continue
@@ -50,15 +55,11 @@ export async function importCurrencyDataChunk(offset: number, limit: number) {
 
     try {
       // Find or create the date entry
-      let dateEntry = await prisma.dates.findUnique({
+      const dateEntry = await prisma.dates.upsert({
         where: { date },
+        update: {},
+        create: { date },
       })
-      if (!dateEntry) {
-        dateEntry = await prisma.dates.create({
-          data: { date },
-        })
-        console.log(`Created new date entry for ${dateStr}`)
-      }
 
       let validEntriesCount = 0
 

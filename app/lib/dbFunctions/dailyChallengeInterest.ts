@@ -12,6 +12,12 @@ type ChallengeResult = Prisma.DailyChallengeGetPayload<{
       }
     }
     interestRateYearData: true
+    currencyValue: {
+      include: {
+        currency: true
+      }
+    }
+    currencyYearData: true
   }
 }>
 
@@ -31,28 +37,69 @@ export async function createDailyChallenge() {
   console.log(`Today's date: ${dateOnly.toISOString().split('T')[0]}`)
 
   // Get all dates that have interest rate data
-  const datesWithInterestRates = await prisma.interestRatePrice.findMany({
-    select: {
-      dateId: true,
-      interestId: true,
+  const datesWithBothData = await prisma.dates.findMany({
+    where: {
+      AND: [{ interestRates: { some: {} } }, { currencies: { some: {} } }],
     },
-    distinct: ['dateId', 'interestId'],
+    select: {
+      id: true,
+      date: true,
+    },
   })
 
-  if (datesWithInterestRates.length === 0) {
-    console.error('No dates with interest rate data found')
+  if (datesWithBothData.length === 0) {
+    console.error('No dates with both interest rate and currency data found')
     return
   }
 
-  // Randomly select a date and category combination
-  const randomSelection =
-    datesWithInterestRates[
-      Math.floor(Math.random() * datesWithInterestRates.length)
+  // Randomly select a date
+  const randomDate =
+    datesWithBothData[Math.floor(Math.random() * datesWithBothData.length)]
+
+  console.log(`Selected date: ${randomDate.date.toISOString().split('T')[0]}`)
+
+  // Find all available interest rate categories for the selected date
+  const availableInterestRates = await prisma.interestRatePrice.findMany({
+    where: { dateId: randomDate.id },
+    select: { rateType: true },
+    distinct: ['interestId'],
+  })
+
+  if (availableInterestRates.length === 0) {
+    console.error('No interest rates found for the selected date')
+    return
+  }
+
+  // Randomly select an interest rate category
+  const randomInterestRate =
+    availableInterestRates[
+      Math.floor(Math.random() * availableInterestRates.length)
     ]
+  const selectedCategory = randomInterestRate.rateType
+
+  // Find all available currencies for the selected date
+  const availableCurrencies = await prisma.currencyValue.findMany({
+    where: { dateId: randomDate.id },
+    select: { currency: true },
+    distinct: ['currencyId'],
+  })
+
+  if (availableCurrencies.length === 0) {
+    console.error('No currencies found for the selected date')
+    return
+  }
+
+  // Randomly select a currency
+  const randomCurrency =
+    availableCurrencies[Math.floor(Math.random() * availableCurrencies.length)]
+  const selectedCurrency = randomCurrency.currency
+
+  console.log(`Selected interest rate category: ${selectedCategory.category}`)
+  console.log(`Selected currency: ${selectedCurrency.name}`)
 
   // Fetch the selected date
   const selectedDate = await prisma.dates.findUnique({
-    where: { id: randomSelection.dateId },
+    where: { id: randomDate.id },
   })
 
   if (!selectedDate) {
@@ -60,17 +107,6 @@ export async function createDailyChallenge() {
     return
   }
   console.log(`Selected date: ${selectedDate.date.toISOString().split('T')[0]}`)
-
-  // Fetch the selected interest rate category
-  const selectedCategory = await prisma.interestRate.findUnique({
-    where: { id: randomSelection.interestId },
-  })
-
-  if (!selectedCategory) {
-    console.error('Selected interest rate category not found')
-    return
-  }
-  console.log(`Selected interest rate category: ${selectedCategory.category}`)
 
   // Find the interest rate for the selected date and category
   const interestRate = await prisma.interestRatePrice.findFirst({
@@ -124,6 +160,51 @@ export async function createDailyChallenge() {
 
   console.log('Sample of year data (first 5 entries):')
   console.log(JSON.stringify(yearDataJson.slice(0, 5), null, 2))
+  const currencyValue = await prisma.currencyValue.findFirst({
+    where: {
+      dateId: selectedDate.id,
+      currencyId: selectedCurrency.id,
+    },
+  })
+
+  if (!currencyValue) {
+    console.error('No currency value found for the selected date and currency')
+    return
+  }
+  console.log(
+    `Currency value for selected date and currency: ${currencyValue.value}`
+  )
+
+  // Fetch year data for currency (365 days surrounding the chosen date)
+  const currencyYearData = await prisma.currencyValue.findMany({
+    where: {
+      currency: { id: selectedCurrency.id },
+      date: {
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    },
+    select: {
+      value: true,
+      date: { select: { date: true } },
+    },
+    orderBy: {
+      date: { date: 'asc' },
+    },
+  })
+
+  console.log(
+    `Retrieved ${currencyYearData.length} currency data points for the surrounding year`
+  )
+  const currencyYearDataJson = currencyYearData.map((d) => ({
+    date: d.date.date.toISOString().split('T')[0],
+    value: d.value.toNumber(),
+  }))
+
+  console.log('Sample of currency year data (first 5 entries):')
+  console.log(JSON.stringify(currencyYearDataJson.slice(0, 5), null, 2))
 
   // Create the daily challenge
   const challenge = await prisma.dailyChallenge.create({
@@ -131,11 +212,19 @@ export async function createDailyChallenge() {
       challengeDate: dateOnly,
       date: { connect: { id: selectedDate.id } },
       interestRate: { connect: { id: interestRate.id } },
+      currencyValue: { connect: { id: currencyValue.id } },
       interestRateYearData: {
         create: {
           startDate,
           endDate,
           dataPoints: yearDataJson,
+        },
+      },
+      currencyYearData: {
+        create: {
+          startDate,
+          endDate,
+          dataPoints: currencyYearDataJson,
         },
       },
     },
@@ -146,7 +235,13 @@ export async function createDailyChallenge() {
           rateType: true,
         },
       },
+      currencyValue: {
+        include: {
+          currency: true,
+        },
+      },
       interestRateYearData: true,
+      currencyYearData: true,
     },
   })
 
@@ -162,10 +257,18 @@ export async function createDailyChallenge() {
         historicalDate: typedChallenge.date.date.toISOString(),
         interestRateCategory: typedChallenge.interestRate.rateType.category,
         interestRate: typedChallenge.interestRate.rate,
+        currency: typedChallenge.currencyValue?.currency.name ?? 'Unknown',
+        currencyValue: typedChallenge.currencyValue?.value ?? 0,
         yearDataId: typedChallenge.interestRateYearData?.id,
         yearDataPoints: typedChallenge.interestRateYearData?.dataPoints
           ? Array.isArray(typedChallenge.interestRateYearData.dataPoints)
             ? typedChallenge.interestRateYearData.dataPoints.length
+            : undefined
+          : undefined,
+        currencyYearDataId: typedChallenge.currencyYearData?.id,
+        currencyYearDataPoints: typedChallenge.currencyYearData?.dataPoints
+          ? Array.isArray(typedChallenge.currencyYearData.dataPoints)
+            ? typedChallenge.currencyYearData.dataPoints.length
             : undefined
           : undefined,
       },
