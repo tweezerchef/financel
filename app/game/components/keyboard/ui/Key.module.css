@@ -1,16 +1,16 @@
 .key {
-  margin: calc(0.5vh + 2px);
-  font-size: calc(1vh + 0.5rem);
+  margin: calc(0.5dvh + 2px);
+  font-size: calc(1dvh + 0.5rem);
   text-align: center;
-  width: calc(100% / 7 - (1vh + 4px));
-  height: calc(3vh + 1rem);
+  width: calc(100% / 7 - (1dvh + 4px));
+  height: calc(3dvh + 1rem);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: calc(0.5vh + 2px);
+  border-radius: calc(0.5dvh + 2px);
   background-color: #020202;
   color: #fffb00;
- 
+
   cursor: pointer;
   transition: all 0.1s ease;
   position: relative;
@@ -35,10 +35,10 @@
 
 .key:active {
   background-color: #262a2d;
-  transform: translateY(calc(0.2vh + 1px));
+  transform: translateY(calc(0.2dvh + 1px));
   box-shadow:
-    0 calc(0.1vh + 0.5px) 0 #1a1d1f,
-    0 calc(0.2vh + 1px) calc(0.2vh + 1px) rgba(0, 0, 0, 0.2);
+    0 calc(0.1dvh + 0.5px) 0 #1a1d1f,
+    0 calc(0.2dvh + 1px) calc(0.2dvh + 1px) rgba(0, 0, 0, 0.2);
 }
 
 .key:active .keyContent {
