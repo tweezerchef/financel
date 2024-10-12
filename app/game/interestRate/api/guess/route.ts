@@ -2,7 +2,6 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
-import { Decimal } from '@prisma/client/runtime/library'
 import { ResultCategory } from '@prisma/client'
 import { arrowDecider } from '../../../../lib/interestRate/arrowDecider'
 import prisma from '../../../../lib/prisma/prisma'
