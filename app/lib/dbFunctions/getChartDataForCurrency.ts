@@ -15,21 +15,27 @@ export async function getChartDataForCurrency({
   // Find the most recent daily challenge
   const dailyChallenge = await prisma.dailyChallenge.findUnique({
     where: { id: dailyChallengeId },
-    include: { currencyYearData: true },
+    select: {
+      currencyYearData: {
+        select: {
+          dataPoints: true,
+        },
+      },
+    },
   })
-  if (!dailyChallenge || !dailyChallenge.currencyYearDataId)
+  if (!dailyChallenge || !dailyChallenge.currencyYearData)
     throw new Error('No daily challenge found for the given ID')
 
-  if (!dailyChallenge.currencyYearData?.dataPoints)
+  if (!dailyChallenge.currencyYearData.dataPoints)
     throw new Error('No chart data found for the daily challenge')
 
   const rawDataPoints = dailyChallenge.currencyYearData.dataPoints as {
     date: string
-    rate: number
+    value: number
   }[]
   const dataPoints: ChartDataPoint[] = rawDataPoints.map((point) => ({
     date: formatDate(new Date(point.date)),
-    currency: point.rate,
+    currency: point.value,
   }))
 
   return dataPoints
