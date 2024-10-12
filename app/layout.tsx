@@ -26,6 +26,18 @@ const myColor: MantineColorsTuple = [
   '#0090cd',
   '#007cb5',
 ]
+const yellow: MantineColorsTuple = [
+  '#fffee1',
+  '#fffccb',
+  '#fff99a',
+  '#fff564',
+  '#fff238',
+  '#fff11d',
+  '#fff009',
+  '#e3d500',
+  '#c9bd00',
+  '#ada300',
+]
 
 const tickerFont = localFont({
   src: './SUBWT___.ttf',
@@ -35,6 +47,7 @@ const tickerFont = localFont({
 const theme = createTheme({
   colors: {
     myColor,
+    yellow,
   },
   primaryColor: 'myColor',
   primaryShade: 6,

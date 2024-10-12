@@ -7,7 +7,7 @@
   margin: 0 auto;
   padding: 1rem;
   box-sizing: border-box;
-  height: 40vh; /* Default height for taller screens */
+  height: 40dvh; /* Default height for taller screens */
 }
 
 @media (max-width: 600px) {
@@ -19,7 +19,7 @@
 
 @media (max-height: 700px) {
   .wrapper {
-    height: 30vh; /* Reduced height for shorter screens */
+    height: 30dvh; /* Reduced height for shorter screens */
   }
 }
 

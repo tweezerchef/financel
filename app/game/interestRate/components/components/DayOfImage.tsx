@@ -7,10 +7,9 @@ export function DayOfImage() {
       <Image
         src="/JP.webp"
         alt="Interest Rate"
-        quality={80}
+        quality={70}
         width={250}
         height={166.5}
-        style={{ objectFit: 'contain' }}
         priority
       />
     </div>
