@@ -9,7 +9,7 @@
 }
 
 .dayOf {
-  height: 25%; /* Use percentage instead of vh */
+  height: 23%; /* Use percentage instead of vh */
   min-height: 150px; /* Ensure a minimum height */
   width: 100%;
   overflow: hidden;

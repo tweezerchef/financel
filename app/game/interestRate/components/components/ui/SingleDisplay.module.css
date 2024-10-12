@@ -1,8 +1,12 @@
 .flipBox {
   background-color: transparent;
-  width: 1.5rem;
-  height: 1.6rem;
-  perspective: 100px;
+  width: 4dvh;
+  height: 6dvh;
+  min-width: 1rem;
+  min-height: 1.5rem;
+  max-width: 5rem;
+  max-height: 6rem;
+  perspective: 1000px;
 }
 
 .flipBoxInner {
@@ -28,7 +32,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 1rem;
+  font-size: clamp(1.5rem, 5vmin, 3.5rem);
   font-weight: bold;
   border-radius: 2px;
   overflow: hidden;
@@ -36,16 +40,15 @@
 
 .flipBoxFront {
   background-color: #000000;
-  color: #fffb00;
+  color: var(--mantine-color-yellow-3);
 }
 
 .flipBoxBack {
   background-color: #000000;
-  color: #fffb00;
+  color: var(--mantine-color-yellow-3);
   transform: rotateX(180deg);
 }
 
-/* Add this new class for the divider */
 .divider {
   position: absolute;
   width: 100%;
@@ -70,15 +73,15 @@
 .bottomHalfVisible {
   background-clip: text;
   -webkit-background-clip: text;
-  color: #fffb00;
+  color: var(--mantine-color-yellow-3);
 }
 
 .topHalfVisible {
   -webkit-text-fill-color: transparent;
   background-image: linear-gradient(
     to bottom,
-    #fffb00 0%,
-    #fffb00 50%,
+    var(--mantine-color-yellow-3) 0%,
+    var(--mantine-color-yellow-3) 50%,
     transparent 50%,
     transparent 100%
   );
@@ -90,8 +93,8 @@
     to bottom,
     transparent 0%,
     transparent 50%,
-    #fffb00 50%,
-    #fffb00 100%
+    var(--mantine-color-yellow-3) 50%,
+    var(--mantine-color-yellow-3) 100%
   );
 }
 
@@ -99,5 +102,13 @@
 .flipBoxFront .bottomHalfVisible,
 .flipBoxBack .topHalfVisible,
 .flipBoxBack .bottomHalfVisible {
-  color: #fffb00;
+  color: var(--mantine-color-yellow-3);
+}
+
+/* Updated media queries */
+@media (max-width: 375px) {
+  .flipBox {
+    width: 2vw;
+    height: 3dvh;
+  }
 }

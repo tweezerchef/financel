@@ -43,7 +43,7 @@
 
 .footer {
   overflow: hidden;
-  height: min(50px, 7dvh);
+  height: min(50px, 7vh);
   min-height: 30px;
   background-color: #000000;
   display: flex;
