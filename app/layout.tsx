@@ -13,6 +13,7 @@ import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
 import { UserProvider } from './context/user/UserContext'
+import { DailyChallengeProvider } from './context/dailyChallenge/DailyChallengeContext'
 
 const myColor: MantineColorsTuple = [
   '#e0fbff',
@@ -76,7 +77,9 @@ export default function RootLayout({
           <MantineProvider theme={theme}>
             <div className={classes.rootContainer}>
               <UserProvider>
-                <Center>{children}</Center>
+                <DailyChallengeProvider>
+                  <Center>{children}</Center>
+                </DailyChallengeProvider>
               </UserProvider>
             </div>
           </MantineProvider>
