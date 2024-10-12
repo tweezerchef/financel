@@ -57,12 +57,7 @@ export default function Currency() {
   return (
     <div className={classes.container}>
       <div className={classes.dayOf}>
-        <CurrencyDayOf
-          setChallengeDate={setChallengeDate}
-          setInitialData={setInitialData}
-          amountAway={amountAway}
-          guessCount={guessCount}
-        />
+        <CurrencyDayOf amountAway={amountAway} guessCount={guessCount} />
       </div>
       <div className={classes.guess}>
         <CurrencyGuess

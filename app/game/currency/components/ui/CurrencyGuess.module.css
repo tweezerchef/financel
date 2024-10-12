@@ -1,0 +1,20 @@
+/* ui/InterestRateGuess.module.css */
+.stack {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+}
+
+.guessDisplayBox {
+  flex: 1;
+  overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.guessDisplay {
+  padding: 3px; /* Adjust as needed */
+}
+
+.guessBox {
+  border-top: 1px solid #ccc; /* Optional: visual separation */
+}
