@@ -1,6 +1,6 @@
 .key {
-  margin: calc(0.5dvh + 2px);
-  font-size: calc(1dvh + 0.5rem);
+  margin: calc(0.5dvh);
+  font-size: calc(1dvh + 1rem);
   text-align: center;
   width: calc(100% / 7 - (1dvh + 4px));
   height: calc(3dvh + 1rem);
@@ -9,7 +9,7 @@
   justify-content: center;
   border-radius: calc(0.5dvh + 2px);
   background-color: #020202;
-  color: #fffb00;
+  color: var(--mantine-color-yellow-3);
 
   cursor: pointer;
   transition: all 0.1s ease;

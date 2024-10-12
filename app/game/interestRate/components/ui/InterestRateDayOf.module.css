@@ -10,19 +10,19 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 46px; /* Height of the legend */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .slide {
   position: absolute;
-  top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 17px;
 }
 
 .legend {
@@ -47,11 +47,15 @@
   width: 100%;
   padding: 5px 0;
 }
+
 /* Media queries for responsive font sizing and layout */
 @media (max-width: 1200px) {
   .legend {
     font-size: 16px;
     height: 27px;
+  }
+  .slideWrapper {
+    bottom: 27px;
   }
 }
 
@@ -60,16 +64,27 @@
     font-size: 16px;
     height: 27px;
   }
+  .slideWrapper {
+    bottom: 27px;
+  }
 }
 
 @media (max-width: 600px) {
   .legend {
-    font-size: 15px;
+    font-size: 16px;
     padding: 3px 0;
-    height: 25px;
+    height: 35px;
   }
-
+  .slideWrapper {
+    bottom: 35px;
+  }
   .legend span {
     margin: 2px 0;
+  }
+}
+
+@media (max-width: 375px) {
+  .legend {
+    font-size: 14px;
   }
 }
