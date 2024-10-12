@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center; /* Center content vertically */
   align-items: center; /* Center content horizontally */
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   box-sizing: border-box;
   padding: 0 0.25rem;

@@ -94,28 +94,25 @@ export function InterestRateDayOf({
             </div>
           )}
         </Transition>
-
-        <div className={classes.legend}>
-          <Transition
-            mounted={!!amountAway && !!guessCount}
-            transition="slide-up"
-            duration={400}
-            timingFunction="ease"
-          >
-            {(styles) => (
-              <div style={styles} className={classes.legendContent}>
-                <span>
-                  {parseFloat(amountAway!) >= 2.51
-                    ? 'Greater Than'
-                    : 'Less Than'}
-                  : {parseFloat(amountAway!) >= 2.51 ? '2.5' : amountAway}{' '}
-                  Points Away
-                </span>
-                <span> Guesses Left: {guessCount}</span>
-              </div>
-            )}
-          </Transition>
-        </div>
+      </div>
+      <div className={classes.legend}>
+        <Transition
+          mounted={!!amountAway && !!guessCount}
+          transition="slide-up"
+          duration={400}
+          timingFunction="ease"
+        >
+          {(styles) => (
+            <div style={styles} className={classes.legendContent}>
+              <span>
+                {parseFloat(amountAway!) >= 2.51 ? 'Greater Than' : 'Less Than'}
+                : {parseFloat(amountAway!) >= 2.51 ? '2.5' : amountAway} Points
+                Away
+              </span>
+              <span> Guesses Left: {guessCount}</span>
+            </div>
+          )}
+        </Transition>
       </div>
     </Container>
   )
