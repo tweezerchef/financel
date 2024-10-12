@@ -9,32 +9,31 @@ interface ChartDataPoint {
   interestRate: number
 }
 
-export async function getChartDataForDailyChallenge() {
-  // Find the most recent daily challenge
-  const mostRecentChallenge = await prisma.dailyChallenge.findFirst({
+interface GetChartDataProps {
+  dailyChallengeId: string
+}
+
+export async function getChartDataForInterestRate({
+  dailyChallengeId,
+}: GetChartDataProps) {
+  const dailyChallenge = await prisma.dailyChallenge.findUnique({
     where: {
-      challengeDate: {
-        lte: new Date(), // Less than or equal to today
-      },
+      id: dailyChallengeId,
     },
-    orderBy: {
-      challengeDate: 'desc',
-    },
-    include: {
-      interestRateYearData: true,
-      interestRate: {
-        include: {
-          rateType: true,
+    select: {
+      interestRateYearData: {
+        select: {
+          dataPoints: true,
         },
       },
     },
   })
 
-  if (!mostRecentChallenge || !mostRecentChallenge.interestRateYearData)
-    throw new Error('No recent daily challenge found')
+  if (!dailyChallenge || !dailyChallenge.interestRateYearData)
+    throw new Error('No data found for the given daily challenge ID')
 
   // Extract and parse the data points
-  const dataPoints = mostRecentChallenge.interestRateYearData.dataPoints as {
+  const dataPoints = dailyChallenge.interestRateYearData.dataPoints as {
     date: string
     rate: number
   }[]
