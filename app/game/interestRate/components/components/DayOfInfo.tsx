@@ -1,4 +1,6 @@
 import { Text, Paper, Container } from '@mantine/core'
+import { formatDate } from '../../../lib/formatDate'
+import { addOrdinalSuffix } from '../../../lib/addOrdinalSuffix'
 import classes from './ui/DayOfInfo.module.css'
 
 interface DayOfInfoProps {
@@ -21,41 +23,6 @@ const getDuration = (rateType: string) => {
       return 'Overnight'
     default:
       return 'Unknown Duration'
-  }
-}
-
-const formatDate = (dateString: string): string => {
-  const [year, month, day] = dateString.split('-')
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ]
-  const monthIndex = parseInt(month, 10) - 1
-  const dayNumber = parseInt(day, 10)
-  return `${monthNames[monthIndex]} ${dayNumber}, ${year}`
-}
-
-const addOrdinalSuffix = (day: number): string => {
-  if (day > 3 && day < 21) return `${day}th`
-  switch (day % 10) {
-    case 1:
-      return `${day}st`
-    case 2:
-      return `${day}nd`
-    case 3:
-      return `${day}rd`
-    default:
-      return `${day}th`
   }
 }
 

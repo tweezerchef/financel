@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useLocalStorage } from './lib/useLocalStorage'
 import { useUserContext } from '../context/user/UserContext'
+import { useDailyChallengeContext } from '../context/dailyChallenge/DailyChallengeContext'
 
 const AuthenticatedGame = dynamic(
   () =>
@@ -62,6 +63,21 @@ export default function Game() {
 
     validateToken()
   }, [token, guestToken, tokenIsLoading, guestTokenIsLoading, router, setUser])
+  const { setDailyChallengeCurrency } = useDailyChallengeContext()
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/game/api/dailyChallenge/')
+        const data = await response.json()
+        setDailyChallengeCurrency(data)
+        console.log('data', data)
+      } catch (error) {
+        console.error('Error fetching daily challenge data:', error)
+      }
+    }
+    fetchData()
+  }, [setDailyChallengeCurrency])
 
   if (tokenIsLoading || guestTokenIsLoading) return <div>Loading...</div>
 
