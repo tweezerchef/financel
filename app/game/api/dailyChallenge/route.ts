@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import prisma from '../../../../lib/prisma/prisma'
-import { getChartDataForInterestRate } from '../../../../lib/dbFunctions/getChartDataForInterestRate'
+import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
+import prisma from '../../../lib/prisma/prisma'
 
 export async function GET() {
   try {
@@ -13,13 +13,12 @@ export async function GET() {
             date: true,
           },
         },
-        interestRate: {
+        currencyValue: {
           select: {
-            rateType: {
-              select: {
-                category: true,
-              },
+            currency: {
+              select: { name: true },
             },
+            value: true, // Add this to fetch the currency value
           },
         },
       },
@@ -31,14 +30,20 @@ export async function GET() {
         { status: 404 }
       )
 
-    const chartData = await getChartDataForInterestRate({
+    const chartData = await getChartDataForCurrency({
       dailyChallengeId: dailyChallenge.id,
     })
 
+    // Process the currency value
+    const currencyValue = dailyChallenge.currencyValue?.value.toString() || ''
+
+    const decimalPosition = currencyValue.indexOf('.') + 1
+
     const response = {
       date: dailyChallenge.date.date,
-      category: dailyChallenge.interestRate.rateType.category,
+      currency: dailyChallenge.currencyValue?.currency.name,
       chartData,
+      decimalPosition,
     }
 
     return NextResponse.json(response, { status: 200 })

@@ -201,11 +201,9 @@ export function InterestRateGuess({
       guesses.length,
       resultId,
       form,
-      setGuesses,
-      setIsAnimating,
-      setModalProps,
+      setAmountAway,
+      setGuessCount,
       handlers,
-      setFinalGuess,
     ]
   )
   const memoizedHandleSubmit = useCallback(
