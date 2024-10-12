@@ -1,0 +1,90 @@
+.dayOfContainer {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.slideWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 46px; /* Height of the legend */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.legend {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px; /* Default height for largest font size */
+}
+
+.legendContent {
+  color: #fffb00;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  text-align: center;
+  font-family: tickerFont;
+  width: 100%;
+  padding: 5px 0;
+}
+
+/* Media queries for responsive font sizing and layout */
+@media (max-width: 1200px) {
+  .legend {
+    font-size: 16px;
+    height: 27px;
+  }
+  .slideWrapper {
+    bottom: 27px;
+  }
+}
+
+@media (max-width: 900px) {
+  .legend {
+    font-size: 16px;
+    height: 27px;
+  }
+  .slideWrapper {
+    bottom: 27px;
+  }
+}
+
+@media (max-width: 600px) {
+  .legend {
+    font-size: 16px;
+    padding: 3px 0;
+    height: 35px;
+  }
+  .slideWrapper {
+    bottom: 35px;
+  }
+  .legend span {
+    margin: 2px 0;
+  }
+}
+
+@media (max-width: 375px) {
+  .legend {
+    font-size: 14px;
+  }
+}
