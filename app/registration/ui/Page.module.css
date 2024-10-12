@@ -5,7 +5,7 @@
   width: 100%;
   padding: 0.5rem;
   box-sizing: border-box;
-  min-height: calc(100vh - 90px); /* Subtract header and footer height */
+  min-height: calc(100dvh - 90px); /* Subtract header and footer height */
 }
 
 .stepper {
