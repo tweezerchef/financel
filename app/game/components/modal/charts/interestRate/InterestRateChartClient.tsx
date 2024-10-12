@@ -60,9 +60,17 @@ export function InterestRateChartClient({
     //   setError('Invalid date format')
     //   return
     // }
+    const normalizeDate = (dateString: string) => {
+      const [month, day] = dateString.split(' ')
+      return `${month} ${day.padStart(2, '0')}`
+    }
 
-    const dateIndex = initialData.findIndex((point) => point.date === date)
-    console.log('Date Index:', dateIndex)
+    const normalizedDate = normalizeDate(date)
+    console.log('Normalized Date:', normalizedDate)
+
+    const dateIndex = initialData.findIndex(
+      (point) => normalizeDate(point.date) === normalizedDate
+    )
 
     if (dateIndex === -1) setError(`Specified date "${date}" not found in data`)
     // Continue with chart creation, but without the date point
