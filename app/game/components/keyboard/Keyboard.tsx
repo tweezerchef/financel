@@ -14,20 +14,22 @@ interface KeyboardProps {
   form: UseFormReturnType<{ guess: string }>
   field: string
   handleSubmit: (values: { guess: string }) => void
+  maxDigits: number
 }
 
 export const Keyboard: React.FC<KeyboardProps> = ({
   form,
   field,
   handleSubmit,
+  maxDigits,
 }) => {
   const handleKeyPress = (value: string) => {
     let newValue = form.values.guess
     if (value === '↵') {
-      if (newValue.length === 3)
+      if (newValue.length === maxDigits)
         form.onSubmit((values) => handleSubmit(values))()
     } else if (value === '⌫') newValue = newValue.slice(0, -1)
-    else if (value !== '.') if (newValue.length < 3) newValue += value
+    else if (value !== '.') if (newValue.length < maxDigits) newValue += value
 
     form.setFieldValue(field, newValue)
   }
