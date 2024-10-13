@@ -67,10 +67,6 @@ export default function Currency() {
           setGuessCount={setGuessCount}
         />
       </div>
-      <Text>Under Construction</Text>
-      <Link href="/">
-        <Button>Back To login</Button>
-      </Link>
     </div>
   )
 }

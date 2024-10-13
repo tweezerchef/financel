@@ -1,24 +1,23 @@
-/* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
-/* eslint-disable no-nested-ternary */
 import React, { FC, useState, useEffect, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from '../../../components/display/SingleDisplay'
-import classes from './ui/GuessDisplay.module.css'
+import classes from './ui/CurrencyGuessDisplay.module.css'
 
-interface GuessDisplayProps {
+interface CurrencyGuessDisplayProps {
   guess: string
   result?: { amount: ResponseNumbers; direction: Direction } | null
   isSpinning: boolean
+  decimalPlace: number
 }
 
-export const GuessDisplay: FC<GuessDisplayProps> = ({
+export const CurrencyGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
   guess,
   result,
   isSpinning,
+  decimalPlace,
 }) => {
-  const [wholePart, decimalPart] = guess.split('.')
   const [displayedResults, setDisplayedResults] = useState<
     Array<{ id: string; value: string }>
   >([])
@@ -69,19 +68,26 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
     <Box className={classes.container}>
       <Group className={classes.guessGroup}>
         <SingleDisplay
-          value={wholePart || ''}
+          value={guess[0] || ''}
           isSpinning={staggeredSpinning[0]}
           isNumber
         />
-        <span className={classes.decimal}>.</span>
+        {decimalPlace === 1 && <span className={classes.decimal}>.</span>}
         <SingleDisplay
-          value={decimalPart?.[0] || ''}
+          value={guess[1] || ''}
           isSpinning={staggeredSpinning[1]}
           isNumber
         />
+        {decimalPlace === 2 && <span className={classes.decimal}>.</span>}
         <SingleDisplay
-          value={decimalPart?.[1] || ''}
+          value={guess[2] || ''}
           isSpinning={staggeredSpinning[2]}
+          isNumber
+        />
+        {decimalPlace === 3 && <span className={classes.decimal}>.</span>}
+        <SingleDisplay
+          value={guess[3] || ''}
+          isSpinning={staggeredSpinning[3]}
           isNumber
         />
       </Group>

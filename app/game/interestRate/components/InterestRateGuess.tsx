@@ -252,6 +252,7 @@ export function InterestRateGuess({
               form={form}
               field="guess"
               handleSubmit={memoizedHandleSubmit}
+              maxDigits={3}
             />
           </form>
         ) : (
