@@ -241,7 +241,10 @@ export function InterestRateGuess({
           <NextModal
             {...modalProps}
             opened={opened}
-            initialData={initialData}
+            chartData={initialData?.map((item) => ({
+              date: item.date,
+              value: item.interestRate,
+            }))}
             challengeDate={formattedChallengeDate}
             finalGuess={finalGuess}
           />

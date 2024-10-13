@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 'use client'
 
 /* eslint-disable no-nested-ternary */
@@ -6,7 +8,9 @@ import { useReward } from 'react-rewards'
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { InterestRateChartClient } from './charts/interestRate/InterestRateChartClient'
+import { InterestRateChart } from './charts/interestRate/InterestRateChart'
+import { CurrencyChart } from './charts/currency/CurrencyChart'
+import { StockChart } from './charts/stock/StockChart'
 
 import classes from './ui/NextModal.module.css'
 
@@ -22,7 +26,7 @@ interface NextModalProps {
   challengeDate: string
   finalGuess: number | undefined
   type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
-  initialData?: Array<{ date: string; interestRate: number }>
+  chartData?: Array<{ date: string; value: number }>
 }
 
 export function NextModal({
@@ -35,7 +39,7 @@ export function NextModal({
   challengeDate,
   finalGuess,
   type,
-  initialData,
+  chartData,
 }: NextModalProps) {
   const rewardRef = useRef<HTMLDivElement>(null)
   const { reward, isAnimating } = useReward('wrongAnswerReward', 'emoji', {
@@ -81,6 +85,42 @@ export function NextModal({
           ? 'final'
           : ''
 
+  const renderChart = () => {
+    if (!chartData) return null
+
+    switch (type) {
+      case 'Interest Rate':
+        return (
+          <InterestRateChart
+            date={challengeDate}
+            guess={finalGuess}
+            chartData={chartData.map((item) => ({
+              date: item.date,
+              interestRate: item.value,
+            }))}
+          />
+        )
+      // case 'Currency Price':
+      //   return (
+      //     <CurrencyChart
+      //       date={challengeDate}
+      //       guess={finalGuess}
+      //       yearData={chartData}
+      //     />
+      //   )
+      // case 'Stock Price':
+      //   return (
+      //     <StockChart
+      //       date={challengeDate}
+      //       guess={finalGuess}
+      //       yearData={chartData}
+      //     />
+      //   )
+      default:
+        return null
+    }
+  }
+
   return (
     <div className={classes.nextModal}>
       <Modal
@@ -113,13 +153,7 @@ export function NextModal({
             <Text className={classes.modalText}>{subTitle}</Text>
           </Center>
 
-          {type === 'Interest Rate' && initialData && (
-            <InterestRateChartClient
-              date={challengeDate}
-              guess={finalGuess}
-              initialData={initialData}
-            />
-          )}
+          {renderChart()}
 
           <Center>
             <Link href={`/game/${next}`} passHref legacyBehavior>

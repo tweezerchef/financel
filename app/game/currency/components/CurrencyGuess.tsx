@@ -42,13 +42,13 @@ interface CurrencyModalProps {
 }
 
 export function CurrencyGuess({
-  initialData,
   challengeDate,
   setAmountAway,
   setGuessCount,
 }: CurrencyGuessProps) {
   const { dailyChallengeCurrency } = useDailyChallengeContext()
-  const decimalPlace = dailyChallengeCurrency?.decimalPlace ?? 2 // Default to 2 if null
+  const decimalPlace = dailyChallengeCurrency?.decimalPlace ?? 2
+  const { yearData } = dailyChallengeCurrency ?? {}
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [resultId, setResultId] = useState<string | null>(null)
@@ -222,15 +222,19 @@ export function CurrencyGuess({
         )}
       </div>
       <div className={classes.guessBox}>
-        {/* {opened !== undefined && modalProps && finalGuess !== null && (
+        {opened !== undefined && modalProps && finalGuess !== null && (
           <NextModal
             {...modalProps}
+            type="Currency Price"
             opened={opened}
-            initialData={initialData}
+            chartData={yearData?.map((item) => ({
+              date: item.date,
+              value: item.currencyValue,
+            }))}
             challengeDate={formattedChallengeDate}
             finalGuess={finalGuess}
           />
-        )} */}
+        )}
         {guesses.length < 6 ? (
           <form>
             <Keyboard

@@ -21,7 +21,7 @@ interface CurrencyType {
   currency: string
   challengeDate: ChallengeDateType
   decimalPlace: number
-  yearData: Array<{ date: string; currency: number }>
+  yearData: Array<{ date: string; currencyValue: number }>
 }
 interface DailyChallengeCurrencyType {
   dailyChallengeCurrency: CurrencyType | null
