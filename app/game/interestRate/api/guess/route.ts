@@ -60,8 +60,9 @@ export async function POST(request: NextRequest) {
         data: { date: dateOnly },
       }),
     ])
-
-    const timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
+    let timeTaken
+    if (isComplete)
+      timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
 
     return NextResponse.json(
       {

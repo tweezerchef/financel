@@ -40,7 +40,7 @@ export async function getChartDataForInterestRate({
 
   // Format the data for the Mantine AreaChart
   const chartData: ChartDataPoint[] = dataPoints.map((point) => ({
-    date: formatDate(new Date(point.date)),
+    date: formatDate(new Date(`${point.date}Z`)), // Add 'Z' to ensure UTC
     interestRate: point.rate,
   }))
 
@@ -63,5 +63,5 @@ function formatDate(date: Date): string {
     'Nov',
     'Dec',
   ]
-  return `${months[date.getMonth()]} ${date.getDate().toString().padStart(2, '0')}`
+  return `${months[date.getUTCMonth()]} ${date.getUTCDate().toString().padStart(2, '0')}`
 }
