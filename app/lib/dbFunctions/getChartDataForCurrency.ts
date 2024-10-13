@@ -34,12 +34,13 @@ export async function getChartDataForCurrency({
     value: number
   }[]
   const dataPoints: ChartDataPoint[] = rawDataPoints.map((point) => ({
-    date: formatDate(new Date(point.date)),
+    date: formatDate(new Date(`${point.date}Z`)), // Add 'Z' to ensure UTC
     currency: point.value,
   }))
 
   return dataPoints
 }
+
 function formatDate(date: Date): string {
   const months = [
     'Jan',
@@ -55,5 +56,5 @@ function formatDate(date: Date): string {
     'Nov',
     'Dec',
   ]
-  return `${months[date.getMonth()]} ${date.getDate().toString().padStart(2, '0')}`
+  return `${months[date.getUTCMonth()]} ${date.getUTCDate().toString().padStart(2, '0')}`
 }
