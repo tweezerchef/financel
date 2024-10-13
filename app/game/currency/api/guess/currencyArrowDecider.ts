@@ -38,7 +38,7 @@ function calculateArrowAmount(
   return { arrows, difference: newDifference, range }
 }
 
-export function arrowDecider(
+export function currencyArrowDecider(
   guess: number,
   actual: number,
   range: number
