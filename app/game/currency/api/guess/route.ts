@@ -3,15 +3,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
 import { ResultCategory } from '@prisma/client'
-import { arrowDecider } from '../../../../lib/interestRate/arrowDecider'
+import { currencyArrowDecider } from './currencyArrowDecider'
+
 import prisma from '../../../../lib/prisma/prisma'
 
-function compareGuessWithRate(guess: number, rate: number): [number, number][] {
-  const guessStr = guess.toFixed(2).replace('.', '')
-  const rateStr = rate.toFixed(2).replace('.', '')
+function compareGuessWithRate(
+  guess: number,
+  currencyPrice: number,
+  decimal: number
+): [number, number][] {
+  const guessStr = guess.toFixed(decimal).replace('.', '')
+  const rateStr = currencyPrice.toFixed(decimal).replace('.', '')
   const result: [number, number][] = []
 
-  for (let i = 0; i < 3; i++)
+  for (let i = 0; i < decimal; i++)
     if (guessStr[i] === rateStr[i]) result.push([i, parseInt(guessStr[i], 10)])
 
   return result
@@ -30,18 +35,21 @@ export async function POST(request: NextRequest) {
       today.getMonth(),
       today.getDate()
     )
-    const { guess, resultId, guessCount } = await request.json()
+    const { guess, resultId, guessCount, decimal, range } = await request.json()
 
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
     if (!resultId) throw new Error('resultId is required')
 
     const dailyChallenge = await getDailyChallenge(dateOnly)
-    console.log('Daily Challenge:', dailyChallenge.interestRate.rate)
-    const rateNumber = dailyChallenge.interestRate.rate.toNumber()
-    console.log('Rate Number:', rateNumber)
-    const result = arrowDecider(guess, rateNumber)
-    const correctDigits = compareGuessWithRate(guess, rateNumber)
-    const isCorrect = correctDigits.length === 3 && guess === rateNumber
+
+    console.log('Daily Challenge:', dailyChallenge.currencyValueId)
+    const currencyValue = dailyChallenge.currencyValue?.value.toNumber() ?? 0
+    console.log('Currency Value:', currencyValue)
+
+    const result = currencyArrowDecider(guess, range, decimal)
+    const correctDigits = compareGuessWithRate(guess, currencyValue, decimal)
+    const isCorrect =
+      correctDigits.length === decimal && guess === currencyValue
     const isComplete = isCorrect || guessCount === 6
 
     const now = new Date()
@@ -74,7 +82,7 @@ export async function POST(request: NextRequest) {
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
         correctDigits,
-        rateNumber: isCorrect || isComplete ? rateNumber : undefined,
+        rateNumber: isCorrect || isComplete ? currencyValue : undefined,
       },
       { status: 200 }
     )
@@ -91,6 +99,14 @@ async function getDailyChallenge(dateOnly: Date) {
       interestRate: {
         select: {
           rate: true,
+          date: {
+            select: { date: true },
+          },
+        },
+      },
+      currencyValue: {
+        select: {
+          value: true,
           date: {
             select: { date: true },
           },
@@ -114,10 +130,10 @@ async function updateResultCategory(
   now: Date
 ) {
   return prisma.resultCategory.upsert({
-    where: { resultId_category: { resultId, category: 'INTEREST_RATE' } },
+    where: { resultId_category: { resultId, category: 'CURRENCY' } },
     create: {
       resultId,
-      category: 'INTEREST_RATE',
+      category: 'CURRENCY',
       guess,
       correct: isCorrect,
       tries: guessCount,

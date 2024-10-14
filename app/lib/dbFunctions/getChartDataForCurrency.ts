@@ -15,21 +15,27 @@ export async function getChartDataForCurrency({
   // Find the most recent daily challenge
   const dailyChallenge = await prisma.dailyChallenge.findUnique({
     where: { id: dailyChallengeId },
-    include: { currencyYearData: true },
+    select: {
+      currencyYearData: {
+        select: {
+          dataPoints: true,
+        },
+      },
+    },
   })
-  if (!dailyChallenge || !dailyChallenge.currencyYearDataId)
+  if (!dailyChallenge || !dailyChallenge.currencyYearData)
     throw new Error('No daily challenge found for the given ID')
 
-  if (!dailyChallenge.currencyYearData?.dataPoints)
+  if (!dailyChallenge.currencyYearData.dataPoints)
     throw new Error('No chart data found for the daily challenge')
 
   const rawDataPoints = dailyChallenge.currencyYearData.dataPoints as {
     date: string
-    rate: number
+    currency: number
   }[]
   const dataPoints: ChartDataPoint[] = rawDataPoints.map((point) => ({
-    date: formatDate(new Date(point.date)),
-    currency: point.rate,
+    date: formatDate(new Date(`${point.date}Z`)), // Add 'Z' to ensure UTC
+    currency: point.currency,
   }))
 
   return dataPoints
@@ -49,5 +55,5 @@ function formatDate(date: Date): string {
     'Nov',
     'Dec',
   ]
-  return `${months[date.getMonth()]} ${date.getDate().toString().padStart(2, '0')}`
+  return `${months[date.getUTCMonth()]} ${date.getUTCDate().toString().padStart(2, '0')}`
 }
