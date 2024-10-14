@@ -8,6 +8,7 @@ import { useForm } from '@mantine/form'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { v4 as uuidv4 } from 'uuid'
+import { formattedGuess } from './lib/formattedGuess'
 import { useUserContext } from '../../../context/user/UserContext'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 import { NextModal } from '../../components/modal/NextModal'
@@ -47,8 +48,8 @@ export function CurrencyGuess({
   setGuessCount,
 }: CurrencyGuessProps) {
   const { dailyChallengeCurrency } = useDailyChallengeContext()
-  const decimalPlace = dailyChallengeCurrency?.decimalPlace ?? 2
-  const { yearData } = dailyChallengeCurrency ?? {}
+  const { decimal } = dailyChallengeCurrency ?? {}
+  const { range } = dailyChallengeCurrency ?? {}
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [resultId, setResultId] = useState<string | null>(null)
@@ -92,9 +93,27 @@ export function CurrencyGuess({
     async (values: { guess: string }) => {
       if (isAnimating || guesses.length >= 6 || !resultId) return
 
-      // Format the guess based on decimalPlace
-      const formattedGuess = values.guess.padStart(4, '0').slice(0, 4)
-      const numericGuess = parseFloat(formattedGuess) / 10 ** (decimalPlace - 1)
+      console.log('unformatted guess', values.guess)
+      console.log('decimal', decimal)
+
+      // Pad the guess to 4 digits
+      const postGuess = formattedGuess(values.guess, decimal ?? 2)
+      console.log('postGuess', postGuess, 'type', typeof postGuess)
+      // Calculate the numeric guess by inserting the decimal point at the correct position
+      const decimalIndex = decimal ?? 2
+      // const numericGuess = parseFloat(
+      //   `${formattedGuess.slice(0, -decimalIndex)}.${formattedGuess.slice(-decimalIndex)}`
+      // )
+      const unformattedGuess = values.guess
+      const decimalPlace = decimal ?? 2 // Default to 2 if decimal is undefined
+
+      const decimalGuess = parseFloat(
+        `${unformattedGuess.slice(0, -decimalPlace)}.${unformattedGuess.slice(-decimalPlace)}`
+      )
+
+      console.log('decimalGuess:', decimalGuess)
+      const numericGuess = parseFloat(values.guess)
+      console.log('numericGuess after correction:', numericGuess)
 
       try {
         setIsAnimating(true)
@@ -104,10 +123,11 @@ export function CurrencyGuess({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            guess: numericGuess,
+            guess: postGuess,
             guessCount: guessCount.current,
             resultId,
-            decimalPlace,
+            decimal,
+            range,
           }),
         })
         guessCount.current += 1
@@ -115,7 +135,7 @@ export function CurrencyGuess({
 
         const newGuess: Guess = {
           id: uuidv4(),
-          guess: formattedGuess, // Use the padded guess string here
+          guess: unformattedGuess, // Use the padded guess string here
           result: null,
           isSpinning: true,
         }
@@ -155,7 +175,7 @@ export function CurrencyGuess({
           (isComplete && !isAnimating) ||
           (guessCount.current === 7 && !isAnimating)
         ) {
-          setFinalGuess(parseFloat(formattedGuess))
+          setFinalGuess(parseFloat(unformattedGuess))
           setTimeout(() => {
             setModalProps({
               opened: true,
@@ -178,7 +198,8 @@ export function CurrencyGuess({
       isAnimating,
       guesses.length,
       resultId,
-      decimalPlace,
+      decimal,
+      range,
       form,
       setAmountAway,
       setGuessCount,
@@ -205,7 +226,7 @@ export function CurrencyGuess({
               guess={guess.guess}
               result={guess.result}
               isSpinning={guess.isSpinning}
-              decimalPlace={decimalPlace}
+              decimal={decimal ?? 2}
             />
           </div>
         ))}
@@ -215,7 +236,7 @@ export function CurrencyGuess({
               guess={form.values.guess}
               result={null}
               isSpinning={false}
-              decimalPlace={decimalPlace}
+              decimal={decimal ?? 2}
             />
           </div>
         )}

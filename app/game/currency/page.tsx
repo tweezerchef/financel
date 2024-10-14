@@ -2,11 +2,10 @@
 
 'use client'
 
-import Link from 'next/link'
-import { useState } from 'react'
-import { Button, Text } from '@mantine/core'
+import { useState, useEffect } from 'react'
 import { CurrencyDayOf } from './components/CurrencyDayOf'
 import { CurrencyGuess } from './components/CurrencyGuess'
+import { useDailyChallengeContext } from '../../context/dailyChallenge/DailyChallengeContext'
 import classes from './ui/CurrencyPage.module.css'
 
 type DayOf = 'image' | 'day'
@@ -54,6 +53,21 @@ export default function Currency() {
   const [challengeDate, setChallengeDate] = useState<DayOf>('image')
   const [amountAway, setAmountAway] = useState<string | null>(null)
   const [guessCount, setGuessCount] = useState<number | null>(null)
+  const { setDailyChallengeCurrency } = useDailyChallengeContext()
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/game/api/dailyChallenge/')
+        const data = await response.json()
+        setDailyChallengeCurrency(data)
+        console.log('data', data)
+      } catch (error) {
+        console.error('Error fetching daily challenge data:', error)
+      }
+    }
+    fetchData()
+  }, [setDailyChallengeCurrency])
   return (
     <div className={classes.container}>
       <div className={classes.dayOf}>

@@ -51,6 +51,8 @@ export function currencyArrowDecider(
     }
 
   const difference = Math.abs(guess - actual)
+  console.log('difference', difference)
+  console.log('range', range)
   const result = calculateArrowAmount(difference, range)
 
   const direction = guess > actual ? 'up' : 'down'
