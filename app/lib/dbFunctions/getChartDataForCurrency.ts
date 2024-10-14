@@ -3,7 +3,7 @@ import prisma from '../prisma/prisma'
 
 interface ChartDataPoint {
   date: string
-  currency: number
+  value: number
 }
 interface GetChartDataProps {
   dailyChallengeId: string
@@ -31,13 +31,12 @@ export async function getChartDataForCurrency({
 
   const rawDataPoints = dailyChallenge.currencyYearData.dataPoints as {
     date: string
-    currency: number
+    value: number
   }[]
   const dataPoints: ChartDataPoint[] = rawDataPoints.map((point) => ({
     date: formatDate(new Date(`${point.date}Z`)), // Add 'Z' to ensure UTC
-    currency: point.currency,
+    value: point.value,
   }))
-
   return dataPoints
 }
 function formatDate(date: Date): string {

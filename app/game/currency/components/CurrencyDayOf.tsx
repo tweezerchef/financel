@@ -22,7 +22,7 @@ interface ChallengeDateType {
   currency: string
   date: string
   chartData: Array<unknown>
-  decimalPosition: number
+  decimal: number
 }
 
 export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
@@ -32,10 +32,8 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
   const challengeData = dailyChallengeCurrency as ChallengeDateType | null
 
   const { currency, date: challengeDate } = challengeData || {}
-  console.log('challengeDate after destructuring:', challengeDate)
 
   const formattedDate = challengeDate ? formatDate(challengeDate) : null
-  console.log('formattedDate:', formattedDate)
 
   const finalDate = formattedDate
     ? (() => {
@@ -45,16 +43,6 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
         return `${month} ${dayWithSuffix}, ${year}`
       })()
     : null
-  console.log(
-    'finalDate',
-    finalDate,
-    'currency',
-    currency,
-    'formatDate',
-    formattedDate,
-    'challengeDate',
-    challengeDate
-  )
   useEffect(() => {
     if (dayOfSlide === 'image') {
       const timeoutId = setTimeout(() => {
