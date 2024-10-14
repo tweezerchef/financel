@@ -16,7 +16,7 @@ interface CurrencyDayOfProps {
   setInitialData: React.Dispatch<
     React.SetStateAction<Array<{ date: string; currency: number }>>
   >
-  amountAway: string | null
+  amountAway: number | null
   guessCount: number | null
 }
 
@@ -24,7 +24,7 @@ interface CurrencyDayOfProps {
 interface CurrencyGuessProps {
   initialData: Array<{ date: string; currency: number }>
   challengeDate: DayOf
-  setAmountAway: React.Dispatch<React.SetStateAction<string | null>>
+  setAmountAway: React.Dispatch<React.SetStateAction<number | null>>
   setGuessCount: React.Dispatch<React.SetStateAction<number | null>>
 }
 
@@ -35,7 +35,7 @@ export default function Currency() {
     Array<{ date: string; currency: number }>
   >([])
   const [challengeDate, setChallengeDate] = useState<DayOf>('image')
-  const [amountAway, setAmountAway] = useState<string | null>(null)
+  const [amountAway, setAmountAway] = useState<number | null>(null)
   const [guessCount, setGuessCount] = useState<number | null>(null)
   const { setDailyChallengeCurrency } = useDailyChallengeContext()
 

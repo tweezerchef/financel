@@ -23,16 +23,16 @@ function calculateArrowAmount(
     newDifference = 0.05 * range
   } else if (percentageDifference <= 15) {
     arrows = 2
-    newDifference = 0.15 * range
+    newDifference = 15
   } else if (percentageDifference <= 25) {
     arrows = 3
-    newDifference = 0.25 * range
+    newDifference = 25
   } else if (percentageDifference <= 50) {
     arrows = 4
-    newDifference = 0.5 * range
+    newDifference = 50
   } else {
     arrows = 5
-    newDifference = 0.51 * range
+    newDifference = 50.01
   }
 
   return { arrows, difference: newDifference, range }
