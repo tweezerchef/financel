@@ -150,7 +150,7 @@ export function InterestRateGuess({
           correctDigits,
           rateNumber,
         } = result
-        console.log(correctDigits)
+
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
         form.reset()
 

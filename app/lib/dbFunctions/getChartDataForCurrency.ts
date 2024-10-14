@@ -31,16 +31,15 @@ export async function getChartDataForCurrency({
 
   const rawDataPoints = dailyChallenge.currencyYearData.dataPoints as {
     date: string
-    value: number
+    currency: number
   }[]
   const dataPoints: ChartDataPoint[] = rawDataPoints.map((point) => ({
     date: formatDate(new Date(`${point.date}Z`)), // Add 'Z' to ensure UTC
-    currency: point.value,
+    currency: point.currency,
   }))
 
   return dataPoints
 }
-
 function formatDate(date: Date): string {
   const months = [
     'Jan',

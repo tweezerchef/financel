@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 'use client'
@@ -11,10 +12,40 @@ import dynamic from 'next/dynamic'
 import { InterestRateChart } from './charts/interestRate/InterestRateChart'
 import { CurrencyChart } from './charts/currency/CurrencyChart'
 import { StockChart } from './charts/stock/StockChart'
+import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 
 import classes from './ui/NextModal.module.css'
 
+function formatDateForChart(date: string): string {
+  try {
+    const [year, month, day] = date.split('T')[0].split('-')
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ]
+    return `${monthNames[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`
+  } catch (error) {
+    console.error('Error formatting date:', error)
+    return date
+  }
+}
+
 const Confetti = dynamic(() => import('react-confetti'), { ssr: false })
+
+type ChartDataPoint =
+  | { date: string; interestRate: number }
+  | { date: string; currency: number }
+  | { date: string; value: number }
 
 interface NextModalProps {
   opened: boolean
@@ -26,7 +57,12 @@ interface NextModalProps {
   challengeDate: string
   finalGuess: number | undefined
   type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
-  chartData?: Array<{ date: string; value: number }>
+  chartData?: ChartDataPoint[]
+}
+
+// Add this type definition
+type CurrencyTypeWithChart = {
+  chartData?: Array<{ date: string; currency: number }>
 }
 
 export function NextModal({
@@ -48,6 +84,12 @@ export function NextModal({
     elementSize: 30,
     spread: 40,
   })
+  const { dailyChallengeCurrency } = useDailyChallengeContext()
+  const formattedDate = dailyChallengeCurrency
+    ? formatDateForChart(dailyChallengeCurrency.date)
+    : ''
+
+  const yearData = (dailyChallengeCurrency as CurrencyTypeWithChart)?.chartData
 
   const animationCountRef = useRef(0)
 
@@ -86,7 +128,7 @@ export function NextModal({
           : ''
 
   const renderChart = () => {
-    if (!chartData) return null
+    if (!chartData && !yearData) return null
 
     switch (type) {
       case 'Interest Rate':
@@ -94,20 +136,22 @@ export function NextModal({
           <InterestRateChart
             date={challengeDate}
             guess={finalGuess}
-            chartData={chartData.map((item) => ({
-              date: item.date,
-              interestRate: item.value,
-            }))}
+            chartData={
+              chartData as Array<{ date: string; interestRate: number }>
+            }
           />
         )
-      // case 'Currency Price':
-      //   return (
-      //     <CurrencyChart
-      //       date={challengeDate}
-      //       guess={finalGuess}
-      //       yearData={chartData}
-      //     />
-      //   )
+      case 'Currency Price':
+        return (
+          <CurrencyChart
+            date={formattedDate}
+            guess={finalGuess}
+            chartData={
+              yearData ||
+              (chartData as Array<{ date: string; currency: number }>)
+            }
+          />
+        )
       // case 'Stock Price':
       //   return (
       //     <StockChart

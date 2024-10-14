@@ -129,7 +129,6 @@ export function CurrencyGuess({
           correctDigits,
           rateNumber,
         } = result
-        console.log(correctDigits)
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
         form.reset()
 
@@ -165,7 +164,7 @@ export function CurrencyGuess({
               actual: `${rateNumber}%`,
               tries: guessCount.current,
               time: timeTaken,
-              type: 'Interest Rate',
+              type: 'Currency Price',
             })
             handlers.open()
           }, 2500) // 2000 milliseconds = 2 seconds
@@ -227,10 +226,6 @@ export function CurrencyGuess({
             {...modalProps}
             type="Currency Price"
             opened={opened}
-            chartData={yearData?.map((item) => ({
-              date: item.date,
-              value: item.currencyValue,
-            }))}
             challengeDate={formattedChallengeDate}
             finalGuess={finalGuess}
           />
@@ -251,22 +246,26 @@ export function CurrencyGuess({
     </div>
   )
 }
-
-function formatDateForChart(date: string | Date): string {
-  const d = new Date(date)
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ]
-  return `${months[d.getMonth()]} ${d.getDate().toString().padStart(2, '0')}`
+function formatDateForChart(date: string): string {
+  try {
+    const [year, month, day] = date.split('T')[0].split('-')
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ]
+    return `${monthNames[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`
+  } catch (error) {
+    console.error('Error formatting date:', error)
+    return date
+  }
 }

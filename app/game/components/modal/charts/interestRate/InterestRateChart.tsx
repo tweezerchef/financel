@@ -46,10 +46,6 @@ export function InterestRateChart({
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log('Chart Data:', chartData)
-    console.log('Date:', date)
-    console.log('Guess:', guess)
-
     if (!chartData || chartData.length === 0) {
       setError('No data available')
       return
@@ -67,7 +63,6 @@ export function InterestRateChart({
     }
 
     const normalizedDate = normalizeDate(date)
-    console.log('Normalized Date:', normalizedDate)
 
     const dateIndex = chartData.findIndex(
       (point) => normalizeDate(point.date) === normalizedDate
