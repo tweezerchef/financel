@@ -21,7 +21,7 @@ type DayOf = 'image' | 'day'
 interface CurrencyGuessProps {
   initialData: Array<{ date: string; currency: number }>
   challengeDate: DayOf
-  setAmountAway: React.Dispatch<React.SetStateAction<string | null>>
+  setAmountAway: React.Dispatch<React.SetStateAction<number | null>>
   setGuessCount: React.Dispatch<React.SetStateAction<number | null>>
 }
 

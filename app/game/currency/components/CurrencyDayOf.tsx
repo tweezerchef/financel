@@ -13,7 +13,7 @@ import { formatDate } from '../../lib/formatDate'
 import { addOrdinalSuffix } from '../../lib/addOrdinalSuffix'
 
 interface CurrencyDayOfProps {
-  amountAway: string | null
+  amountAway: number | null
   guessCount: number | null
 }
 
@@ -82,6 +82,27 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
               {finalDate && currency && (
                 <CurrencyDayOfInfo date={finalDate} currency={currency} />
               )}
+            </div>
+          )}
+        </Transition>
+      </div>
+      <div className={classes.legend}>
+        <Transition
+          mounted={!!amountAway && !!guessCount}
+          transition="slide-up"
+          duration={400}
+          timingFunction="ease"
+        >
+          {(styles) => (
+            <div style={styles} className={classes.legendContent}>
+              <span>
+                {amountAway! >= 50.01 ? 'Greater Than' : 'Less Than'}:{' '}
+                {amountAway! >= 50.01
+                  ? '50'
+                  : parseFloat(amountAway!.toString())}
+                Percent Away
+              </span>
+              <span> Guesses Left: {guessCount}</span>
             </div>
           )}
         </Transition>
