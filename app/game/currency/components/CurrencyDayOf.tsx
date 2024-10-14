@@ -3,7 +3,7 @@
 
 'use client'
 
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { Container, Transition } from '@mantine/core'
 import { CurrencyDayOfImage } from './components/CurrencyDayOfImage'
 import classes from './ui/CurrencyDayOf.module.css'
@@ -27,6 +27,11 @@ interface ChallengeDateType {
 
 export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
   const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
+  const [oldLegendContent, setOldLegendContent] = useState<string>('')
+  const [newLegendContent, setNewLegendContent] = useState<string>('')
+  const [isAnimating, setIsAnimating] = useState(false)
+  const legendRef = useRef<HTMLDivElement>(null)
+
   const { dailyChallengeCurrency } = useDailyChallengeContext()
 
   const challengeData = dailyChallengeCurrency as ChallengeDateType | null
@@ -53,6 +58,24 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
     }
   }, [dayOfSlide, setDayOfSlide])
 
+  useEffect(() => {
+    if (amountAway !== null && guessCount !== null) {
+      const content = `${amountAway >= 50.01 ? 'Greater Than' : 'Less Than'}:
+        ${amountAway >= 50.01 ? '50' : parseFloat(amountAway.toString())}
+        Percent Away | Guesses Left: ${guessCount}`
+
+      setOldLegendContent(newLegendContent || content)
+      setNewLegendContent(content)
+      setIsAnimating(true)
+
+      // Reset animation after it completes
+      const animationDuration = 1000 // 1 second, adjust as needed
+      setTimeout(() => {
+        setIsAnimating(false)
+        setOldLegendContent(content)
+      }, animationDuration)
+    }
+  }, [amountAway, guessCount, newLegendContent])
   return (
     <Container className={classes.dayOfContainer}>
       <div className={classes.slideWrapper}>
@@ -86,26 +109,13 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
           )}
         </Transition>
       </div>
-      <div className={classes.legend}>
-        <Transition
-          mounted={!!amountAway && !!guessCount}
-          transition="slide-up"
-          duration={400}
-          timingFunction="ease"
+      <div className={classes.legend} ref={legendRef}>
+        <div
+          className={`${classes.legendContent} ${isAnimating ? classes.animate : ''}`}
         >
-          {(styles) => (
-            <div style={styles} className={classes.legendContent}>
-              <span>
-                {amountAway! >= 50.01 ? 'Greater Than' : 'Less Than'}:{' '}
-                {amountAway! >= 50.01
-                  ? '50'
-                  : parseFloat(amountAway!.toString())}
-                Percent Away
-              </span>
-              <span> Guesses Left: {guessCount}</span>
-            </div>
-          )}
-        </Transition>
+          <span>{oldLegendContent}</span>
+          <span>{newLegendContent}</span>
+        </div>
       </div>
     </Container>
   )
