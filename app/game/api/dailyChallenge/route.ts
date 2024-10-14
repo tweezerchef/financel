@@ -15,10 +15,12 @@ export async function GET() {
         },
         currencyValue: {
           select: {
+            value: true,
             currency: {
-              select: { name: true },
+              select: {
+                name: true,
+              },
             },
-            value: true, // Add this to fetch the currency value
           },
         },
       },
@@ -34,9 +36,14 @@ export async function GET() {
       dailyChallengeId: dailyChallenge.id,
     })
 
+    // Calculate the range of values in chartData
+    const values = chartData.map((point) => point.currency)
+    const minValue = Math.min(...values)
+    const maxValue = Math.max(...values)
+    const range = maxValue - minValue
+
     // Process the currency value
     const currencyValue = dailyChallenge.currencyValue?.value.toString() || ''
-
     const decimalPosition = currencyValue.indexOf('.') + 1
 
     const response = {
@@ -44,6 +51,7 @@ export async function GET() {
       currency: dailyChallenge.currencyValue?.currency.name,
       chartData,
       decimalPosition,
+      range,
     }
 
     return NextResponse.json(response, { status: 200 })

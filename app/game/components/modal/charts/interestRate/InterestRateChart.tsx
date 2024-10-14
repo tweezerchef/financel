@@ -30,26 +30,23 @@ interface ChartDataPoint {
   interestRate: number
 }
 
-interface InterestRateChartClientProps {
-  initialData: ChartDataPoint[]
+interface InterestRateChartProps {
+  chartData: ChartDataPoint[]
   date: string
   guess?: number
 }
 
-export function InterestRateChartClient({
-  initialData,
+export function InterestRateChart({
+  chartData,
   date,
   guess,
-}: InterestRateChartClientProps) {
-  const [chartData, setChartData] = useState<ChartData<'line'> | null>(null)
+}: InterestRateChartProps) {
+  const [formattedChartData, setFormattedChartData] =
+    useState<ChartData<'line'> | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log('Initial Data:', initialData)
-    console.log('Date:', date)
-    console.log('Guess:', guess)
-
-    if (!initialData || initialData.length === 0) {
+    if (!chartData || chartData.length === 0) {
       setError('No data available')
       return
     }
@@ -66,21 +63,20 @@ export function InterestRateChartClient({
     }
 
     const normalizedDate = normalizeDate(date)
-    console.log('Normalized Date:', normalizedDate)
 
-    const dateIndex = initialData.findIndex(
+    const dateIndex = chartData.findIndex(
       (point) => normalizeDate(point.date) === normalizedDate
     )
 
     if (dateIndex === -1) setError(`Specified date "${date}" not found in data`)
     // Continue with chart creation, but without the date point
 
-    setChartData({
-      labels: initialData.map((point) => point.date),
+    setFormattedChartData({
+      labels: chartData.map((point) => point.date),
       datasets: [
         {
           label: 'Interest Rate',
-          data: initialData.map((point) => point.interestRate),
+          data: chartData.map((point) => point.interestRate),
           fill: false,
           backgroundColor: 'rgb(0, 0, 0)',
           borderColor: 'rgb(0, 0, 0)',
@@ -92,7 +88,7 @@ export function InterestRateChartClient({
           ? [
               {
                 label: 'Actual',
-                data: initialData.map((point, index) =>
+                data: chartData.map((point, index) =>
                   index === dateIndex ? point.interestRate : null
                 ),
                 pointStyle: 'triangle',
@@ -107,7 +103,7 @@ export function InterestRateChartClient({
           ? [
               {
                 label: 'Your Guess',
-                data: initialData.map((_, index) =>
+                data: chartData.map((_, index) =>
                   index === dateIndex ? guess : null
                 ),
                 pointStyle: 'circle',
@@ -120,7 +116,7 @@ export function InterestRateChartClient({
           : []),
       ],
     })
-  }, [initialData, date, guess])
+  }, [chartData, date, guess])
 
   if (error) return <div>Error: {error}</div>
 
@@ -166,7 +162,9 @@ export function InterestRateChartClient({
 
   return (
     <div style={{ width: '100%', height: '300px' }}>
-      <Line data={chartData} options={options} />
+      {formattedChartData && (
+        <Line data={formattedChartData} options={options} />
+      )}
     </div>
   )
 }
