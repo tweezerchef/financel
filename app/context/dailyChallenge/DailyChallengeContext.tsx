@@ -21,11 +21,14 @@ interface CurrencyType {
   currency: string
   challengeDate: ChallengeDateType
   decimalPlace: number
-  yearData: Array<{ date: string; currencyValue: number }>
+  yearData: Array<{ date: string; currency: number }>
+  date: string
 }
+
 interface DailyChallengeCurrencyType {
   dailyChallengeCurrency: CurrencyType | null
   setDailyChallengeCurrency: (currency: CurrencyType | null) => void
+  fetchDailyChallenge: () => Promise<void>
 }
 
 interface ChallengeProviderProps {
@@ -61,18 +64,42 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
     else localStorage.removeItem('dailyChallengeCurrency')
   }
 
+  const fetchDailyChallenge = useCallback(async () => {
+    try {
+      const response = await fetch('game/api/dailyChallenge')
+      const { data } = await response.json()
+
+      const newCurrency: CurrencyType = {
+        currencyValue: parseFloat(data.currencyValue),
+        currency: data.currency,
+        challengeDate: new Date(data.date),
+        decimalPlace: data.decimalPosition,
+        yearData: data.chartData,
+        date: data.date,
+      }
+
+      setDailyChallengeAndStore(newCurrency)
+    } catch (error) {
+      console.error('Error fetching daily challenge:', error)
+    }
+  }, [])
+
+  useEffect(() => {
+    const storedCurrency = localStorage.getItem('dailyChallengeCurrency')
+    if (storedCurrency) {
+      const parsedCurrency = JSON.parse(storedCurrency)
+      setDailyChallengeCurrency(parsedCurrency)
+    } else fetchDailyChallenge()
+  }, [fetchDailyChallenge])
+
   const value = useMemo(
     () => ({
       dailyChallengeCurrency,
       setDailyChallengeCurrency: setDailyChallengeAndStore,
+      fetchDailyChallenge,
     }),
-    [dailyChallengeCurrency]
+    [dailyChallengeCurrency, fetchDailyChallenge]
   )
-
-  useEffect(() => {
-    const storedCurrency = localStorage.getItem('dailyChallengeCurrency')
-    if (storedCurrency) setDailyChallengeCurrency(JSON.parse(storedCurrency))
-  }, [])
 
   return (
     <DailyChallengeContext.Provider value={value}>
