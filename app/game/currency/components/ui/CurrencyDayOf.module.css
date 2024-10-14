@@ -97,9 +97,14 @@
     margin: 2px 0;
   }
 }
+@media (max-width: 400px) {
+  .legendContent span {
+    font-size: 14px;
+  }
+}
 
 @media (max-width: 375px) {
   .legend {
-    font-size: 14px;
+    font-size: 12px;
   }
 }

@@ -100,20 +100,9 @@ export function CurrencyGuess({
       const postGuess = formattedGuess(values.guess, decimal ?? 2)
       console.log('postGuess', postGuess, 'type', typeof postGuess)
       // Calculate the numeric guess by inserting the decimal point at the correct position
-      const decimalIndex = decimal ?? 2
-      // const numericGuess = parseFloat(
-      //   `${formattedGuess.slice(0, -decimalIndex)}.${formattedGuess.slice(-decimalIndex)}`
-      // )
+
       const unformattedGuess = values.guess
       const decimalPlace = decimal ?? 2 // Default to 2 if decimal is undefined
-
-      const decimalGuess = parseFloat(
-        `${unformattedGuess.slice(0, -decimalPlace)}.${unformattedGuess.slice(-decimalPlace)}`
-      )
-
-      console.log('decimalGuess:', decimalGuess)
-      const numericGuess = parseFloat(values.guess)
-      console.log('numericGuess after correction:', numericGuess)
 
       try {
         setIsAnimating(true)
