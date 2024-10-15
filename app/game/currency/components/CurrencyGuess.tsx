@@ -172,7 +172,7 @@ export function CurrencyGuess({
               chartData: chartData || [],
             })
             handlers.open()
-          }, 2500) // 2500 milliseconds = 2.5 seconds
+          }, 2500)
         }
       } catch (error) {
         console.error('Submission failed:', error)
