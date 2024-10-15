@@ -56,7 +56,7 @@ const theme = createTheme({
 
 export const metadata: Metadata = {
   icons: {
-    icon: '/favicon.png',
+    icon: '/favicon.svg',
   },
   title: 'Financel',
   description: 'A game for the Brothers of Finance',
