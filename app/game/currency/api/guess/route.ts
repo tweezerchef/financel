@@ -46,7 +46,6 @@ export async function POST(request: NextRequest) {
     console.log('currencyValue', currencyValue)
 
     const result = currencyArrowDecider(guess, currencyValue, guess)
-    console.log('Result:', result)
     const correctDigits = compareGuessWithRate(guess, currencyValue, decimal)
     const isCorrect =
       correctDigits.length === decimal && guess === currencyValue
