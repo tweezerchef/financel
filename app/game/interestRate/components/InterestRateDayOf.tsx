@@ -44,7 +44,6 @@ export function InterestRateDayOf({
           .then((response) => response.json())
           .then((data) => {
             const { date, category, chartData } = data
-            console.log('Challenge date:', date)
             setDayOfInfo({ date, category, chartData })
             setInitialData(chartData)
             setChallengeDate(date)

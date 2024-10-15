@@ -3,7 +3,7 @@
 
 'use client'
 
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { Container, Transition } from '@mantine/core'
 import { CurrencyDayOfImage } from './components/CurrencyDayOfImage'
 import classes from './ui/CurrencyDayOf.module.css'
@@ -13,7 +13,7 @@ import { formatDate } from '../../lib/formatDate'
 import { addOrdinalSuffix } from '../../lib/addOrdinalSuffix'
 
 interface CurrencyDayOfProps {
-  amountAway: string | null
+  amountAway: number | null
   guessCount: number | null
 }
 
@@ -22,20 +22,23 @@ interface ChallengeDateType {
   currency: string
   date: string
   chartData: Array<unknown>
-  decimalPosition: number
+  decimal: number
 }
 
 export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
   const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
+  const [oldLegendContent, setOldLegendContent] = useState<string>('')
+  const [newLegendContent, setNewLegendContent] = useState<string>('')
+  const [isAnimating, setIsAnimating] = useState(false)
+  const legendRef = useRef<HTMLDivElement>(null)
+
   const { dailyChallengeCurrency } = useDailyChallengeContext()
 
   const challengeData = dailyChallengeCurrency as ChallengeDateType | null
 
   const { currency, date: challengeDate } = challengeData || {}
-  console.log('challengeDate after destructuring:', challengeDate)
 
   const formattedDate = challengeDate ? formatDate(challengeDate) : null
-  console.log('formattedDate:', formattedDate)
 
   const finalDate = formattedDate
     ? (() => {
@@ -45,16 +48,6 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
         return `${month} ${dayWithSuffix}, ${year}`
       })()
     : null
-  console.log(
-    'finalDate',
-    finalDate,
-    'currency',
-    currency,
-    'formatDate',
-    formattedDate,
-    'challengeDate',
-    challengeDate
-  )
   useEffect(() => {
     if (dayOfSlide === 'image') {
       const timeoutId = setTimeout(() => {
@@ -65,6 +58,24 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
     }
   }, [dayOfSlide, setDayOfSlide])
 
+  useEffect(() => {
+    if (amountAway !== null && guessCount !== null) {
+      const content = `${amountAway >= 50.01 ? 'Greater Than' : 'Less Than'}:
+        ${amountAway >= 50.01 ? '50' : parseFloat(amountAway.toString())}
+        Percent Away | Guesses Left: ${guessCount}`
+
+      setOldLegendContent(newLegendContent || content)
+      setNewLegendContent(content)
+      setIsAnimating(true)
+
+      // Reset animation after it completes
+      const animationDuration = 1000 // 1 second, adjust as needed
+      setTimeout(() => {
+        setIsAnimating(false)
+        setOldLegendContent(content)
+      }, animationDuration)
+    }
+  }, [amountAway, guessCount, newLegendContent])
   return (
     <Container className={classes.dayOfContainer}>
       <div className={classes.slideWrapper}>
@@ -97,6 +108,14 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
             </div>
           )}
         </Transition>
+      </div>
+      <div className={classes.legend} ref={legendRef}>
+        <div
+          className={`${classes.legendContent} ${isAnimating ? classes.animate : ''}`}
+        >
+          <span>{oldLegendContent}</span>
+          <span>{newLegendContent}</span>
+        </div>
       </div>
     </Container>
   )

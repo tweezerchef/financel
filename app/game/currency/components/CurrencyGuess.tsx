@@ -8,6 +8,7 @@ import { useForm } from '@mantine/form'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { v4 as uuidv4 } from 'uuid'
+import { formattedGuess } from './lib/formattedGuess'
 import { useUserContext } from '../../../context/user/UserContext'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 import { NextModal } from '../../components/modal/NextModal'
@@ -18,9 +19,8 @@ import classes from './ui/CurrencyGuess.module.css'
 type DayOf = 'image' | 'day'
 
 interface CurrencyGuessProps {
-  initialData: Array<{ date: string; currency: number }>
   challengeDate: DayOf
-  setAmountAway: React.Dispatch<React.SetStateAction<string | null>>
+  setAmountAway: React.Dispatch<React.SetStateAction<number | null>>
   setGuessCount: React.Dispatch<React.SetStateAction<number | null>>
 }
 
@@ -39,6 +39,7 @@ interface CurrencyModalProps {
   tries: number
   time: number
   type: string
+  chartData: Array<{ date: string; value: number }>
 }
 
 export function CurrencyGuess({
@@ -47,8 +48,7 @@ export function CurrencyGuess({
   setGuessCount,
 }: CurrencyGuessProps) {
   const { dailyChallengeCurrency } = useDailyChallengeContext()
-  const decimalPlace = dailyChallengeCurrency?.decimalPlace ?? 2
-  const { yearData } = dailyChallengeCurrency ?? {}
+  const { decimal, range, chartData } = dailyChallengeCurrency ?? {}
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [resultId, setResultId] = useState<string | null>(null)
@@ -92,9 +92,12 @@ export function CurrencyGuess({
     async (values: { guess: string }) => {
       if (isAnimating || guesses.length >= 6 || !resultId) return
 
-      // Format the guess based on decimalPlace
-      const formattedGuess = values.guess.padStart(4, '0').slice(0, 4)
-      const numericGuess = parseFloat(formattedGuess) / 10 ** (decimalPlace - 1)
+      // Pad the guess to 4 digits
+      const postGuess = formattedGuess(values.guess, decimal ?? 2)
+
+      // Calculate the numeric guess by inserting the decimal point at the correct position
+
+      const unformattedGuess = values.guess // Default to 2 if decimal is undefined
 
       try {
         setIsAnimating(true)
@@ -104,10 +107,11 @@ export function CurrencyGuess({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            guess: numericGuess,
+            guess: postGuess,
             guessCount: guessCount.current,
             resultId,
-            decimalPlace,
+            decimal,
+            range,
           }),
         })
         guessCount.current += 1
@@ -115,7 +119,7 @@ export function CurrencyGuess({
 
         const newGuess: Guess = {
           id: uuidv4(),
-          guess: formattedGuess, // Use the padded guess string here
+          guess: unformattedGuess, // Use the padded guess string here
           result: null,
           isSpinning: true,
         }
@@ -127,7 +131,7 @@ export function CurrencyGuess({
           timeTaken,
           difference,
           correctDigits,
-          rateNumber,
+          dollarValue,
         } = result
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
         form.reset()
@@ -155,20 +159,21 @@ export function CurrencyGuess({
           (isComplete && !isAnimating) ||
           (guessCount.current === 7 && !isAnimating)
         ) {
-          setFinalGuess(parseFloat(formattedGuess))
+          setFinalGuess(parseFloat(unformattedGuess))
           setTimeout(() => {
             setModalProps({
               opened: true,
               close: () => console.log('Modal closed'),
               correct,
-              actual: `${rateNumber}%`,
+              actual: `$ ${dollarValue}`,
               tries: guessCount.current,
               time: timeTaken,
               type: 'Currency Price',
+              chartData: chartData || [],
             })
             handlers.open()
-          }, 2500) // 2000 milliseconds = 2 seconds
-        } // Add this closing brace
+          }, 2500) // 2500 milliseconds = 2.5 seconds
+        }
       } catch (error) {
         console.error('Submission failed:', error)
         setIsAnimating(false)
@@ -178,10 +183,12 @@ export function CurrencyGuess({
       isAnimating,
       guesses.length,
       resultId,
-      decimalPlace,
+      decimal,
+      range,
       form,
       setAmountAway,
       setGuessCount,
+      chartData,
       handlers,
     ]
   )
@@ -205,7 +212,7 @@ export function CurrencyGuess({
               guess={guess.guess}
               result={guess.result}
               isSpinning={guess.isSpinning}
-              decimalPlace={decimalPlace}
+              decimal={decimal ?? 2}
             />
           </div>
         ))}
@@ -215,7 +222,7 @@ export function CurrencyGuess({
               guess={form.values.guess}
               result={null}
               isSpinning={false}
-              decimalPlace={decimalPlace}
+              decimal={decimal ?? 2}
             />
           </div>
         )}
@@ -228,6 +235,7 @@ export function CurrencyGuess({
             opened={opened}
             challengeDate={formattedChallengeDate}
             finalGuess={finalGuess}
+            chartData={chartData ?? []}
           />
         )}
         {guesses.length < 6 ? (

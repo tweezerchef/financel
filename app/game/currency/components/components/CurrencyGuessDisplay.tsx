@@ -9,14 +9,14 @@ interface CurrencyGuessDisplayProps {
   guess: string
   result?: { amount: ResponseNumbers; direction: Direction } | null
   isSpinning: boolean
-  decimalPlace: number
+  decimal: number
 }
 
 export const CurrencyGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
   guess,
   result,
   isSpinning,
-  decimalPlace,
+  decimal,
 }) => {
   const [displayedResults, setDisplayedResults] = useState<
     Array<{ id: string; value: string }>
@@ -72,19 +72,19 @@ export const CurrencyGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
           isSpinning={staggeredSpinning[0]}
           isNumber
         />
-        {decimalPlace === 1 && <span className={classes.decimal}>.</span>}
+        {decimal === 1 && <span className={classes.decimal}>.</span>}
         <SingleDisplay
           value={guess[1] || ''}
           isSpinning={staggeredSpinning[1]}
           isNumber
         />
-        {decimalPlace === 2 && <span className={classes.decimal}>.</span>}
+        {decimal === 2 && <span className={classes.decimal}>.</span>}
         <SingleDisplay
           value={guess[2] || ''}
           isSpinning={staggeredSpinning[2]}
           isNumber
         />
-        {decimalPlace === 3 && <span className={classes.decimal}>.</span>}
+        {decimal === 3 && <span className={classes.decimal}>.</span>}
         <SingleDisplay
           value={guess[3] || ''}
           isSpinning={staggeredSpinning[3]}

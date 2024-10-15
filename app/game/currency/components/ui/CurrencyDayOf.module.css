@@ -31,23 +31,38 @@
   left: 0;
   right: 0;
   background-color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 46px; /* Default height for largest font size */
+  height: 46px;
+  overflow: hidden;
 }
 
 .legendContent {
-  color: #fffb00;
   display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  text-align: center;
-  font-family: tickerFont;
-  width: 100%;
-  padding: 5px 0;
+  width: 200%;
+  height: 100%;
 }
 
+.legendContent span {
+  flex: 0 0 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fffb00;
+  font-family: tickerFont;
+  white-space: nowrap;
+}
+
+.animate {
+  animation: ticker 1s linear;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 /* Media queries for responsive font sizing and layout */
 @media (max-width: 1200px) {
   .legend {
@@ -78,13 +93,18 @@
   .slideWrapper {
     bottom: 35px;
   }
-  .legend span {
+  .legendContent span {
     margin: 2px 0;
+  }
+}
+@media (max-width: 400px) {
+  .legendContent span {
+    font-size: 14px;
   }
 }
 
 @media (max-width: 375px) {
   .legend {
-    font-size: 14px;
+    font-size: 12px;
   }
 }

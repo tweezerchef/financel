@@ -42,11 +42,10 @@ export async function POST(request: NextRequest) {
 
     const dailyChallenge = await getDailyChallenge(dateOnly)
 
-    console.log('Daily Challenge:', dailyChallenge.currencyValueId)
     const currencyValue = dailyChallenge.currencyValue?.value.toNumber() ?? 0
-    console.log('Currency Value:', currencyValue)
+    console.log('currencyValue', currencyValue)
 
-    const result = currencyArrowDecider(guess, range, decimal)
+    const result = currencyArrowDecider(guess, currencyValue, guess)
     const correctDigits = compareGuessWithRate(guess, currencyValue, decimal)
     const isCorrect =
       correctDigits.length === decimal && guess === currencyValue
@@ -82,7 +81,7 @@ export async function POST(request: NextRequest) {
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
         correctDigits,
-        rateNumber: isCorrect || isComplete ? currencyValue : undefined,
+        dollarValue: isCorrect || isComplete ? currencyValue : undefined,
       },
       { status: 200 }
     )
