@@ -42,10 +42,11 @@ function formatDateForChart(date: string): string {
 
 const Confetti = dynamic(() => import('react-confetti'), { ssr: false })
 
-type ChartDataPoint =
-  | { date: string; interestRate: number }
-  | { date: string; currency: number }
-  | { date: string; value: number }
+type ChartDataPoint = {
+  date: string
+  interestRate?: number
+  value?: number
+}
 
 interface NextModalProps {
   opened: boolean
@@ -57,12 +58,13 @@ interface NextModalProps {
   challengeDate: string
   finalGuess: number | undefined
   type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
-  chartData?: ChartDataPoint[]
+  chartData: ChartDataPoint[]
+  currency?: string
 }
 
-// Add this type definition
+// Update the type definition
 type CurrencyTypeWithChart = {
-  chartData?: Array<{ date: string; currency: number }>
+  chartData?: Array<{ date: string; value: number }>
 }
 
 export function NextModal({
@@ -76,6 +78,7 @@ export function NextModal({
   finalGuess,
   type,
   chartData,
+  currency,
 }: NextModalProps) {
   const rewardRef = useRef<HTMLDivElement>(null)
   const { reward, isAnimating } = useReward('wrongAnswerReward', 'emoji', {
@@ -84,12 +87,11 @@ export function NextModal({
     elementSize: 30,
     spread: 40,
   })
+  console.log('actual', actual)
   const { dailyChallengeCurrency } = useDailyChallengeContext()
   const formattedDate = dailyChallengeCurrency
     ? formatDateForChart(dailyChallengeCurrency.date)
     : ''
-
-  const yearData = (dailyChallengeCurrency as CurrencyTypeWithChart)?.chartData
 
   const animationCountRef = useRef(0)
 
@@ -128,7 +130,7 @@ export function NextModal({
           : ''
 
   const renderChart = () => {
-    if (!chartData && !yearData) return null
+    if (!chartData && !chartData) return null
 
     switch (type) {
       case 'Interest Rate':
@@ -146,10 +148,7 @@ export function NextModal({
           <CurrencyChart
             date={formattedDate}
             guess={finalGuess}
-            chartData={
-              yearData ||
-              (chartData as Array<{ date: string; currency: number }>)
-            }
+            chartData={chartData as Array<{ date: string; value: number }>}
           />
         )
       // case 'Stock Price':

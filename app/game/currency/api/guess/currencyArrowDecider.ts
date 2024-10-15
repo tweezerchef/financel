@@ -14,7 +14,6 @@ function calculateArrowAmount(
 } {
   // Calculate the percentage difference based on the range
   const percentageDifference = (difference / correct) * 100
-  console.log('percentageDifference', percentageDifference)
 
   let arrows: ResponseNumbers
   let newDifference: number
@@ -68,12 +67,10 @@ export function currencyArrowDecider(
     }
 
   const difference = Math.abs(guess - actual)
-  console.log('guess', guess)
-  console.log('correct', correct)
   const result = calculateArrowAmount(difference, correct)
 
   const direction = guess > actual ? 'up' : 'down'
-  console.log('new difference', result.difference)
+
   // Handle the new return type from calculateArrowAmount
   if (typeof result === 'object')
     return {
