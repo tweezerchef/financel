@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const currencyValue = dailyChallenge.currencyValue?.value.toNumber() ?? 0
     console.log('currencyValue', currencyValue)
 
-    const result = currencyArrowDecider(guess, currencyValue, range)
+    const result = currencyArrowDecider(guess, currencyValue, guess)
     console.log('Result:', result)
     const correctDigits = compareGuessWithRate(guess, currencyValue, decimal)
     const isCorrect =
