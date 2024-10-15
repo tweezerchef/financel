@@ -87,7 +87,6 @@ export function NextModal({
     elementSize: 30,
     spread: 40,
   })
-  console.log('actual', actual)
   const { dailyChallengeCurrency } = useDailyChallengeContext()
   const formattedDate = dailyChallengeCurrency
     ? formatDateForChart(dailyChallengeCurrency.date)
