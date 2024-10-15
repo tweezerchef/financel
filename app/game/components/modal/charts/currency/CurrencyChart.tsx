@@ -27,7 +27,7 @@ ChartJS.register(
 
 interface ChartDataPoint {
   date: string
-  currency: number
+  value: number
 }
 
 interface CurrencyChartProps {
@@ -40,12 +40,8 @@ export function CurrencyChart({ chartData, date, guess }: CurrencyChartProps) {
   const [formattedChartData, setFormattedChartData] =
     useState<ChartData<'line'> | null>(null)
   const [error, setError] = useState<string | null>(null)
-  console.log('CurrencyChart props:', { chartData, date, guess })
-  useEffect(() => {
-    console.log('Chart Data:', chartData)
-    console.log('Date:', date)
-    console.log('Guess:', guess)
 
+  useEffect(() => {
     if (!chartData || chartData.length === 0) {
       setError('No data available')
       return
@@ -57,7 +53,6 @@ export function CurrencyChart({ chartData, date, guess }: CurrencyChartProps) {
     }
 
     const normalizedDate = normalizeDate(date)
-    console.log('Normalized Date:', normalizedDate)
 
     const dateIndex = chartData.findIndex(
       (point) => normalizeDate(point.date) === normalizedDate
@@ -71,7 +66,7 @@ export function CurrencyChart({ chartData, date, guess }: CurrencyChartProps) {
       datasets: [
         {
           label: 'Currency Value',
-          data: chartData.map((point) => point.currency),
+          data: chartData.map((point) => point.value),
           fill: false,
           backgroundColor: 'rgb(0, 0, 0)',
           borderColor: 'rgb(0, 0, 0)',
@@ -84,7 +79,7 @@ export function CurrencyChart({ chartData, date, guess }: CurrencyChartProps) {
               {
                 label: 'Actual',
                 data: chartData.map((point, index) =>
-                  index === dateIndex ? point.currency : null
+                  index === dateIndex ? point.value : null
                 ),
                 pointStyle: 'triangle',
                 pointRadius: 10,

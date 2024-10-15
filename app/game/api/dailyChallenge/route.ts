@@ -37,20 +37,20 @@ export async function GET() {
     })
 
     // Calculate the range of values in chartData
-    const values = chartData.map((point) => point.currency)
+    const values = chartData.map((point) => point.value)
     const minValue = Math.min(...values)
     const maxValue = Math.max(...values)
     const range = maxValue - minValue
 
     // Process the currency value
     const currencyValue = dailyChallenge.currencyValue?.value.toString() || ''
-    const decimalPosition = currencyValue.indexOf('.') + 1
+    const decimal = currencyValue.indexOf('.')
 
     const response = {
       date: dailyChallenge.date.date,
       currency: dailyChallenge.currencyValue?.currency.name,
       chartData,
-      decimalPosition,
+      decimal,
       range,
     }
 

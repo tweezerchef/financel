@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
 import { ResultCategory } from '@prisma/client'
-import { arrowDecider } from '../../../../lib/interestRate/arrowDecider'
+import { arrowDecider } from './arrowDecider'
 import prisma from '../../../../lib/prisma/prisma'
 
 function compareGuessWithRate(guess: number, rate: number): [number, number][] {
@@ -36,9 +36,9 @@ export async function POST(request: NextRequest) {
     if (!resultId) throw new Error('resultId is required')
 
     const dailyChallenge = await getDailyChallenge(dateOnly)
-    console.log('Daily Challenge:', dailyChallenge.interestRate.rate)
+
     const rateNumber = dailyChallenge.interestRate.rate.toNumber()
-    console.log('Rate Number:', rateNumber)
+
     const result = arrowDecider(guess, rateNumber)
     const correctDigits = compareGuessWithRate(guess, rateNumber)
     const isCorrect = correctDigits.length === 3 && guess === rateNumber

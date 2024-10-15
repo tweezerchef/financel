@@ -6,42 +6,58 @@ interface ArrowDeciderReturn {
 
 function calculateArrowAmount(
   difference: number,
-  range: number
+  correct: number
 ): {
   arrows: ResponseNumbers
   difference: number
-  range: number
+  correct: number
 } {
   // Calculate the percentage difference based on the range
-  const percentageDifference = (difference / range) * 100
+  const percentageDifference = (difference / correct) * 100
 
   let arrows: ResponseNumbers
   let newDifference: number
-
-  if (percentageDifference <= 5) {
+  if (percentageDifference <= 14.99)
+    if (percentageDifference < 2.5) {
+      arrows = 1
+      newDifference = 2.5
+    } else if (percentageDifference < 4.99) {
+      arrows = 2
+      newDifference = 4.99
+    } else if (percentageDifference < 10) {
+      arrows = 3
+      newDifference = 10
+    } else if (percentageDifference < 12) {
+      arrows = 4
+      newDifference = 12
+    } else {
+      arrows = 5
+      newDifference = 14.99
+    }
+  else if (percentageDifference <= 15) {
     arrows = 1
-    newDifference = 0.05 * range
-  } else if (percentageDifference <= 15) {
-    arrows = 2
-    newDifference = 0.15 * range
+    newDifference = 15
   } else if (percentageDifference <= 25) {
+    arrows = 2
+    newDifference = 25
+  } else if (percentageDifference <= 35) {
     arrows = 3
-    newDifference = 0.25 * range
+    newDifference = 35
   } else if (percentageDifference <= 50) {
     arrows = 4
-    newDifference = 0.5 * range
+    newDifference = 50
   } else {
     arrows = 5
-    newDifference = 0.51 * range
+    newDifference = 50.01
   }
 
-  return { arrows, difference: newDifference, range }
+  return { arrows, difference: newDifference, correct }
 }
 
 export function currencyArrowDecider(
   guess: number,
   actual: number,
-  range: number
+  correct: number
 ): ArrowDeciderReturn {
   if (guess === actual)
     return {
@@ -51,7 +67,7 @@ export function currencyArrowDecider(
     }
 
   const difference = Math.abs(guess - actual)
-  const result = calculateArrowAmount(difference, range)
+  const result = calculateArrowAmount(difference, correct)
 
   const direction = guess > actual ? 'up' : 'down'
 
