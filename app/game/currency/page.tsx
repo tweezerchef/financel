@@ -11,24 +11,6 @@ import classes from './ui/CurrencyPage.module.css'
 type DayOf = 'image' | 'day'
 
 // Add prop types for CurrencyDayOf
-interface CurrencyDayOfProps {
-  setChallengeDate: React.Dispatch<React.SetStateAction<DayOf>>
-  setInitialData: React.Dispatch<
-    React.SetStateAction<Array<{ date: string; currency: number }>>
-  >
-  amountAway: number | null
-  guessCount: number | null
-}
-
-// Add prop types for CurrencyGuess
-interface CurrencyGuessProps {
-  initialData: Array<{ date: string; currency: number }>
-  challengeDate: DayOf
-  setAmountAway: React.Dispatch<React.SetStateAction<number | null>>
-  setGuessCount: React.Dispatch<React.SetStateAction<number | null>>
-}
-
-// Add prop types for CurrencyDayOf
 
 export default function Currency() {
   const [initialData, setInitialData] = useState<
@@ -58,7 +40,6 @@ export default function Currency() {
       </div>
       <div className={classes.guess}>
         <CurrencyGuess
-          initialData={initialData}
           challengeDate={challengeDate}
           setAmountAway={setAmountAway}
           setGuessCount={setGuessCount}

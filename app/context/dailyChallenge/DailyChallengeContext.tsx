@@ -22,7 +22,7 @@ interface CurrencyType {
   challengeDate: ChallengeDateType
   decimal: number
   range: number
-  yearData: Array<{ date: string; currency: number }>
+  chartData: Array<{ date: string; value: number }>
   date: string
 }
 
@@ -75,7 +75,7 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
         currency: data.currency,
         challengeDate: new Date(data.date),
         decimal: data.decimal,
-        yearData: data.chartData,
+        chartData: data.chartData,
         date: data.date,
         range: data.range,
       }

@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
         correctDigits,
-        rateNumber: isCorrect || isComplete ? currencyValue : undefined,
+        dollarValue: isCorrect || isComplete ? currencyValue : undefined,
       },
       { status: 200 }
     )

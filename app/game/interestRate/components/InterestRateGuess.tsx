@@ -53,6 +53,7 @@ interface IRmodalProps {
   tries?: number
   time?: number
   type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
+  chartData: Array<{ date: string; interestRate: number }>
 }
 
 interface Guess {
@@ -187,6 +188,7 @@ export function InterestRateGuess({
               tries: currentGuessCount,
               time: timeTaken,
               type: 'Interest Rate',
+              chartData: initialData,
             })
             handlers.open()
           }, 2500) // 2000 milliseconds = 2 seconds
@@ -203,6 +205,7 @@ export function InterestRateGuess({
       form,
       setAmountAway,
       setGuessCount,
+      initialData,
       handlers,
     ]
   )
@@ -241,10 +244,7 @@ export function InterestRateGuess({
           <NextModal
             {...modalProps}
             opened={opened}
-            chartData={initialData?.map((item) => ({
-              date: item.date,
-              value: item.interestRate,
-            }))}
+            chartData={initialData}
             challengeDate={formattedChallengeDate}
             finalGuess={finalGuess}
           />
