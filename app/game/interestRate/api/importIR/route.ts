@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
-import { importInterestRates } from './importInterestRates'
+import { importInterestRatesChunk } from './importInterestRatesChunks'
 
-export async function POST() {
+export async function GET() {
+  // const { searchParams } = new URL(request.url)
+  // const offset = parseInt(searchParams.get('offset') || '0', 10)
+  // const limit = parseInt(searchParams.get('limit') || '100', 10)
+
   try {
-    await importInterestRates()
-    return NextResponse.json({ message: 'Import completed successfully' })
+    const result = await importInterestRatesChunk(0, 10000)
+    return NextResponse.json(result)
   } catch (error) {
     return NextResponse.json(
       { message: 'Error during import', error },
