@@ -38,6 +38,7 @@ interface StockType {
   challengeDate: ChallengeDateType
   chartData: Array<{ date: string; price: number }>
   date: string
+  decimal: number
 }
 
 interface DailyChallengeContextType {
@@ -79,30 +80,6 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
     useState<StockType | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const setDailyChallengeAndStore = useCallback(
-    (
-      currency: CurrencyType | null,
-      interestRate: InterestRateType | null,
-      stock: StockType | null
-    ) => {
-      setDailyChallengeCurrency(currency)
-      setDailyChallengeInterestRate(interestRate)
-      setDailyChallengeStock(stock)
-      if (currency && interestRate && stock)
-        localStorage.setItem(
-          'dailyChallenge',
-          JSON.stringify({
-            currency,
-            interestRate,
-            stock,
-            lastFetched: new Date().toISOString(),
-          })
-        )
-      else localStorage.removeItem('dailyChallenge')
-    },
-    []
-  )
-
   const fetchDailyChallenge = useCallback(async () => {
     if (isLoading) return
     setIsLoading(true)
@@ -134,56 +111,27 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
         challengeDate: new Date(data.date),
         chartData: data.stockChartData,
         date: data.date,
+        decimal: data.stockDecimal,
       }
 
-      setDailyChallengeAndStore(newCurrency, newInterestRate, newStock)
+      setDailyChallengeCurrency(newCurrency)
+      setDailyChallengeInterestRate(newInterestRate)
+      setDailyChallengeStock(newStock)
     } catch (error) {
       console.error('Error fetching daily challenge:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [isLoading, setDailyChallengeAndStore])
-
-  useEffect(() => {
-    const storedChallenge = localStorage.getItem('dailyChallenge')
-    if (storedChallenge) {
-      const { currency, interestRate, stock, lastFetched } =
-        JSON.parse(storedChallenge)
-      const lastFetchedDate = new Date(lastFetched)
-      const currentDate = new Date()
-
-      // Check if the stored data is from today
-      if (lastFetchedDate.toDateString() === currentDate.toDateString()) {
-        setDailyChallengeCurrency(currency)
-        setDailyChallengeInterestRate(interestRate)
-        setDailyChallengeStock(stock)
-      } else fetchDailyChallenge()
-    } else fetchDailyChallenge()
-  }, [fetchDailyChallenge])
+  }, [isLoading])
 
   const value = useMemo(
     () => ({
       dailyChallengeCurrency,
       dailyChallengeInterestRate,
       dailyChallengeStock,
-      setDailyChallengeCurrency: (currency: CurrencyType | null) =>
-        setDailyChallengeAndStore(
-          currency,
-          dailyChallengeInterestRate,
-          dailyChallengeStock
-        ),
-      setDailyChallengeInterestRate: (interestRate: InterestRateType | null) =>
-        setDailyChallengeAndStore(
-          dailyChallengeCurrency,
-          interestRate,
-          dailyChallengeStock
-        ),
-      setDailyChallengeStock: (stock: StockType | null) =>
-        setDailyChallengeAndStore(
-          dailyChallengeCurrency,
-          dailyChallengeInterestRate,
-          stock
-        ),
+      setDailyChallengeCurrency,
+      setDailyChallengeInterestRate,
+      setDailyChallengeStock,
       fetchDailyChallenge,
     }),
     [
@@ -191,7 +139,6 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
       dailyChallengeInterestRate,
       dailyChallengeStock,
       fetchDailyChallenge,
-      setDailyChallengeAndStore,
     ]
   )
 
