@@ -31,8 +31,10 @@ export function Navbar() {
         <Image
           src="/favicon.svg" // Replace with the actual logo source
           alt="Financel Logo"
-          width={100} // Set the appropriate width
-          height={100} // Set the appropriate height
+          width={120} // Set the appropriate width
+          height={120} // Set the appropriate height
+          quality={70}
+          priority
         />
       </div>
       <div className={classes.titleContainer}>
