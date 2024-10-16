@@ -88,7 +88,6 @@ export async function GET() {
 
     // Process the currency value
     const currencyValue = dailyChallenge.currencyValue?.value.toString() || ''
-    console.log('curValue', currencyValue)
     const currencyDecimal = currencyValue.indexOf('.')
     const stockDecimal = dailyChallenge.stockPrice?.price
       .toString()

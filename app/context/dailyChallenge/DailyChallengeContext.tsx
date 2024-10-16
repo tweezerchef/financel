@@ -82,6 +82,15 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
 
   const fetchDailyChallenge = useCallback(async () => {
     if (isLoading) return
+
+    // Check if data already exists in context
+    if (
+      dailyChallengeCurrency &&
+      dailyChallengeInterestRate &&
+      dailyChallengeStock
+    )
+      return
+
     setIsLoading(true)
     try {
       const response = await fetch('/game/api/dailyChallenge')
@@ -96,7 +105,6 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
         date: data.date,
         range: data.currencyRange,
       }
-      console.log('newCurrency', newCurrency)
       const newInterestRate: InterestRateType = {
         interestRate: parseFloat(data.interestRate),
         category: data.interestRateCategory,
@@ -122,7 +130,12 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
     } finally {
       setIsLoading(false)
     }
-  }, [isLoading])
+  }, [
+    isLoading,
+    dailyChallengeCurrency,
+    dailyChallengeInterestRate,
+    dailyChallengeStock,
+  ])
 
   const value = useMemo(
     () => ({

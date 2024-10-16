@@ -9,8 +9,6 @@ import { CurrencyDayOfImage } from './components/CurrencyDayOfImage'
 import classes from './ui/CurrencyDayOf.module.css'
 import { CurrencyDayOfInfo } from './components/CurrencyDayOfInfo'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
-import { formatDate } from '../../lib/formatDate'
-import { addOrdinalSuffix } from '../../lib/addOrdinalSuffix'
 
 interface CurrencyDayOfProps {
   amountAway: number | null
@@ -18,12 +16,6 @@ interface CurrencyDayOfProps {
 }
 
 type DayOf = 'image' | 'day'
-interface ChallengeDateType {
-  currency: string
-  date: string
-  chartData: Array<unknown>
-  decimal: number
-}
 
 export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
   const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')

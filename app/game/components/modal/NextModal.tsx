@@ -91,7 +91,6 @@ export function NextModal({
   const formattedDate = dailyChallengeCurrency
     ? formatDateForChart(dailyChallengeCurrency.date)
     : ''
-  console.log('formattedDate', formattedDate)
   const animationCountRef = useRef(0)
 
   useEffect(() => {

@@ -43,11 +43,11 @@ export function StockDayOf({ amountAway, guessCount }: StockDayOfProps) {
       setIsAnimating(true)
 
       const animationDuration = 1000
-      const animationDelay = 1000
 
       const timeoutId = setTimeout(() => {
         setIsAnimating(false)
-      }, animationDuration + animationDelay)
+        setOldLegendContent(content)
+      }, animationDuration)
 
       return () => clearTimeout(timeoutId)
     }
@@ -59,8 +59,8 @@ export function StockDayOf({ amountAway, guessCount }: StockDayOfProps) {
         <Transition
           mounted={dayOfSlide === 'image'}
           transition="slide-left"
-          duration={500}
-          timingFunction="ease-in-out"
+          duration={400}
+          timingFunction="ease"
         >
           {(styles) => (
             <div style={styles} className={classes.slide}>
@@ -75,8 +75,8 @@ export function StockDayOf({ amountAway, guessCount }: StockDayOfProps) {
             stockName !== undefined
           }
           transition="slide-left"
-          duration={500}
-          timingFunction="ease-in-out"
+          duration={400}
+          timingFunction="ease"
         >
           {(styles) => (
             <div style={styles} className={classes.slide}>
@@ -85,17 +85,12 @@ export function StockDayOf({ amountAway, guessCount }: StockDayOfProps) {
           )}
         </Transition>
       </div>
-      <div className={classes.legendWrapper}>
+      <div className={classes.legend} ref={legendRef}>
         <div
-          ref={legendRef}
-          className={classes.legend}
-          style={{
-            opacity: isAnimating ? 0 : 1,
-            transform: `translateY(${isAnimating ? 20 : 0}px)`,
-          }}
+          className={`${classes.legendContent} ${isAnimating ? classes.animate : ''}`}
         >
-          {oldLegendContent}
-          {newLegendContent}
+          <span>{oldLegendContent}</span>
+          <span>{newLegendContent}</span>
         </div>
       </div>
     </Container>
