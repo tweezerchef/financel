@@ -5,11 +5,11 @@ export function StockDayOfImage() {
   return (
     <div className={classes.imageWrapper}>
       <Image
-        src="/FX-684x382.webp"
+        src="/stockImage.png"
         alt="Currency"
         quality={70}
-        width={684}
-        height={382}
+        width={500}
+        height={331}
         priority
       />
     </div>
