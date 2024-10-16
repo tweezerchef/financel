@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server'
-import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
-import { getChartDataForInterestRate } from '../../../lib/dbFunctions/getChartDataForInterestRate'
-import { getChartDataForStock } from '../../../lib/dbFunctions/getChartDataForStock'
 import prisma from '../../../lib/prisma/prisma'
 
 export async function GET() {
@@ -95,20 +92,24 @@ export async function GET() {
 
     // Process the currency value
     const currencyValue = dailyChallenge.currencyValue?.value.toString() || ''
-    const decimal = currencyValue.indexOf('.')
-    console.log(decimal)
+    console.log('curValue', currencyValue)
+    const currencyDecimal = currencyValue.indexOf('.')
+    const stockDecimal = dailyChallenge.stockPrice?.price
+      .toString()
+      .indexOf('.')
     const response = {
       date: dailyChallenge.challengeDate,
       currency: dailyChallenge.currencyValue?.currency.name,
       currencyValue: dailyChallenge.currencyValue?.value,
       currencyChartData,
-      currencyDecimal: decimal,
+      currencyDecimal,
       currencyRange,
       interestRateCategory: dailyChallenge.interestRate.rateType.category,
       interestRate: dailyChallenge.interestRate.rate,
       interestRateChartData,
       stockName: dailyChallenge.stockPrice?.stock.name,
       stockPrice: dailyChallenge.stockPrice?.price,
+      stockDecimal,
       stockChartData,
     }
 
