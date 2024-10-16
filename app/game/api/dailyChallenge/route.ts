@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server'
 import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
+import { getChartDataForInterestRate } from '../../../lib/dbFunctions/getChartDataForInterestRate'
+import { getChartDataForStock } from '../../../lib/dbFunctions/getChartDataForStock'
 import prisma from '../../../lib/prisma/prisma'
 
 export async function GET() {
@@ -8,6 +11,7 @@ export async function GET() {
       orderBy: { challengeDate: 'desc' },
       select: {
         id: true,
+        challengeDate: true,
         date: {
           select: {
             date: true,
@@ -23,6 +27,41 @@ export async function GET() {
             },
           },
         },
+        interestRate: {
+          select: {
+            rate: true,
+            rateType: {
+              select: {
+                category: true,
+              },
+            },
+          },
+        },
+        stockPrice: {
+          select: {
+            price: true,
+            stock: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        currencyYearData: {
+          select: {
+            dataPoints: true,
+          },
+        },
+        interestRateYearData: {
+          select: {
+            dataPoints: true,
+          },
+        },
+        stockYearData: {
+          select: {
+            dataPoints: true,
+          },
+        },
       },
     })
 
@@ -32,29 +71,48 @@ export async function GET() {
         { status: 404 }
       )
 
-    const chartData = await getChartDataForCurrency({
-      dailyChallengeId: dailyChallenge.id,
-    })
+    const currencyChartData =
+      (dailyChallenge.currencyYearData?.dataPoints as Array<{
+        date: string
+        value: number
+      }>) || []
+    const interestRateChartData =
+      (dailyChallenge.interestRateYearData?.dataPoints as Array<{
+        date: string
+        rate: number
+      }>) || []
+    const stockChartData =
+      (dailyChallenge.stockYearData?.dataPoints as Array<{
+        date: string
+        price: number
+      }>) || []
 
-    // Calculate the range of values in chartData
-    const values = chartData.map((point) => point.value)
-    const minValue = Math.min(...values)
-    const maxValue = Math.max(...values)
-    const range = maxValue - minValue
+    // Calculate the range of values in currencyChartData
+    const currencyValues = currencyChartData.map((point) => point.value)
+    const currencyMinValue = Math.min(...currencyValues)
+    const currencyMaxValue = Math.max(...currencyValues)
+    const currencyRange = currencyMaxValue - currencyMinValue
 
     // Process the currency value
     const currencyValue = dailyChallenge.currencyValue?.value.toString() || ''
     const decimal = currencyValue.indexOf('.')
-
+    console.log(decimal)
     const response = {
-      date: dailyChallenge.date.date,
+      date: dailyChallenge.challengeDate,
       currency: dailyChallenge.currencyValue?.currency.name,
-      chartData,
-      decimal,
-      range,
+      currencyValue: dailyChallenge.currencyValue?.value,
+      currencyChartData,
+      currencyDecimal: decimal,
+      currencyRange,
+      interestRateCategory: dailyChallenge.interestRate.rateType.category,
+      interestRate: dailyChallenge.interestRate.rate,
+      interestRateChartData,
+      stockName: dailyChallenge.stockPrice?.stock.name,
+      stockPrice: dailyChallenge.stockPrice?.price,
+      stockChartData,
     }
 
-    return NextResponse.json(response, { status: 200 })
+    return NextResponse.json({ data: response }, { status: 200 })
   } catch (e) {
     console.error('Error fetching daily challenge:', e)
     return NextResponse.json(
