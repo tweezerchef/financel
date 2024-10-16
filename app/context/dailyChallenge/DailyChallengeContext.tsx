@@ -96,7 +96,7 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
         date: data.date,
         range: data.currencyRange,
       }
-
+      console.log('newCurrency', newCurrency)
       const newInterestRate: InterestRateType = {
         interestRate: parseFloat(data.interestRate),
         category: data.interestRateCategory,
