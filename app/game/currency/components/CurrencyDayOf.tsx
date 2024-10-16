@@ -34,20 +34,8 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
 
   const { dailyChallengeCurrency } = useDailyChallengeContext()
 
-  const challengeData = dailyChallengeCurrency as ChallengeDateType | null
+  const { currency, date } = dailyChallengeCurrency || {}
 
-  const { currency, date: challengeDate } = challengeData || {}
-
-  const formattedDate = challengeDate ? formatDate(challengeDate) : null
-
-  const finalDate = formattedDate
-    ? (() => {
-        const [month, dayWithComma, year] = formattedDate.split(' ')
-        const day = parseInt(dayWithComma, 10)
-        const dayWithSuffix = addOrdinalSuffix(day)
-        return `${month} ${dayWithSuffix}, ${year}`
-      })()
-    : null
   useEffect(() => {
     if (dayOfSlide === 'image') {
       const timeoutId = setTimeout(() => {
@@ -68,14 +56,14 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
       setNewLegendContent(content)
       setIsAnimating(true)
 
-      // Reset animation after it completes
-      const animationDuration = 1000 // 1 second, adjust as needed
+      const animationDuration = 1000
       setTimeout(() => {
         setIsAnimating(false)
         setOldLegendContent(content)
       }, animationDuration)
     }
   }, [amountAway, guessCount, newLegendContent])
+
   return (
     <Container className={classes.dayOfContainer}>
       <div className={classes.slideWrapper}>
@@ -93,17 +81,15 @@ export function CurrencyDayOf({ amountAway, guessCount }: CurrencyDayOfProps) {
         </Transition>
 
         <Transition
-          mounted={
-            dayOfSlide === 'day' && finalDate !== null && currency !== null
-          }
+          mounted={dayOfSlide === 'day' && date !== null && currency !== null}
           transition="slide-left"
           duration={400}
           timingFunction="ease"
         >
           {(styles) => (
             <div style={styles} className={classes.slide}>
-              {finalDate && currency && (
-                <CurrencyDayOfInfo date={finalDate} currency={currency} />
+              {date && currency && (
+                <CurrencyDayOfInfo date={date} currency={currency} />
               )}
             </div>
           )}

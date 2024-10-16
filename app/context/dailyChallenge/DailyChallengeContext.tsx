@@ -10,8 +10,6 @@ import {
   ReactNode,
   useEffect,
   useCallback,
-  Dispatch,
-  SetStateAction,
 } from 'react'
 
 type ChallengeDateType = Date
@@ -26,9 +24,29 @@ interface CurrencyType {
   date: string
 }
 
-interface DailyChallengeCurrencyType {
+interface InterestRateType {
+  interestRate: number
+  category: string
+  challengeDate: ChallengeDateType
+  chartData: Array<{ date: string; interestRate: number }>
+  date: string
+}
+
+interface StockType {
+  stockPrice: number
+  stockName: string
+  challengeDate: ChallengeDateType
+  chartData: Array<{ date: string; price: number }>
+  date: string
+}
+
+interface DailyChallengeContextType {
   dailyChallengeCurrency: CurrencyType | null
+  dailyChallengeInterestRate: InterestRateType | null
+  dailyChallengeStock: StockType | null
   setDailyChallengeCurrency: (currency: CurrencyType | null) => void
+  setDailyChallengeInterestRate: (interestRate: InterestRateType | null) => void
+  setDailyChallengeStock: (stock: StockType | null) => void
   fetchDailyChallenge: () => Promise<void>
 }
 
@@ -36,10 +54,8 @@ interface ChallengeProviderProps {
   children: ReactNode
 }
 
-type CategoryType = 'INTEREST_RATE' | 'CURRENCY' | 'STOCK'
-
 const DailyChallengeContext = createContext<
-  DailyChallengeCurrencyType | undefined
+  DailyChallengeContextType | undefined
 >(undefined)
 
 export const useDailyChallengeContext = () => {
@@ -57,50 +73,126 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
 }) => {
   const [dailyChallengeCurrency, setDailyChallengeCurrency] =
     useState<CurrencyType | null>(null)
+  const [dailyChallengeInterestRate, setDailyChallengeInterestRate] =
+    useState<InterestRateType | null>(null)
+  const [dailyChallengeStock, setDailyChallengeStock] =
+    useState<StockType | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const setDailyChallengeAndStore = (currency: CurrencyType | null) => {
-    setDailyChallengeCurrency(currency)
-    if (currency)
-      localStorage.setItem('dailyChallengeCurrency', JSON.stringify(currency))
-    else localStorage.removeItem('dailyChallengeCurrency')
-  }
+  const setDailyChallengeAndStore = useCallback(
+    (
+      currency: CurrencyType | null,
+      interestRate: InterestRateType | null,
+      stock: StockType | null
+    ) => {
+      setDailyChallengeCurrency(currency)
+      setDailyChallengeInterestRate(interestRate)
+      setDailyChallengeStock(stock)
+      if (currency && interestRate && stock)
+        localStorage.setItem(
+          'dailyChallenge',
+          JSON.stringify({
+            currency,
+            interestRate,
+            stock,
+            lastFetched: new Date().toISOString(),
+          })
+        )
+      else localStorage.removeItem('dailyChallenge')
+    },
+    []
+  )
 
   const fetchDailyChallenge = useCallback(async () => {
+    if (isLoading) return
+    setIsLoading(true)
     try {
-      const response = await fetch('game/api/dailyChallenge')
+      const response = await fetch('/game/api/dailyChallenge')
       const { data } = await response.json()
 
       const newCurrency: CurrencyType = {
         currencyValue: parseFloat(data.currencyValue),
         currency: data.currency,
         challengeDate: new Date(data.date),
-        decimal: data.decimal,
-        chartData: data.chartData,
+        decimal: data.currencyDecimal,
+        chartData: data.currencyChartData,
         date: data.date,
-        range: data.range,
+        range: data.currencyRange,
       }
 
-      setDailyChallengeAndStore(newCurrency)
+      const newInterestRate: InterestRateType = {
+        interestRate: parseFloat(data.interestRate),
+        category: data.interestRateCategory,
+        challengeDate: new Date(data.date),
+        chartData: data.interestRateChartData,
+        date: data.date,
+      }
+
+      const newStock: StockType = {
+        stockPrice: parseFloat(data.stockPrice),
+        stockName: data.stockName,
+        challengeDate: new Date(data.date),
+        chartData: data.stockChartData,
+        date: data.date,
+      }
+
+      setDailyChallengeAndStore(newCurrency, newInterestRate, newStock)
     } catch (error) {
       console.error('Error fetching daily challenge:', error)
+    } finally {
+      setIsLoading(false)
     }
-  }, [])
+  }, [isLoading, setDailyChallengeAndStore])
 
   useEffect(() => {
-    const storedCurrency = localStorage.getItem('dailyChallengeCurrency')
-    if (storedCurrency) {
-      const parsedCurrency = JSON.parse(storedCurrency)
-      setDailyChallengeCurrency(parsedCurrency)
+    const storedChallenge = localStorage.getItem('dailyChallenge')
+    if (storedChallenge) {
+      const { currency, interestRate, stock, lastFetched } =
+        JSON.parse(storedChallenge)
+      const lastFetchedDate = new Date(lastFetched)
+      const currentDate = new Date()
+
+      // Check if the stored data is from today
+      if (lastFetchedDate.toDateString() === currentDate.toDateString()) {
+        setDailyChallengeCurrency(currency)
+        setDailyChallengeInterestRate(interestRate)
+        setDailyChallengeStock(stock)
+      } else fetchDailyChallenge()
     } else fetchDailyChallenge()
   }, [fetchDailyChallenge])
 
   const value = useMemo(
     () => ({
       dailyChallengeCurrency,
-      setDailyChallengeCurrency: setDailyChallengeAndStore,
+      dailyChallengeInterestRate,
+      dailyChallengeStock,
+      setDailyChallengeCurrency: (currency: CurrencyType | null) =>
+        setDailyChallengeAndStore(
+          currency,
+          dailyChallengeInterestRate,
+          dailyChallengeStock
+        ),
+      setDailyChallengeInterestRate: (interestRate: InterestRateType | null) =>
+        setDailyChallengeAndStore(
+          dailyChallengeCurrency,
+          interestRate,
+          dailyChallengeStock
+        ),
+      setDailyChallengeStock: (stock: StockType | null) =>
+        setDailyChallengeAndStore(
+          dailyChallengeCurrency,
+          dailyChallengeInterestRate,
+          stock
+        ),
       fetchDailyChallenge,
     }),
-    [dailyChallengeCurrency, fetchDailyChallenge]
+    [
+      dailyChallengeCurrency,
+      dailyChallengeInterestRate,
+      dailyChallengeStock,
+      fetchDailyChallenge,
+      setDailyChallengeAndStore,
+    ]
   )
 
   return (

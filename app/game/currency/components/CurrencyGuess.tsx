@@ -48,7 +48,8 @@ export function CurrencyGuess({
   setGuessCount,
 }: CurrencyGuessProps) {
   const { dailyChallengeCurrency } = useDailyChallengeContext()
-  const { decimal, range, chartData } = dailyChallengeCurrency ?? {}
+  const { currencyValue, currency, decimal, range, chartData, date } =
+    dailyChallengeCurrency ?? {}
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [resultId, setResultId] = useState<string | null>(null)
