@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server'
 import prisma from '../../../lib/prisma/prisma'
+import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
 
 export async function GET() {
   try {
@@ -8,7 +9,6 @@ export async function GET() {
       orderBy: { challengeDate: 'desc' },
       select: {
         id: true,
-        challengeDate: true,
         date: {
           select: {
             date: true,
@@ -68,11 +68,14 @@ export async function GET() {
         { status: 404 }
       )
 
-    const currencyChartData =
-      (dailyChallenge.currencyYearData?.dataPoints as Array<{
-        date: string
-        value: number
-      }>) || []
+    // const currencyChartData =
+    //   (dailyChallenge.currencyYearData?.dataPoints as Array<{
+    //     date: string
+    //     value: number
+    //   }>) || []
+    const currencyChartData = await getChartDataForCurrency({
+      dailyChallengeId: dailyChallenge.id,
+    })
     const interestRateChartData =
       (dailyChallenge.interestRateYearData?.dataPoints as Array<{
         date: string
@@ -98,7 +101,7 @@ export async function GET() {
       .toString()
       .indexOf('.')
     const response = {
-      date: dailyChallenge.challengeDate,
+      date: dailyChallenge.date.date,
       currency: dailyChallenge.currencyValue?.currency.name,
       currencyValue: dailyChallenge.currencyValue?.value,
       currencyChartData,
