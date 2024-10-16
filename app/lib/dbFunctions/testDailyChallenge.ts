@@ -1,5 +1,5 @@
 import prisma from '../prisma/prisma'
-import { createDailyChallenge } from './dailyChallengeInterest'
+import { createDailyChallenge } from './createDailyChallenge'
 
 async function testCreateDailyChallenge() {
   try {

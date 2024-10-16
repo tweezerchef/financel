@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createDailyChallenge } from '../../lib/dbFunctions/dailyChallengeInterest'
+import { createDailyChallenge } from '../../lib/dbFunctions/createDailyChallenge'
 
 export async function GET() {
   console.log('Cron job running')
