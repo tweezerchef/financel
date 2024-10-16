@@ -51,8 +51,6 @@ export async function POST(request: NextRequest) {
     const isCorrect = correctDigits.length === decimal && guess === stockValue
     const isComplete = isCorrect || guessCount === 6
 
-    if (isComplete) await scoreFunction(resultId)
-
     const now = new Date()
 
     const [updatedCategory, _] = await Promise.all([
@@ -70,8 +68,10 @@ export async function POST(request: NextRequest) {
       }),
     ])
     let timeTaken
-    if (isComplete)
-      timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
+    if (isComplete) {
+      timeTaken = await calculateTimeTaken(isComplete, updatedCategory, now)
+      await scoreFunction(resultId)
+    }
 
     return NextResponse.json(
       {
@@ -146,7 +146,7 @@ async function updateResultCategory(
   })
 }
 
-function calculateTimeTaken(
+async function calculateTimeTaken(
   isComplete: boolean,
   category: ResultCategory,
   now: Date
@@ -155,12 +155,10 @@ function calculateTimeTaken(
     const timeTaken = Math.round(
       (now.getTime() - category.startTime.getTime()) / 1000
     )
-    prisma.resultCategory
-      .update({
-        where: { id: category.id },
-        data: { timeTaken },
-      })
-      .catch(console.error) // Fire and forget
+    await prisma.resultCategory.update({
+      where: { id: category.id },
+      data: { timeTaken },
+    })
     return timeTaken
   }
   return undefined
