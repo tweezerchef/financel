@@ -150,14 +150,14 @@ export function NextModal({
             chartData={chartData as Array<{ date: string; value: number }>}
           />
         )
-      // case 'Stock Price':
-      //   return (
-      //     <StockChart
-      //       date={challengeDate}
-      //       guess={finalGuess}
-      //       yearData={chartData}
-      //     />
-      //   )
+      case 'Stock Price':
+        return (
+          <StockChart
+            date={challengeDate}
+            guess={finalGuess}
+            chartData={chartData as Array<{ date: string; price: number }>}
+          />
+        )
       default:
         return null
     }
