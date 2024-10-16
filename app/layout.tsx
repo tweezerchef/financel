@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-no-duplicate-props */
+
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -12,6 +13,7 @@ import {
 import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
+import { DailyChallengeInitializer } from './lib/DailyChallengeInitializer'
 import { UserProvider } from './context/user/UserContext'
 import { DailyChallengeProvider } from './context/dailyChallenge/DailyChallengeContext'
 
@@ -56,7 +58,7 @@ const theme = createTheme({
 
 export const metadata: Metadata = {
   icons: {
-    icon: '/favicon.png',
+    icon: '/favicon.svg',
   },
   title: 'Financel',
   description: 'A game for the Brothers of Finance',
@@ -78,7 +80,9 @@ export default function RootLayout({
             <div className={classes.rootContainer}>
               <UserProvider>
                 <DailyChallengeProvider>
-                  <Center>{children}</Center>
+                  <DailyChallengeInitializer>
+                    <Center>{children}</Center>
+                  </DailyChallengeInitializer>
                 </DailyChallengeProvider>
               </UserProvider>
             </div>

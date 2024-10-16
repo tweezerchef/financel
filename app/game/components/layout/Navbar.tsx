@@ -29,10 +29,12 @@ export function Navbar() {
         aria-label="Toggle navigation menu"
       >
         <Image
-          src="/favicon.png" // Replace with the actual logo source
+          src="/favicon.svg" // Replace with the actual logo source
           alt="Financel Logo"
-          width={50} // Set the appropriate width
-          height={50} // Set the appropriate height
+          width={120} // Set the appropriate width
+          height={120} // Set the appropriate height
+          quality={70}
+          priority
         />
       </div>
       <div className={classes.titleContainer}>

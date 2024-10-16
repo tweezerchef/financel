@@ -13,26 +13,18 @@ type DayOf = 'image' | 'day'
 // Add prop types for CurrencyDayOf
 
 export default function Currency() {
-  const [initialData, setInitialData] = useState<
-    Array<{ date: string; currency: number }>
-  >([])
   const [challengeDate, setChallengeDate] = useState<DayOf>('image')
   const [amountAway, setAmountAway] = useState<number | null>(null)
   const [guessCount, setGuessCount] = useState<number | null>(null)
-  const { setDailyChallengeCurrency } = useDailyChallengeContext()
+  const { dailyChallengeCurrency, fetchDailyChallenge } =
+    useDailyChallengeContext()
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/game/api/dailyChallenge/')
-        const data = await response.json()
-        setDailyChallengeCurrency(data)
-      } catch (error) {
-        console.error('Error fetching daily challenge data:', error)
-      }
-    }
-    fetchData()
-  }, [setDailyChallengeCurrency])
+    if (!dailyChallengeCurrency) fetchDailyChallenge()
+  }, [dailyChallengeCurrency, fetchDailyChallenge])
+
+  if (!dailyChallengeCurrency) return <div>Loading...</div>
+
   return (
     <div className={classes.container}>
       <div className={classes.dayOf}>
