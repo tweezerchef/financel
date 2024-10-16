@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ResultCategory } from '@prisma/client'
 import { stockArrowDecider } from './stockArrowDecider'
+import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
 
 import prisma from '../../../../lib/prisma/prisma'
 
@@ -49,6 +50,8 @@ export async function POST(request: NextRequest) {
     const correctDigits = compareGuessWithRate(guess, stockValue, decimal)
     const isCorrect = correctDigits.length === decimal && guess === stockValue
     const isComplete = isCorrect || guessCount === 6
+
+    if (isComplete) await scoreFunction(resultId)
 
     const now = new Date()
 
