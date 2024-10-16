@@ -1,7 +1,14 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable consistent-return */
 import { Prisma } from '@prisma/client'
+
 import prisma from '../prisma/prisma'
+
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date)
+  result.setDate(result.getDate() + days)
+  return result
+}
 
 type ChallengeResult = Prisma.DailyChallengeGetPayload<{
   include: {
@@ -18,14 +25,14 @@ type ChallengeResult = Prisma.DailyChallengeGetPayload<{
       }
     }
     currencyYearData: true
+    stockPrice: {
+      include: {
+        stock: true
+      }
+    }
+    stockYearData: true
   }
 }>
-
-function addDays(date: Date, days: number): Date {
-  const result = new Date(date)
-  result.setDate(result.getDate() + days)
-  return result
-}
 
 export async function createDailyChallenge() {
   console.log('Starting createDailyChallenge function')
@@ -96,6 +103,25 @@ export async function createDailyChallenge() {
 
   console.log(`Selected interest rate category: ${selectedCategory.category}`)
   console.log(`Selected currency: ${selectedCurrency.name}`)
+
+  // Find all available stocks for the selected date
+  const availableStocks = await prisma.stockPrice.findMany({
+    where: { dateId: randomDate.id },
+    select: { stock: true },
+    distinct: ['stockId'],
+  })
+
+  if (availableStocks.length === 0) {
+    console.error('No stocks found for the selected date')
+    return
+  }
+
+  // Randomly select a stock
+  const randomStock =
+    availableStocks[Math.floor(Math.random() * availableStocks.length)]
+  const selectedStock = randomStock.stock
+
+  console.log(`Selected stock: ${selectedStock.name}`)
 
   // Fetch the selected date
   const selectedDate = await prisma.dates.findUnique({
@@ -206,6 +232,51 @@ export async function createDailyChallenge() {
   console.log('Sample of currency year data (first 5 entries):')
   console.log(JSON.stringify(currencyYearDataJson.slice(0, 5), null, 2))
 
+  // Find the stock price for the selected date and stock
+  const stockPrice = await prisma.stockPrice.findFirst({
+    where: {
+      dateId: selectedDate.id,
+      stockId: selectedStock.id,
+    },
+  })
+
+  if (!stockPrice) {
+    console.error('No stock price found for the selected date and stock')
+    return
+  }
+  console.log(`Stock price for selected date and stock: ${stockPrice.price}`)
+
+  // Fetch year data for stock (365 days surrounding the chosen date)
+  const stockYearData = await prisma.stockPrice.findMany({
+    where: {
+      stock: { id: selectedStock.id },
+      date: {
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    },
+    select: {
+      price: true,
+      date: { select: { date: true } },
+    },
+    orderBy: {
+      date: { date: 'asc' },
+    },
+  })
+
+  console.log(
+    `Retrieved ${stockYearData.length} stock data points for the surrounding year`
+  )
+  const stockYearDataJson = stockYearData.map((d) => ({
+    date: d.date.date.toISOString().split('T')[0],
+    price: d.price.toNumber(),
+  }))
+
+  console.log('Sample of stock year data (first 5 entries):')
+  console.log(JSON.stringify(stockYearDataJson.slice(0, 5), null, 2))
+
   // Create the daily challenge
   const challenge = await prisma.dailyChallenge.create({
     data: {
@@ -213,6 +284,7 @@ export async function createDailyChallenge() {
       date: { connect: { id: selectedDate.id } },
       interestRate: { connect: { id: interestRate.id } },
       currencyValue: { connect: { id: currencyValue.id } },
+      stockPrice: { connect: { id: stockPrice.id } },
       interestRateYearData: {
         create: {
           startDate,
@@ -225,6 +297,13 @@ export async function createDailyChallenge() {
           startDate,
           endDate,
           dataPoints: currencyYearDataJson,
+        },
+      },
+      stockYearData: {
+        create: {
+          startDate,
+          endDate,
+          dataPoints: stockYearDataJson,
         },
       },
     },
@@ -240,8 +319,14 @@ export async function createDailyChallenge() {
           currency: true,
         },
       },
+      stockPrice: {
+        include: {
+          stock: true,
+        },
+      },
       interestRateYearData: true,
       currencyYearData: true,
+      stockYearData: true,
     },
   })
 
@@ -259,18 +344,8 @@ export async function createDailyChallenge() {
         interestRate: typedChallenge.interestRate.rate,
         currency: typedChallenge.currencyValue?.currency.name ?? 'Unknown',
         currencyValue: typedChallenge.currencyValue?.value ?? 0,
-        yearDataId: typedChallenge.interestRateYearData?.id,
-        yearDataPoints: typedChallenge.interestRateYearData?.dataPoints
-          ? Array.isArray(typedChallenge.interestRateYearData.dataPoints)
-            ? typedChallenge.interestRateYearData.dataPoints.length
-            : undefined
-          : undefined,
-        currencyYearDataId: typedChallenge.currencyYearData?.id,
-        currencyYearDataPoints: typedChallenge.currencyYearData?.dataPoints
-          ? Array.isArray(typedChallenge.currencyYearData.dataPoints)
-            ? typedChallenge.currencyYearData.dataPoints.length
-            : undefined
-          : undefined,
+        stock: typedChallenge.stockPrice?.stock.name ?? 'Unknown',
+        stockPrice: typedChallenge.stockPrice?.price ?? 0,
       },
       null,
       2

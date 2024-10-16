@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server'
-import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
 import prisma from '../../../lib/prisma/prisma'
+import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
+import { getChartDataForStock } from '../../../lib/dbFunctions/getChartDataForStock'
 
 export async function GET() {
   try {
@@ -23,6 +25,41 @@ export async function GET() {
             },
           },
         },
+        interestRate: {
+          select: {
+            rate: true,
+            rateType: {
+              select: {
+                category: true,
+              },
+            },
+          },
+        },
+        stockPrice: {
+          select: {
+            price: true,
+            stock: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        currencyYearData: {
+          select: {
+            dataPoints: true,
+          },
+        },
+        interestRateYearData: {
+          select: {
+            dataPoints: true,
+          },
+        },
+        stockYearData: {
+          select: {
+            dataPoints: true,
+          },
+        },
       },
     })
 
@@ -32,29 +69,46 @@ export async function GET() {
         { status: 404 }
       )
 
-    const chartData = await getChartDataForCurrency({
+    const currencyChartData = await getChartDataForCurrency({
       dailyChallengeId: dailyChallenge.id,
     })
-
-    // Calculate the range of values in chartData
-    const values = chartData.map((point) => point.value)
-    const minValue = Math.min(...values)
-    const maxValue = Math.max(...values)
-    const range = maxValue - minValue
+    const interestRateChartData =
+      (dailyChallenge.interestRateYearData?.dataPoints as Array<{
+        date: string
+        rate: number
+      }>) || []
+    const stockChartData = await getChartDataForStock({
+      dailyChallengeId: dailyChallenge.id,
+    })
+    // Calculate the range of values in currencyChartData
+    const currencyValues = currencyChartData.map((point) => point.value)
+    const currencyMinValue = Math.min(...currencyValues)
+    const currencyMaxValue = Math.max(...currencyValues)
+    const currencyRange = currencyMaxValue - currencyMinValue
 
     // Process the currency value
     const currencyValue = dailyChallenge.currencyValue?.value.toString() || ''
-    const decimal = currencyValue.indexOf('.')
-
+    const currencyDecimal = currencyValue.indexOf('.')
+    const stockDecimal = dailyChallenge.stockPrice?.price
+      .toString()
+      .indexOf('.')
     const response = {
       date: dailyChallenge.date.date,
       currency: dailyChallenge.currencyValue?.currency.name,
-      chartData,
-      decimal,
-      range,
+      currencyValue: dailyChallenge.currencyValue?.value,
+      currencyChartData,
+      currencyDecimal,
+      currencyRange,
+      interestRateCategory: dailyChallenge.interestRate.rateType.category,
+      interestRate: dailyChallenge.interestRate.rate,
+      interestRateChartData,
+      stockName: dailyChallenge.stockPrice?.stock.name,
+      stockPrice: dailyChallenge.stockPrice?.price,
+      stockDecimal,
+      stockChartData,
     }
 
-    return NextResponse.json(response, { status: 200 })
+    return NextResponse.json({ data: response }, { status: 200 })
   } catch (e) {
     console.error('Error fetching daily challenge:', e)
     return NextResponse.json(

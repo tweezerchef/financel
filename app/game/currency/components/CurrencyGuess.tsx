@@ -8,7 +8,7 @@ import { useForm } from '@mantine/form'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { v4 as uuidv4 } from 'uuid'
-import { formattedGuess } from './lib/formattedGuess'
+import { formattedGuess } from '../../lib/formattedGuess'
 import { useUserContext } from '../../../context/user/UserContext'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 import { NextModal } from '../../components/modal/NextModal'
@@ -47,8 +47,8 @@ export function CurrencyGuess({
   setAmountAway,
   setGuessCount,
 }: CurrencyGuessProps) {
-  const { dailyChallengeCurrency } = useDailyChallengeContext()
-  const { decimal, range, chartData } = dailyChallengeCurrency ?? {}
+  const { dailyChallengeCurrency, fetchDailyChallenge } =
+    useDailyChallengeContext()
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [resultId, setResultId] = useState<string | null>(null)
@@ -59,7 +59,7 @@ export function CurrencyGuess({
   const [finalGuess, setFinalGuess] = useState<number | null>(null)
   const [formattedChallengeDate, setFormattedChallengeDate] =
     useState<string>('')
-
+  const { chartData, decimal } = dailyChallengeCurrency ?? {}
   const form = useForm({
     initialValues: {
       guess: '',
@@ -73,6 +73,10 @@ export function CurrencyGuess({
   })
 
   useEffect(() => {
+    if (!dailyChallengeCurrency) fetchDailyChallenge()
+  }, [dailyChallengeCurrency, fetchDailyChallenge])
+
+  useEffect(() => {
     if (user?.resultId) setResultId(user.resultId)
     else {
       const storedUserData = localStorage.getItem('userData')
@@ -84,13 +88,23 @@ export function CurrencyGuess({
   }, [user])
 
   useEffect(() => {
-    const formattedDate = formatDateForChart(challengeDate)
-    setFormattedChallengeDate(formattedDate)
-  }, [challengeDate])
+    if (dailyChallengeCurrency?.date) {
+      const formattedDate = formatDateForChart(dailyChallengeCurrency.date)
+      setFormattedChallengeDate(formattedDate)
+    }
+  }, [dailyChallengeCurrency])
 
   const handleSubmit = useCallback(
     async (values: { guess: string }) => {
-      if (isAnimating || guesses.length >= 6 || !resultId) return
+      if (
+        isAnimating ||
+        guesses.length >= 6 ||
+        !resultId ||
+        !dailyChallengeCurrency
+      )
+        return
+
+      const { decimal, range } = dailyChallengeCurrency
 
       // Pad the guess to 4 digits
       const postGuess = formattedGuess(values.guess, decimal ?? 2)
@@ -183,8 +197,7 @@ export function CurrencyGuess({
       isAnimating,
       guesses.length,
       resultId,
-      decimal,
-      range,
+      dailyChallengeCurrency,
       form,
       setAmountAway,
       setGuessCount,
@@ -198,7 +211,7 @@ export function CurrencyGuess({
     },
     [handleSubmit]
   )
-  if (!resultId) return <Text>Loading...</Text>
+  if (!dailyChallengeCurrency) return <div>Loading...</div>
 
   // Implement the rest of the component logic here, similar to InterestRateGuess
   // This includes rendering the guess input, displaying past guesses, and showing the modal

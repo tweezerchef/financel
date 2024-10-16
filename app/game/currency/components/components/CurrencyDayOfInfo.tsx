@@ -1,5 +1,7 @@
 import { Text, Paper, Container } from '@mantine/core'
 import classes from './ui/CurrencyDayOfInfo.module.css'
+import { formatDate } from '../../../lib/formatDate'
+import { addOrdinalSuffix } from '../../../lib/addOrdinalSuffix'
 
 interface CurrencyDayOfInfoProps {
   date: string
@@ -7,6 +9,12 @@ interface CurrencyDayOfInfoProps {
 }
 
 export function CurrencyDayOfInfo({ date, currency }: CurrencyDayOfInfoProps) {
+  const formattedDate = formatDate(date)
+  const [month, dayWithComma, year] = formattedDate.split(' ')
+  const day = parseInt(dayWithComma, 10)
+  const dayWithSuffix = addOrdinalSuffix(day)
+  const finalDate = `${month} ${dayWithSuffix}, ${year}`
+
   return (
     <Container className={classes.container}>
       <Paper
@@ -18,7 +26,7 @@ export function CurrencyDayOfInfo({ date, currency }: CurrencyDayOfInfoProps) {
       >
         <div className={classes.textContainer}>
           <Text size="lg" className={classes.date}>
-            {date}
+            {finalDate}
           </Text>
           <Text size="md" className={classes.currencyType}>
             {currency}

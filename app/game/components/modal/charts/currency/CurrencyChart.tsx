@@ -49,6 +49,10 @@ export function CurrencyChart({ chartData, date, guess }: CurrencyChartProps) {
 
     const normalizeDate = (dateString: string) => {
       const [month, day] = dateString.split(' ')
+      if (!day) {
+        console.error(`Invalid date format: ${dateString}`)
+        return dateString // Return the original string if it can't be parsed
+      }
       return `${month} ${day.padStart(2, '0')}`
     }
 
