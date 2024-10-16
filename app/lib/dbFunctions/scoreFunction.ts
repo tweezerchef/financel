@@ -28,7 +28,7 @@ const calculateScore = (
   const totalScore = categoryScores.reduce((sum, score) => sum + score, 0)
   const averageScore = totalScore / categoryScores.length
 
-  return Math.round(averageScore * 100) / 100 // Round to 2 decimal places
+  return averageScore // Remove rounding to keep full precision
 }
 
 // Function to update the score in the database
@@ -44,7 +44,7 @@ async function updateResultScore(resultId: string): Promise<void> {
 
   await prisma.result.update({
     where: { id: resultId },
-    data: { score },
+    data: { score }, // Store the full precision score
   })
 }
 

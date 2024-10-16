@@ -2,18 +2,14 @@
 
 'use client'
 
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Container, Transition } from '@mantine/core'
 import { DayOfImage } from './components/DayOfImage'
 import classes from './ui/InterestRateDayOf.module.css'
 import { DayOfInfo } from './components/DayOfInfo'
+import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 
 interface InterestRateDayOfProps {
-  setChallengeDate: Dispatch<SetStateAction<'image' | 'day'>>
-
-  setInitialData: Dispatch<
-    SetStateAction<Array<{ date: string; interestRate: number }>>
-  >
   amountAway: string | null
   guessCount: number | null
 }
@@ -27,38 +23,29 @@ interface DayOfInfo {
 }
 
 export function InterestRateDayOf({
-  setChallengeDate,
-  setInitialData,
   amountAway,
   guessCount,
 }: InterestRateDayOfProps) {
-  const [dayOfInfo, setDayOfInfo] = useState<DayOfInfo | null>(null)
   const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
+  const [isLoading, setIsLoading] = useState(true)
+  const { dailyChallengeInterestRate } = useDailyChallengeContext()
+  const { date, category } = dailyChallengeInterestRate || {}
+  console.log('date', date, 'category', category)
+
+  useEffect(() => {
+    if (dailyChallengeInterestRate) setIsLoading(false)
+  }, [dailyChallengeInterestRate])
 
   useEffect(() => {
     if (dayOfSlide === 'image') {
       const timeoutId = setTimeout(() => {
-        fetch('/game/interestRate/api/dailyChallenge/', {
-          method: 'GET',
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            const { date, category, chartData } = data
-            setDayOfInfo({ date, category, chartData })
-            setInitialData(chartData)
-            setChallengeDate(date)
-          })
-          .then(() => {
-            setDayOfSlide('day')
-          })
-          .catch((error) => {
-            console.error('Error fetching daily challenge:', error)
-          })
-      }, 500)
-
+        setDayOfSlide('day')
+      }, 750)
       return () => clearTimeout(timeoutId)
     }
-  }, [dayOfSlide, setChallengeDate, setDayOfSlide, setInitialData])
+  }, [dayOfSlide])
+
+  if (isLoading) return <div>Loading...</div> // Or any loading component
 
   return (
     <Container className={classes.dayOfContainer}>
@@ -77,18 +64,17 @@ export function InterestRateDayOf({
         </Transition>
 
         <Transition
-          mounted={dayOfSlide === 'day' && dayOfInfo !== null}
+          mounted={
+            dayOfSlide === 'day' && date !== undefined && category !== undefined
+          }
           transition="slide-left"
           duration={400}
           timingFunction="ease"
         >
           {(styles) => (
             <div style={styles} className={classes.slide}>
-              {dayOfInfo && (
-                <DayOfInfo
-                  date={dayOfInfo.date}
-                  category={dayOfInfo.category}
-                />
+              {date && category && (
+                <DayOfInfo date={date} category={category} />
               )}
             </div>
           )}
