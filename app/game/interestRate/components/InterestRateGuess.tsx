@@ -14,36 +14,13 @@ import { v4 as uuidv4 } from 'uuid'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
+import { formatDateForChart } from '../../lib/formatDateForChart'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { GuessDisplay } from './components/GuessDisplay'
 import { NextModal } from '../../components/modal/NextModal'
 import { useUserContext } from '../../../context/user/UserContext'
+import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 import classes from './ui/InterestRateGuess.module.css'
-
-// Add this helper function at the top of the file, outside the component
-function formatDateForChart(date: string): string {
-  try {
-    const [year, month, day] = date.split('T')[0].split('-')
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ]
-    return `${monthNames[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`
-  } catch (error) {
-    console.error('Error formatting date:', error)
-    return date
-  }
-}
 
 interface IRmodalProps {
   opened: boolean
@@ -64,15 +41,11 @@ interface Guess {
 }
 
 interface InterestRateGuessProps {
-  initialData: Array<{ date: string; interestRate: number }>
-  challengeDate: string
   setAmountAway: Dispatch<SetStateAction<string | null>>
   setGuessCount: Dispatch<SetStateAction<number | null>>
 }
 
 export function InterestRateGuess({
-  initialData,
-  challengeDate,
   setAmountAway,
   setGuessCount,
 }: InterestRateGuessProps) {
@@ -83,6 +56,9 @@ export function InterestRateGuess({
   const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
   const { user } = useUserContext()
+  const { dailyChallengeInterestRate } = useDailyChallengeContext()
+  const { challengeDate } = dailyChallengeInterestRate || {}
+  const { chartData } = dailyChallengeInterestRate || {}
   const [finalGuess, setFinalGuess] = useState<number | null>(null)
   const [formattedChallengeDate, setFormattedChallengeDate] =
     useState<string>('')
@@ -108,9 +84,11 @@ export function InterestRateGuess({
   }, [user])
 
   useEffect(() => {
-    const formattedDate = formatDateForChart(challengeDate)
-    setFormattedChallengeDate(formattedDate)
-  }, [challengeDate])
+    if (dailyChallengeInterestRate?.date) {
+      const formattedDate = formatDateForChart(dailyChallengeInterestRate.date)
+      setFormattedChallengeDate(formattedDate)
+    }
+  }, [dailyChallengeInterestRate?.date])
 
   const handleSubmit = useCallback(
     async (values: { guess: string }) => {
@@ -188,11 +166,11 @@ export function InterestRateGuess({
               tries: currentGuessCount,
               time: timeTaken,
               type: 'Interest Rate',
-              chartData: initialData,
+              chartData: chartData || [],
             })
             handlers.open()
-          }, 2500) // 2000 milliseconds = 2 seconds
-        } // Add this closing brace
+          }, 2500)
+        }
       } catch (error) {
         console.error('Submission failed:', error)
         setIsAnimating(false)
@@ -205,7 +183,7 @@ export function InterestRateGuess({
       form,
       setAmountAway,
       setGuessCount,
-      initialData,
+      chartData,
       handlers,
     ]
   )
@@ -244,7 +222,7 @@ export function InterestRateGuess({
           <NextModal
             {...modalProps}
             opened={opened}
-            chartData={initialData}
+            chartData={chartData || []}
             challengeDate={formattedChallengeDate}
             finalGuess={finalGuess}
           />

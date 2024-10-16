@@ -1,5 +1,5 @@
 import { Text, Paper, Container } from '@mantine/core'
-import { formatDate } from '../../../lib/formatDate'
+import { formatDateForChart } from '../../../lib/formatDateForChart'
 import { addOrdinalSuffix } from '../../../lib/addOrdinalSuffix'
 import classes from './ui/DayOfInfo.module.css'
 
@@ -28,9 +28,8 @@ const getDuration = (rateType: string) => {
 
 export function DayOfInfo({ date, category }: DayOfInfoProps) {
   const duration = getDuration(category)
-  console.log('original date', date)
-  const formattedDate = formatDate(date)
-  console.log('formatted date', formattedDate)
+  const formattedDate = formatDateForChart(date)
+  console.log('formattedDate', formattedDate)
   const [month, dayWithComma, year] = formattedDate.split(' ')
   const day = parseInt(dayWithComma, 10)
   const dayWithSuffix = addOrdinalSuffix(day)

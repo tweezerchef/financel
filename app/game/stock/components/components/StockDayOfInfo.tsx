@@ -1,6 +1,6 @@
 import { Text, Paper, Container } from '@mantine/core'
 import classes from './ui/StockDayOfInfo.module.css'
-import { formatDate } from '../../../lib/formatDate'
+import { formatDateForChart } from '../../../lib/formatDateForChart'
 import { addOrdinalSuffix } from '../../../lib/addOrdinalSuffix'
 
 interface StockDayOfInfoProps {
@@ -9,7 +9,7 @@ interface StockDayOfInfoProps {
 }
 
 export function StockDayOfInfo({ date, stockName }: StockDayOfInfoProps) {
-  const formattedDate = formatDate(date)
+  const formattedDate = formatDateForChart(date)
   const [month, dayWithComma, year] = formattedDate.split(' ')
   const day = parseInt(dayWithComma, 10)
   const dayWithSuffix = addOrdinalSuffix(day)
