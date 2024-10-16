@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '../../../lib/prisma/prisma'
 import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
+import { getChartDataForStock } from '../../../lib/dbFunctions/getChartDataForStock'
 
 export async function GET() {
   try {
@@ -68,11 +69,6 @@ export async function GET() {
         { status: 404 }
       )
 
-    // const currencyChartData =
-    //   (dailyChallenge.currencyYearData?.dataPoints as Array<{
-    //     date: string
-    //     value: number
-    //   }>) || []
     const currencyChartData = await getChartDataForCurrency({
       dailyChallengeId: dailyChallenge.id,
     })
@@ -81,12 +77,9 @@ export async function GET() {
         date: string
         rate: number
       }>) || []
-    const stockChartData =
-      (dailyChallenge.stockYearData?.dataPoints as Array<{
-        date: string
-        price: number
-      }>) || []
-
+    const stockChartData = await getChartDataForStock({
+      dailyChallengeId: dailyChallenge.id,
+    })
     // Calculate the range of values in currencyChartData
     const currencyValues = currencyChartData.map((point) => point.value)
     const currencyMinValue = Math.min(...currencyValues)
