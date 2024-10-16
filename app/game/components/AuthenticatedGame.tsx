@@ -22,10 +22,12 @@ export function AuthenticatedGame() {
           path = '/game/stock'
           break
         default:
-          path = '/game'
+          path = '/game/final'
       }
       router.push(path)
     }
+    // Handle the case when nextCategory is null
+    else router.push('/game/final')
   }, [user, router])
 
   // Render loading state or null while redirecting
