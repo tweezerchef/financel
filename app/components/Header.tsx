@@ -18,7 +18,8 @@ export function Header() {
           src="/loginHeader.webp"
           alt="Financel"
           fill
-          quality={100}
+          sizes="width: 500px, height: 309px"
+          quality={90}
           priority
         />
       </AspectRatio>
