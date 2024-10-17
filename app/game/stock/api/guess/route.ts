@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ResultCategory } from '@prisma/client'
 import { stockArrowDecider } from './stockArrowDecider'
+import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
 
 import prisma from '../../../../lib/prisma/prisma'
 
@@ -67,8 +68,10 @@ export async function POST(request: NextRequest) {
       }),
     ])
     let timeTaken
-    if (isComplete)
-      timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
+    if (isComplete) {
+      timeTaken = await calculateTimeTaken(isComplete, updatedCategory, now)
+      await scoreFunction(resultId)
+    }
 
     return NextResponse.json(
       {
@@ -143,7 +146,7 @@ async function updateResultCategory(
   })
 }
 
-function calculateTimeTaken(
+async function calculateTimeTaken(
   isComplete: boolean,
   category: ResultCategory,
   now: Date
@@ -152,12 +155,10 @@ function calculateTimeTaken(
     const timeTaken = Math.round(
       (now.getTime() - category.startTime.getTime()) / 1000
     )
-    prisma.resultCategory
-      .update({
-        where: { id: category.id },
-        data: { timeTaken },
-      })
-      .catch(console.error) // Fire and forget
+    await prisma.resultCategory.update({
+      where: { id: category.id },
+      data: { timeTaken },
+    })
     return timeTaken
   }
   return undefined

@@ -8,36 +8,13 @@ import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { v4 as uuidv4 } from 'uuid'
 import { formattedGuess } from '../../lib/formattedGuess'
+import { formatDateForChart } from '../../lib/formatDateForChart'
 import { useUserContext } from '../../../context/user/UserContext'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 import { NextModal } from '../../components/modal/NextModal'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { StockGuessDisplay } from './components/StockGuessDisplay'
 import classes from './ui/StockGuess.module.css'
-
-function formatDateForChart(date: string): string {
-  try {
-    const [year, month, day] = date.split('T')[0].split('-')
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ]
-    return `${monthNames[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`
-  } catch (error) {
-    console.error('Error formatting date:', error)
-    return date
-  }
-}
 
 type DayOf = 'image' | 'day'
 

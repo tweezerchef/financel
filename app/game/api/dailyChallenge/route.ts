@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import prisma from '../../../lib/prisma/prisma'
 import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
 import { getChartDataForStock } from '../../../lib/dbFunctions/getChartDataForStock'
+import { getChartDataForInterestRate } from '../../../lib/dbFunctions/getChartDataForInterestRate'
 
 export async function GET() {
   try {
@@ -72,11 +73,10 @@ export async function GET() {
     const currencyChartData = await getChartDataForCurrency({
       dailyChallengeId: dailyChallenge.id,
     })
-    const interestRateChartData =
-      (dailyChallenge.interestRateYearData?.dataPoints as Array<{
-        date: string
-        rate: number
-      }>) || []
+    const interestRateChartData = await getChartDataForInterestRate({
+      dailyChallengeId: dailyChallenge.id,
+    })
+
     const stockChartData = await getChartDataForStock({
       dailyChallengeId: dailyChallenge.id,
     })
