@@ -27,7 +27,7 @@ export function StockDayOf({ amountAway, guessCount }: StockDayOfProps) {
     if (dayOfSlide === 'image') {
       const timeoutId = setTimeout(() => {
         setDayOfSlide('day')
-      }, 500)
+      }, 750)
       return () => clearTimeout(timeoutId)
     }
   }, [dayOfSlide])

@@ -43,10 +43,14 @@ export async function createDailyChallenge() {
   )
   console.log(`Today's date: ${dateOnly.toISOString().split('T')[0]}`)
 
-  // Get all dates that have interest rate data
-  const datesWithBothData = await prisma.dates.findMany({
+  // Get all dates that have interest rate, currency, and stock data
+  const datesWithAllData = await prisma.dates.findMany({
     where: {
-      AND: [{ interestRates: { some: {} } }, { currencies: { some: {} } }],
+      AND: [
+        { interestRates: { some: {} } },
+        { currencies: { some: {} } },
+        { stockPrices: { some: {} } },
+      ],
     },
     select: {
       id: true,
@@ -54,14 +58,14 @@ export async function createDailyChallenge() {
     },
   })
 
-  if (datesWithBothData.length === 0) {
-    console.error('No dates with both interest rate and currency data found')
+  if (datesWithAllData.length === 0) {
+    console.error('No dates with interest rate, currency, and stock data found')
     return
   }
 
   // Randomly select a date
   const randomDate =
-    datesWithBothData[Math.floor(Math.random() * datesWithBothData.length)]
+    datesWithAllData[Math.floor(Math.random() * datesWithAllData.length)]
 
   console.log(`Selected date: ${randomDate.date.toISOString().split('T')[0]}`)
 
