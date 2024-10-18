@@ -13,11 +13,12 @@ function compareGuessWithRate(
   decimal: number
 ): [number, number][] {
   const guessStr = guess.toFixed(decimal).replace('.', '')
-  const rateStr = currencyPrice.toFixed(decimal).replace('.', '')
+  const currencyStr = currencyPrice.toFixed(decimal).replace('.', '')
   const result: [number, number][] = []
 
   for (let i = 0; i < decimal; i++)
-    if (guessStr[i] === rateStr[i]) result.push([i, parseInt(guessStr[i], 10)])
+    if (guessStr[i] === currencyStr[i])
+      result.push([i, parseInt(guessStr[i], 10)])
 
   return result
 }
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
       today.getMonth(),
       today.getDate()
     )
-    const { guess, resultId, guessCount, decimal, range } = await request.json()
+    const { guess, resultId, guessCount, decimal } = await request.json()
 
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
     if (!resultId) throw new Error('resultId is required')
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     const currencyValue = dailyChallenge.currencyValue?.value.toNumber() ?? 0
     console.log('currencyValue', currencyValue)
 
-    const result = currencyArrowDecider(guess, currencyValue, guess)
+    const result = currencyArrowDecider(guess, currencyValue)
     const correctDigits = compareGuessWithRate(guess, currencyValue, decimal)
     const isCorrect =
       correctDigits.length === decimal && guess === currencyValue

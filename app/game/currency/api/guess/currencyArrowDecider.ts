@@ -63,8 +63,7 @@ function calculateArrowAmount(
 
 export function currencyArrowDecider(
   guess: number,
-  actual: number,
-  correct: number
+  actual: number
 ): ArrowDeciderReturn {
   if (guess === actual)
     return {
@@ -75,7 +74,7 @@ export function currencyArrowDecider(
     }
 
   const difference = Math.abs(guess - actual)
-  const result = calculateArrowAmount(difference, correct)
+  const result = calculateArrowAmount(difference, actual)
 
   const direction = guess > actual ? 'up' : 'down'
 
