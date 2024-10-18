@@ -13,25 +13,21 @@ const calculateScore = (
     let score = 100
 
     // Deduct points based on tries (up to 6 tries)
-    const tryDeductions = [0, 15, 15, 15, 15, 15, 15]
-    for (let i = 1; i <= Math.min(category.tries, 6); i++)
-      score -= tryDeductions[i]
+    const tryDeductions = [0, 5, 10, 15, 20, 25, 30]
+    score -= tryDeductions[Math.min(category.tries, 6)]
 
     // Deduct points based on time (1 point per 10 seconds)
     score -= Math.ceil(category.timeTaken / 10)
 
-    // If the guess was incorrect after 6 tries, adjust score based on percentClose
-    if (
-      !category.correct &&
-      category.tries >= 6 &&
-      category.percentClose !== null
-    ) {
-      // Ensure percentClose is a number and use it in calculation
-      const percentClose = Number(category.percentClose)
-      score *= (100 - percentClose) / 100
-    } else if (!category.correct)
-      // If incorrect and percentClose is not available, score is 0
-      score = 0
+    // Adjust score based on correctness and percentClose
+    if (!category.correct)
+      if (category.percentClose !== null) {
+        // Use percentClose for the final incorrect guess
+        const percentClose = Number(category.percentClose)
+        score *= (100 - percentClose) / 100
+      }
+      // If percentClose is not available for an incorrect guess, apply a significant penalty
+      else score *= 0.1 // 90% penalty
 
     // Ensure score doesn't go below 0
     return Math.max(0, score)

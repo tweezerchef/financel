@@ -78,19 +78,10 @@ export function currencyArrowDecider(
 
   const direction = guess > actual ? 'up' : 'down'
 
-  // Handle the new return type from calculateArrowAmount
-  if (typeof result === 'object')
-    return {
-      percentClose: result.percentClose,
-      direction,
-      amount: result.arrows,
-      difference: result.difference,
-    }
-
   return {
-    percentClose: 100,
-    difference: result,
+    percentClose: result.percentClose,
     direction,
-    amount: result,
+    amount: result.arrows,
+    difference: result.difference,
   }
 }
