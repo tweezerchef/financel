@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
-import { createDailyChallenge } from '../../lib/dbFunctions/createDailyChallenge'
+import { runDailyChallenge } from '../../lib/dbFunctions/runDailyChallenge'
 
 export async function GET() {
   console.log('Cron job running')
 
   try {
-    await createDailyChallenge()
+    await runDailyChallenge()
     return NextResponse.json(
       { message: 'Cron job ran successfully' },
       { status: 200 }
