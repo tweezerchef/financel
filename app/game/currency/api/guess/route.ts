@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
+        result.percentClose,
         now
       ),
       prisma.result.update({
@@ -126,6 +127,7 @@ async function updateResultCategory(
   isCorrect: boolean,
   guessCount: number,
   isComplete: boolean,
+  percentClose: number,
   now: Date
 ) {
   return prisma.resultCategory.upsert({
@@ -138,6 +140,7 @@ async function updateResultCategory(
       tries: guessCount,
       completed: isComplete,
       endTime: isComplete ? now : undefined,
+      percentClose,
       startTime: now,
     },
     update: {
@@ -146,6 +149,7 @@ async function updateResultCategory(
       tries: guessCount,
       completed: isComplete,
       endTime: isComplete ? now : undefined,
+      percentClose,
     },
   })
 }
