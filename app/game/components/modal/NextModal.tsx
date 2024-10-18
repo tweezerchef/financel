@@ -56,7 +56,7 @@ interface NextModalProps {
   tries?: number
   time?: number
   challengeDate: string
-  finalGuess: number | undefined
+  finalGuess: number | null
   type: 'Interest Rate' | 'Currency Price' | 'Stock Price'
   chartData: ChartDataPoint[]
   currency?: string
@@ -126,16 +126,16 @@ export function NextModal({
         : type === 'Stock Price'
           ? 'final'
           : ''
-
+  console.log('finalGuess', finalGuess)
   const renderChart = () => {
-    if (!chartData && !chartData) return null
+    if (!chartData) return null
 
     switch (type) {
       case 'Interest Rate':
         return (
           <InterestRateChart
             date={challengeDate}
-            guess={finalGuess}
+            guess={finalGuess !== null ? finalGuess : undefined}
             chartData={
               chartData as Array<{ date: string; interestRate: number }>
             }
@@ -145,7 +145,7 @@ export function NextModal({
         return (
           <CurrencyChart
             date={formattedDate}
-            guess={finalGuess}
+            guess={finalGuess !== null ? finalGuess : undefined}
             chartData={chartData as Array<{ date: string; value: number }>}
           />
         )
@@ -153,7 +153,7 @@ export function NextModal({
         return (
           <StockChart
             date={challengeDate}
-            guess={finalGuess}
+            guess={finalGuess !== null ? finalGuess : undefined}
             chartData={chartData as Array<{ date: string; price: number }>}
           />
         )

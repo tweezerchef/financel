@@ -34,6 +34,13 @@ enum IRCategories {
   T_OVERNIGHT
 }
 
+enum LeaderboardType {
+  TODAY
+  YESTERDAY
+  WEEKLY
+  MONTHLY
+}
+
 model User {
   id         String    @id @default(uuid())
   email      String    @unique
@@ -160,16 +167,41 @@ model CurrencyValue {
   DailyChallenge DailyChallenge[]
 }
 
+model Leaderboard {
+  id                String             @id @default(uuid())
+  type              LeaderboardType
+  startDate         DateTime           @db.Date
+  endDate           DateTime           @db.Date
+  entries           LeaderboardEntry[]
+  totalParticipants Int                @default(0)
+  lastCalculated    DateTime           @default(now())
+
+  @@unique([type, startDate, endDate])
+  @@index([type, startDate, endDate])
+}
+
+model LeaderboardEntry {
+  id            String      @id @default(uuid())
+  leaderboardId String
+  leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id])
+  resultId      String      @unique
+  result        Result      @relation(fields: [resultId], references: [id])
+  rank          Int
+
+  @@index([leaderboardId, rank])
+}
+
 model Result {
-  id             String           @id @default(uuid())
-  userId         String?
-  guestId        String?
-  date           DateTime         @db.Date
-  user           User?            @relation(fields: [userId], references: [id])
-  guest          Guest?           @relation(fields: [guestId], references: [id])
-  categories     ResultCategory[]
-  score          Decimal          @default(0)
-  DailyChallenge DailyChallenge[]
+  id               String            @id @default(uuid())
+  userId           String?
+  guestId          String?
+  date             DateTime          @db.Date
+  user             User?             @relation(fields: [userId], references: [id])
+  guest            Guest?            @relation(fields: [guestId], references: [id])
+  categories       ResultCategory[]
+  score            Decimal           @default(0)
+  DailyChallenge   DailyChallenge[]
+  leaderboardEntry LeaderboardEntry?
 
   @@unique([guestId, date])
   @@unique([userId, date])
@@ -178,17 +210,18 @@ model Result {
 }
 
 model ResultCategory {
-  id        String    @id @default(uuid())
-  resultId  String
-  category  Category
-  guess     Decimal   @db.Decimal(10, 2)
-  correct   Boolean   @default(false)
-  tries     Int
-  startTime DateTime  @default(now())
-  completed Boolean   @default(false)
-  endTime   DateTime?
-  timeTaken Int?
-  result    Result    @relation(fields: [resultId], references: [id])
+  id           String    @id @default(uuid())
+  resultId     String
+  category     Category
+  guess        Decimal   @db.Decimal(10, 2)
+  correct      Boolean   @default(false)
+  tries        Int
+  startTime    DateTime  @default(now())
+  completed    Boolean   @default(false)
+  endTime      DateTime?
+  timeTaken    Int?
+  percentClose Decimal?  @db.Decimal(10, 2)
+  result       Result    @relation(fields: [resultId], references: [id])
 
   @@unique([resultId, category])
 }

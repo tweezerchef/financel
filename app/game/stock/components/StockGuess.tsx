@@ -163,7 +163,7 @@ export function StockGuess({
           (isComplete && !isAnimating) ||
           (guessCount.current === 7 && !isAnimating)
         ) {
-          setFinalGuess(parseFloat(unformattedGuess))
+          setFinalGuess(postGuess)
           setTimeout(() => {
             setModalProps({
               opened: true,

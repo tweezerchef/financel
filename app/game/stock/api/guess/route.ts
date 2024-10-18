@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const stockValue = dailyChallenge.stockPrice?.price.toNumber() ?? 0
     console.log('stockValue', stockValue)
 
-    const result = stockArrowDecider(guess, stockValue, guess)
+    const result = stockArrowDecider(guess, stockValue)
     const correctDigits = compareGuessWithRate(guess, stockValue, decimal)
     const isCorrect = correctDigits.length === decimal && guess === stockValue
     const isComplete = isCorrect || guessCount === 6
@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
+        result.percentClose,
         now
       ),
       prisma.result.update({
@@ -122,6 +123,7 @@ async function updateResultCategory(
   isCorrect: boolean,
   guessCount: number,
   isComplete: boolean,
+  percentClose: number,
   now: Date
 ) {
   return prisma.resultCategory.upsert({
@@ -135,6 +137,7 @@ async function updateResultCategory(
       completed: isComplete,
       endTime: isComplete ? now : undefined,
       startTime: now,
+      percentClose,
     },
     update: {
       guess,
@@ -142,6 +145,7 @@ async function updateResultCategory(
       tries: guessCount,
       completed: isComplete,
       endTime: isComplete ? now : undefined,
+      percentClose,
     },
   })
 }
