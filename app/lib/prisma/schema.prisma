@@ -210,17 +210,18 @@ model Result {
 }
 
 model ResultCategory {
-  id        String    @id @default(uuid())
-  resultId  String
-  category  Category
-  guess     Decimal   @db.Decimal(10, 2)
-  correct   Boolean   @default(false)
-  tries     Int
-  startTime DateTime  @default(now())
-  completed Boolean   @default(false)
-  endTime   DateTime?
-  timeTaken Int?
-  result    Result    @relation(fields: [resultId], references: [id])
+  id             String    @id @default(uuid())
+  resultId       String
+  category       Category
+  guess          Decimal   @db.Decimal(10, 2)
+  correct        Boolean   @default(false)
+  tries          Int
+  startTime      DateTime  @default(now())
+  completed      Boolean   @default(false)
+  endTime        DateTime?
+  timeTaken      Int?
+  percentClosest Decimal?  @db.Decimal(10, 2)
+  result         Result    @relation(fields: [resultId], references: [id])
 
   @@unique([resultId, category])
 }
