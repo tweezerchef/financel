@@ -11,6 +11,7 @@ import {
   useEffect,
   useCallback,
 } from 'react'
+import { useSession } from 'next-auth/react'
 
 type UserType = 'guest' | 'registered'
 type Category = 'INTEREST_RATE' | 'CURRENCY' | 'STOCK'
@@ -31,10 +32,6 @@ interface UserContextType {
   refreshSignedAvatarUrl: () => Promise<void>
 }
 
-interface UserProviderProps {
-  children: ReactNode
-}
-
 const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const useUserContext = () => {
@@ -45,8 +42,44 @@ export const useUserContext = () => {
   return context
 }
 
-export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
+export const UserProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<UserData | null>(null)
+  const { data: session, status } = useSession()
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (status === 'authenticated' && session?.user?.id)
+        try {
+          const response = await fetch('/auth/api/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            // Include the session token if needed
+            // body: JSON.stringify({ sessionToken: session.accessToken }),
+          })
+          if (response.ok) {
+            const userData = await response.json()
+            setUser({
+              id: userData.id,
+              type: 'registered',
+              resultId: userData.resultId,
+              nextCategory: userData.nextCategory,
+              username: userData.username,
+              signedAvatarUrl: userData.signedAvatarUrl,
+              signedAvatarExpiration: userData.signedAvatarExpiration,
+            })
+          }
+        } catch (error) {
+          console.error('Failed to fetch user data:', error)
+        }
+      else if (status === 'unauthenticated') setUser(null)
+    }
+
+    fetchUserData()
+  }, [status, session])
 
   const refreshSignedAvatarUrl = useCallback(async () => {
     if (user?.signedAvatarUrl)
@@ -69,36 +102,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }
   }, [user?.signedAvatarUrl])
 
-  useEffect(() => {
-    // Load user data from localStorage on initial render
-    const storedUser = localStorage.getItem('userData')
-    if (storedUser) setUser(JSON.parse(storedUser))
-  }, [])
-
-  useEffect(() => {
-    if (user?.signedAvatarExpiration) {
-      const timeUntilExpiration = user.signedAvatarExpiration - Date.now()
-      if (timeUntilExpiration > 0) {
-        const timer = setTimeout(refreshSignedAvatarUrl, timeUntilExpiration)
-        return () => clearTimeout(timer)
-      }
-      refreshSignedAvatarUrl()
-    }
-  }, [user?.signedAvatarExpiration, refreshSignedAvatarUrl])
-
-  const setUserAndStore = (userData: UserData | null) => {
-    setUser(userData)
-    if (userData) localStorage.setItem('userData', JSON.stringify(userData))
-    else localStorage.removeItem('userData')
-  }
-
   const value = useMemo(
     () => ({
       user,
-      setUser: setUserAndStore,
+      setUser,
       refreshSignedAvatarUrl,
     }),
-    [user, refreshSignedAvatarUrl]
+    [refreshSignedAvatarUrl, user]
   )
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>
