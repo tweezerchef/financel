@@ -1,21 +1,14 @@
 import 'next-auth'
 
-declare module 'next-auth' {
-  interface Session {
-    user?: {
-      id?: string
-      name?: string | null
-      email?: string | null
-      image?: string | null
-    }
-    guest?: {
-      id?: string
-    }
-  }
-}
+import { User as PrismaUser } from '@prisma/client'
 
-declare module 'next-auth/jwt' {
-  interface JWT {
-    id?: string
+declare module 'next-auth' {
+  interface User extends PrismaUser {}
+  interface Session {
+    user: {
+      id: string
+      email: string
+      name?: string | null
+    } & User
   }
 }

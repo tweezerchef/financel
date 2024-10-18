@@ -13,7 +13,6 @@ import {
   Stack,
 } from '@mantine/core'
 import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
 import { RegisterButton } from './buttons/RegisterButton'
 import classes from './ui/Login.module.css'
 import { useUserContext } from '../context/user/UserContext'
@@ -49,48 +48,39 @@ export function Login(props: PaperProps) {
     setIsLoading(true)
     const { email, password } = values
     try {
-      // Use NextAuth signIn method
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-      })
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      }
 
-      if (result?.error) {
-        console.error('Login failed:', result.error)
-        alert(result.error)
-      } else {
-        // Fetch additional user info
-        const response = await fetch('auth/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+      // login logic
+      const response = await fetch('auth/api/login', requestOptions)
+      const user = await response.json()
+
+      if (response.ok && user.token) {
+        localStorage.setItem('token', user.token)
+        setUser({
+          id: user.id,
+          type: 'registered',
+          resultId: user.resultId,
+          nextCategory: user.nextCategory,
+          signedAvatarUrl: user.signedAvatarUrl,
+          signedAvatarExpiration: user.signedAvatarExpiration,
+          username: user.username,
         })
-        const userData = await response.json()
-
-        if (response.ok) {
-          setUser({
-            id: userData.id,
-            type: 'registered',
-            resultId: userData.resultId,
-            nextCategory: userData.nextCategory,
-            signedAvatarUrl: userData.signedAvatarUrl,
-            signedAvatarExpiration: userData.signedAvatarExpiration,
-            username: userData.username,
-          })
-          router.push('/game')
-        } else {
-          console.error('Failed to fetch user data:', userData.message)
-          alert(userData.message)
-        }
+        router.push('/game')
+      } else {
+        console.error('Guest login failed:', user.message)
+        alert(user.message)
       }
     } catch (error) {
-      console.error('Login error:', error)
-      alert('An error occurred during login.')
+      console.error('Guest login error:', error)
+      alert('An error occurred during guest login.')
     } finally {
       setIsLoading(false)
     }
   }
-
   return (
     <Paper p="md" {...props} className={classes.login}>
       <Center mt="sm">

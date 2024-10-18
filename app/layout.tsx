@@ -1,59 +1,17 @@
-/* eslint-disable react/jsx-no-duplicate-props */
-
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import {
-  Center,
-  ColorSchemeScript,
-  MantineProvider,
-  createTheme,
-  MantineColorsTuple,
-} from '@mantine/core'
+import { ColorSchemeScript, Center } from '@mantine/core'
 import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
 import { DailyChallengeInitializer } from './lib/DailyChallengeInitializer'
-import { UserProvider } from './context/user/UserContext'
-import { DailyChallengeProvider } from './context/dailyChallenge/DailyChallengeContext'
-
-const myColor: MantineColorsTuple = [
-  '#e0fbff',
-  '#cbf2ff',
-  '#9ae2ff',
-  '#64d2ff',
-  '#3cc5fe',
-  '#23bcfe',
-  '#09b8ff',
-  '#00a1e4',
-  '#0090cd',
-  '#007cb5',
-]
-const yellow: MantineColorsTuple = [
-  '#fffee1',
-  '#fffccb',
-  '#fff99a',
-  '#fff564',
-  '#fff238',
-  '#fff11d',
-  '#fff009',
-  '#e3d500',
-  '#c9bd00',
-  '#ada300',
-]
+import { Providers } from './components/Providers'
+import { theme } from './ui/theme'
 
 const tickerFont = localFont({
   src: './SUBWT___.ttf',
   display: 'swap',
-})
-
-const theme = createTheme({
-  colors: {
-    myColor,
-    yellow,
-  },
-  primaryColor: 'myColor',
-  primaryShade: 6,
 })
 
 export const metadata: Metadata = {
@@ -75,19 +33,15 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className={classes.body}>
-        <main>
-          <MantineProvider theme={theme}>
+        <Providers theme={theme}>
+          <main>
             <div className={classes.rootContainer}>
-              <UserProvider>
-                <DailyChallengeProvider>
-                  <DailyChallengeInitializer>
-                    <Center>{children}</Center>
-                  </DailyChallengeInitializer>
-                </DailyChallengeProvider>
-              </UserProvider>
+              <DailyChallengeInitializer>
+                <Center>{children}</Center>
+              </DailyChallengeInitializer>
             </div>
-          </MantineProvider>
-        </main>
+          </main>
+        </Providers>
         <SpeedInsights />
       </body>
     </html>

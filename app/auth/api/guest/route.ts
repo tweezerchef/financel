@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
+// import { Session } from 'next-auth'
 import { prisma } from '../../../lib/prisma/prisma'
-import { authOptions } from '../nextAuth/[...nextauth]'
+import { authOptions } from '../../../api/auth/[...nextauth]/authOptions'
+
+// Add this type declaration at the top of your file
+declare module 'next-auth' {
+  interface Session {
+    guest?: { id: string }
+  }
+}
 
 export async function POST(req: NextRequest) {
   const today = new Date()
@@ -10,6 +18,7 @@ export async function POST(req: NextRequest) {
     today.getMonth(),
     today.getDate()
   )
+
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
 
@@ -19,7 +28,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
 
-    // Combine guest find/create and result find/create operations
     const [guest, result, session] = await prisma.$transaction(
       async (prisma) => {
         const guest = await prisma.guest.upsert({
@@ -53,15 +61,12 @@ export async function POST(req: NextRequest) {
       }
     )
 
-    // Determine the next uncompleted category
     const categoryOrder = ['INTEREST_RATE', 'CURRENCY', 'STOCK']
     const nextCategory =
-      categoryOrder.find((category) => {
-        const categoryResult = result.categories.find(
-          (c) => c.category === category
-        )
-        return !categoryResult || !categoryResult.completed
-      }) || null
+      categoryOrder.find(
+        (category) =>
+          !result.categories.find((c) => c.category === category && c.completed)
+      ) || null
 
     return NextResponse.json({
       sessionToken: session.sessionToken,
@@ -89,19 +94,11 @@ export async function GET() {
   const guestId = session.guest?.id
 
   try {
-    let result
-    if (userId)
-      result = await prisma.result.findFirst({
-        where: { userId },
-        orderBy: { date: 'desc' },
-        include: { categories: true },
-      })
-    else if (guestId)
-      result = await prisma.result.findFirst({
-        where: { guestId },
-        orderBy: { date: 'desc' },
-        include: { categories: true },
-      })
+    const result = await prisma.result.findFirst({
+      where: userId ? { userId } : { guestId },
+      orderBy: { date: 'desc' },
+      include: { categories: true },
+    })
 
     if (!result)
       return NextResponse.json({ message: 'No result found' }, { status: 404 })

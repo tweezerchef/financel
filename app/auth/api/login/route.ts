@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '../nextAuth/[...nextauth]'
+import { authOptions } from '../../../api/auth/[...nextauth]/authOptions'
 import { prisma } from '../../../lib/prisma/prisma'
 import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
 
