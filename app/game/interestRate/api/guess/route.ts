@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ResultCategory } from '@prisma/client'
 import { arrowDecider } from './arrowDecider'
-import prisma from '../../../../lib/prisma/prisma'
+import { prisma } from '../../../../lib/prisma/prisma'
 
 function compareGuessWithRate(guess: number, rate: number): [number, number][] {
   const guessStr = guess.toFixed(2).replace('.', '')

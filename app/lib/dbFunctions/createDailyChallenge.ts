@@ -2,7 +2,7 @@
 /* eslint-disable consistent-return */
 import { Prisma } from '@prisma/client'
 
-import prisma from '../prisma/prisma'
+import { prisma } from '../prisma/prisma'
 
 function addDays(date: Date, days: number): Date {
   const result = new Date(date)

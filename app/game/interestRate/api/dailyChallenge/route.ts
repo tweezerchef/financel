@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import prisma from '../../../../lib/prisma/prisma'
+import { prisma } from '../../../../lib/prisma/prisma'
 import { getChartDataForInterestRate } from '../../../../lib/dbFunctions/getChartDataForInterestRate'
 
 export async function GET() {

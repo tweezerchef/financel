@@ -5,7 +5,7 @@
 import { parse } from 'csv-parse/sync'
 import fs from 'fs'
 import path from 'path'
-import prisma from '../../../../lib/prisma/prisma'
+import { prisma } from '../../../../lib/prisma/prisma'
 
 type IRCategory = 'T_1' | 'T_5' | 'T_10' | 'T_20' | 'T_30'
 

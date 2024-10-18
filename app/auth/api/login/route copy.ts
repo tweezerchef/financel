@@ -1,14 +1,10 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '../nextAuth/[...nextauth]'
+import bcrypt from 'bcrypt'
+import { NextRequest, NextResponse } from 'next/server'
+import jwt from 'jsonwebtoken'
 import { prisma } from '../../../lib/prisma/prisma'
 import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
 
-// Helper functions (inferContentType and extractS3Key) remain unchanged
-function extractS3Key(url: string): string {
-  const match = url.match(/amazonaws\.com\/(.+)/)
-  return match ? match[1] : url
-}
+// Helper function to infer content type from file extension
 function inferContentType(filename: string): string {
   const ext = filename.split('.').pop()?.toLowerCase()
   switch (ext) {
@@ -25,29 +21,40 @@ function inferContentType(filename: string): string {
       return 'application/octet-stream' // Default to binary data if unknown
   }
 }
-export async function POST() {
+
+function extractS3Key(url: string): string {
+  const match = url.match(/amazonaws\.com\/(.+)/)
+  return match ? match[1] : url
+}
+
+interface Req extends NextRequest {
+  json(): Promise<{ email: string; password: string }>
+}
+
+export async function POST(req: Req) {
+  const today = new Date()
+  const dateOnly = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  )
   try {
-    const session = await getServerSession(authOptions)
-
-    if (!session || !session.user)
-      return NextResponse.json(
-        { message: 'Not authenticated' },
-        { status: 401 }
-      )
-
-    const userId = session.user.id
-
+    const { email, password } = await req.json()
+    // Check if the user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { email },
       select: {
         id: true,
+        password: true,
         avatar: true,
         username: true,
       },
     })
-
-    if (!user)
-      return NextResponse.json({ message: 'User not found' }, { status: 404 })
+    if (!user || !(await bcrypt.compare(password, user.password)))
+      return NextResponse.json(
+        { message: 'Invalid email or password.' },
+        { status: 400 }
+      )
 
     const { id, avatar, username } = user
     let signedUrl = null
@@ -58,17 +65,10 @@ export async function POST() {
       signedUrlExpiration = Date.now() + 3600 * 1000 // 1 hour from now
     }
 
-    const today = new Date()
-    const dateOnly = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    )
-
     const result = await prisma.result.upsert({
-      where: { userId_date: { userId: id, date: dateOnly } },
+      where: { userId_date: { userId: user.id, date: dateOnly } },
       update: {},
-      create: { userId: id, date: dateOnly },
+      create: { userId: user.id, date: dateOnly },
       include: {
         categories: {
           orderBy: {
@@ -89,7 +89,14 @@ export async function POST() {
         return !categoryResult || !categoryResult.completed
       }) || null
 
+    // Create a token
+    if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
+
+    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    })
     return NextResponse.json({
+      token,
       id,
       resultId,
       nextCategory,

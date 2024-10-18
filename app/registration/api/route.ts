@@ -8,7 +8,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { getSignedAvatarUrl } from '../../lib/aws/getSignedAvatarUrl'
 import { updateUserAvatar } from '../../lib/dbFunctions/updateUserAvatar'
 
-import prisma from '../../lib/prisma/prisma'
+import { prisma } from '../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData()

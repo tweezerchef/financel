@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server'
-import prisma from '../../../lib/prisma/prisma'
+import { prisma } from '../../../lib/prisma/prisma'
 import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataForCurrency'
 import { getChartDataForStock } from '../../../lib/dbFunctions/getChartDataForStock'
 import { getChartDataForInterestRate } from '../../../lib/dbFunctions/getChartDataForInterestRate'

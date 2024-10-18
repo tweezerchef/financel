@@ -7,7 +7,7 @@
 import { parse } from 'csv-parse/sync'
 import fs from 'fs'
 import path from 'path'
-import prisma from '../../../../lib/prisma/prisma'
+import { prisma } from '../../../../lib/prisma/prisma'
 
 function createDateOnly(dateString: string): Date | null {
   if (!dateString) {

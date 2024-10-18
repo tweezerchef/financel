@@ -9,7 +9,7 @@ import { parse } from 'csv-parse/sync'
 import fs from 'fs'
 import path from 'path'
 import { Prisma } from '@prisma/client'
-import prisma from '../../../../lib/prisma/prisma'
+import { prisma } from '../../../../lib/prisma/prisma'
 
 const MAX_SAFE_VALUE = 999999.999999
 

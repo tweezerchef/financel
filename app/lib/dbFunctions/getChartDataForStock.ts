@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 
-import prisma from '../prisma/prisma'
+import { prisma } from '../prisma/prisma'
 
 interface ChartDataPoint {
   date: string

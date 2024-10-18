@@ -6,7 +6,7 @@ import { ResultCategory } from '@prisma/client'
 import { stockArrowDecider } from './stockArrowDecider'
 import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
 
-import prisma from '../../../../lib/prisma/prisma'
+import { prisma } from '../../../../lib/prisma/prisma'
 
 function compareGuessWithRate(
   guess: number,

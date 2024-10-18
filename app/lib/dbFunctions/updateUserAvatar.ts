@@ -1,4 +1,4 @@
-import prisma from '../prisma/prisma'
+import { prisma } from '../prisma/prisma'
 
 export async function updateUserAvatar(userId: string, avatarUrl: string) {
   try {

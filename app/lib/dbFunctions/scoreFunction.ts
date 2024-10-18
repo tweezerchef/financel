@@ -1,43 +1,49 @@
 /* eslint-disable no-plusplus */
 import { Result, ResultCategory } from '@prisma/client'
-import prisma from '../prisma/prisma'
+import { prisma } from '../prisma/prisma'
 
 const calculateScore = (
   result: Result & { categories: ResultCategory[] }
 ): number => {
-  if (result.categories.length === 0) return 0 // Return 0 if there are no categories
+  // If there are no categories, return a score of 0
+  if (result.categories.length === 0) return 0
 
+  // Calculate scores for each category
   const categoryScores = result.categories.map((category) => {
-    if (!category.completed || category.timeTaken === null) return 0 // Return 0 for incomplete or invalid categories
+    // If the category is not completed or time taken is missing, score is 0
+    if (!category.completed || category.timeTaken === null) return 0
 
+    // Start with a perfect score of 100
     let score = 100
 
-    // Deduct points based on tries (up to 6 tries)
+    // List of point deductions based on number of tries (0 to 6 tries)
     const tryDeductions = [0, 5, 10, 15, 20, 25, 30]
+    // Deduct points based on the number of tries (max 6 tries)
     score -= tryDeductions[Math.min(category.tries, 6)]
 
-    // Deduct points based on time (1 point per 10 seconds)
+    // Deduct 1 point for every 10 seconds taken
     score -= Math.ceil(category.timeTaken / 10)
 
-    // Adjust score based on correctness and percentClose
+    // If the answer is incorrect, adjust the score
     if (!category.correct)
       if (category.percentClose !== null) {
-        // Use percentClose for the final incorrect guess
+        // If we know how close the answer was, reduce score based on that
         const percentClose = Number(category.percentClose)
         score *= (100 - percentClose) / 100
       }
-      // If percentClose is not available for an incorrect guess, apply a significant penalty
-      else score *= 0.1 // 90% penalty
+      // If we don't know how close it was, apply a big penalty (90% reduction)
+      else score *= 0.1
 
-    // Ensure score doesn't go below 0
+    // Make sure the score doesn't go below 0
     return Math.max(0, score)
   })
 
-  // Calculate average score across all categories
+  // Calculate the average score across all categories
   const totalScore = categoryScores.reduce((sum, score) => sum + score, 0)
   const averageScore = totalScore / categoryScores.length
 
-  return averageScore // Remove rounding to keep full precision
+  // Return the average score without rounding
+  return averageScore
 }
 
 // Function to update the score in the database

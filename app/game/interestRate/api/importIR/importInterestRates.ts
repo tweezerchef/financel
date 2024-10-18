@@ -4,7 +4,7 @@
 import { parse } from 'csv-parse'
 import fs from 'fs'
 import path from 'path'
-import prisma from '../../../../lib/prisma/prisma'
+import { prisma } from '../../../../lib/prisma/prisma'
 
 export async function importInterestRates() {
   const csvFilePath = path.resolve(process.cwd(), 'public/InterestRates.csv')

@@ -8,7 +8,7 @@ import { parse } from 'csv-parse/sync'
 import fs from 'fs'
 import path from 'path'
 import { Decimal } from '@prisma/client/runtime/library'
-import prisma from '../../../../lib/prisma/prisma'
+import { prisma } from '../../../../lib/prisma/prisma'
 
 function createDateOnly(dateString: string): Date {
   const [year, month, day] = dateString.split('-').map(Number)
