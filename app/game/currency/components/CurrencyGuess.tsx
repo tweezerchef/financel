@@ -108,10 +108,11 @@ export function CurrencyGuess({
 
       // Pad the guess to 4 digits
       const postGuess = formattedGuess(values.guess, decimal ?? 2)
-
+      console.log('postGuess', postGuess)
       // Calculate the numeric guess by inserting the decimal point at the correct position
 
       const unformattedGuess = values.guess // Default to 2 if decimal is undefined
+      console.log('unformattedGuess', unformattedGuess)
 
       try {
         setIsAnimating(true)
@@ -173,7 +174,9 @@ export function CurrencyGuess({
           (isComplete && !isAnimating) ||
           (guessCount.current === 7 && !isAnimating)
         ) {
-          setFinalGuess(parseFloat(unformattedGuess))
+          // Convert the guess to a number, preserving decimal places
+
+          setFinalGuess(postGuess)
           setTimeout(() => {
             setModalProps({
               opened: true,
@@ -212,9 +215,6 @@ export function CurrencyGuess({
     [handleSubmit]
   )
   if (!dailyChallengeCurrency) return <div>Loading...</div>
-
-  // Implement the rest of the component logic here, similar to InterestRateGuess
-  // This includes rendering the guess input, displaying past guesses, and showing the modal
 
   return (
     <div className={classes.stack}>
