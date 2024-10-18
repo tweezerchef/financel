@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
 
     const rateNumber = dailyChallenge.interestRate.rate.toNumber()
     const difference = Math.abs(guess - rateNumber)
+    const percentageDifference = (difference / rateNumber) * 100
     const result = arrowDecider(guess, rateNumber)
     const correctDigits = compareGuessWithRate(guess, rateNumber)
     const isCorrect = correctDigits.length === 3 && guess === rateNumber
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
-        difference,
+        percentageDifference,
         now
       ),
       prisma.result.update({
