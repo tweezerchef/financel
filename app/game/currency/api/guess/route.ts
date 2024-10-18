@@ -13,11 +13,12 @@ function compareGuessWithRate(
   decimal: number
 ): [number, number][] {
   const guessStr = guess.toFixed(decimal).replace('.', '')
-  const rateStr = currencyPrice.toFixed(decimal).replace('.', '')
+  const currencyStr = currencyPrice.toFixed(decimal).replace('.', '')
   const result: [number, number][] = []
 
   for (let i = 0; i < decimal; i++)
-    if (guessStr[i] === rateStr[i]) result.push([i, parseInt(guessStr[i], 10)])
+    if (guessStr[i] === currencyStr[i])
+      result.push([i, parseInt(guessStr[i], 10)])
 
   return result
 }
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
       today.getMonth(),
       today.getDate()
     )
-    const { guess, resultId, guessCount, decimal, range } = await request.json()
+    const { guess, resultId, guessCount, decimal } = await request.json()
 
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
     if (!resultId) throw new Error('resultId is required')
@@ -45,7 +46,8 @@ export async function POST(request: NextRequest) {
     const currencyValue = dailyChallenge.currencyValue?.value.toNumber() ?? 0
     console.log('currencyValue', currencyValue)
 
-    const result = currencyArrowDecider(guess, currencyValue, guess)
+    const result = currencyArrowDecider(guess, currencyValue)
+    console.log('percentClose', result.percentClose)
     const correctDigits = compareGuessWithRate(guess, currencyValue, decimal)
     const isCorrect =
       correctDigits.length === decimal && guess === currencyValue
@@ -60,6 +62,7 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
+        result.percentClose,
         now
       ),
       prisma.result.update({
@@ -126,6 +129,7 @@ async function updateResultCategory(
   isCorrect: boolean,
   guessCount: number,
   isComplete: boolean,
+  percentClose: number,
   now: Date
 ) {
   return prisma.resultCategory.upsert({
@@ -138,6 +142,7 @@ async function updateResultCategory(
       tries: guessCount,
       completed: isComplete,
       endTime: isComplete ? now : undefined,
+      percentClose,
       startTime: now,
     },
     update: {
@@ -146,6 +151,7 @@ async function updateResultCategory(
       tries: guessCount,
       completed: isComplete,
       endTime: isComplete ? now : undefined,
+      percentClose,
     },
   })
 }

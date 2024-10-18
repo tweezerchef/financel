@@ -2,6 +2,7 @@ interface ArrowDeciderReturn {
   amount: number
   difference: number
   direction: 'up' | 'down' | 'same'
+  percentClose: number
 }
 
 function calculateArrowAmount(
@@ -11,6 +12,7 @@ function calculateArrowAmount(
   arrows: ResponseNumbers
   difference: number
   correct: number
+  percentClose: number
 } {
   // Calculate the percentage difference based on the range
   const percentageDifference = (difference / correct) * 100
@@ -51,23 +53,28 @@ function calculateArrowAmount(
     newDifference = 50.01
   }
 
-  return { arrows, difference: newDifference, correct }
+  return {
+    arrows,
+    difference: newDifference,
+    correct,
+    percentClose: percentageDifference,
+  }
 }
 
 export function stockArrowDecider(
   guess: number,
-  actual: number,
-  correct: number
+  actual: number
 ): ArrowDeciderReturn {
   if (guess === actual)
     return {
       difference: 0,
       direction: 'same',
       amount: 0,
+      percentClose: 0,
     }
 
   const difference = Math.abs(guess - actual)
-  const result = calculateArrowAmount(difference, correct)
+  const result = calculateArrowAmount(difference, actual)
 
   const direction = guess > actual ? 'up' : 'down'
 
@@ -77,11 +84,13 @@ export function stockArrowDecider(
       direction,
       amount: result.arrows,
       difference: result.difference,
+      percentClose: result.percentClose,
     }
 
   return {
     difference: result,
     direction,
     amount: result,
+    percentClose: 0,
   }
 }

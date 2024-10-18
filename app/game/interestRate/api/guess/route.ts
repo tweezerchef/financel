@@ -38,7 +38,8 @@ export async function POST(request: NextRequest) {
     const dailyChallenge = await getDailyChallenge(dateOnly)
 
     const rateNumber = dailyChallenge.interestRate.rate.toNumber()
-
+    const difference = Math.abs(guess - rateNumber)
+    const percentageDifference = (difference / rateNumber) * 100
     const result = arrowDecider(guess, rateNumber)
     const correctDigits = compareGuessWithRate(guess, rateNumber)
     const isCorrect = correctDigits.length === 3 && guess === rateNumber
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
+        percentageDifference,
         now
       ),
       prisma.result.update({
@@ -111,6 +113,7 @@ async function updateResultCategory(
   isCorrect: boolean,
   guessCount: number,
   isComplete: boolean,
+  percentClose: number,
   now: Date
 ) {
   return prisma.resultCategory.upsert({
@@ -124,6 +127,7 @@ async function updateResultCategory(
       completed: isComplete,
       endTime: isComplete ? now : undefined,
       startTime: now,
+      percentClose,
     },
     update: {
       guess,
@@ -131,6 +135,7 @@ async function updateResultCategory(
       tries: guessCount,
       completed: isComplete,
       endTime: isComplete ? now : undefined,
+      percentClose,
     },
   })
 }

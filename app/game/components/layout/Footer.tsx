@@ -2,6 +2,7 @@
 
 'use client'
 
+import { MouseEvent } from 'react'
 import { Container, Group, Anchor } from '@mantine/core'
 import Image from 'next/image'
 
@@ -24,7 +25,7 @@ export function Footer({ className = '' }: FooterProps) {
       c="dimmed"
       key={link.label}
       href={link.link}
-      onClick={(event) => event.preventDefault()}
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => event.preventDefault()}
       size="xs"
     >
       {link.label}
