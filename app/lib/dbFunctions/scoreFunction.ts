@@ -20,6 +20,19 @@ const calculateScore = (
     // Deduct points based on time (1 point per 10 seconds)
     score -= Math.ceil(category.timeTaken / 10)
 
+    // If the guess was incorrect after 6 tries, adjust score based on percentClose
+    if (
+      !category.correct &&
+      category.tries >= 6 &&
+      category.percentClose !== null
+    ) {
+      // Ensure percentClose is a number and use it in calculation
+      const percentClose = Number(category.percentClose)
+      score *= (100 - percentClose) / 100
+    } else if (!category.correct)
+      // If incorrect and percentClose is not available, score is 0
+      score = 0
+
     // Ensure score doesn't go below 0
     return Math.max(0, score)
   })
