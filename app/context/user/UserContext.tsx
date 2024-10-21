@@ -8,8 +8,8 @@ import {
   useMemo,
   useState,
   ReactNode,
-  useEffect,
   useCallback,
+  useEffect,
 } from 'react'
 
 type UserType = 'guest' | 'registered'
@@ -29,6 +29,9 @@ interface UserContextType {
   user: UserData | null
   setUser: (userData: UserData | null) => void
   refreshSignedAvatarUrl: () => Promise<void>
+  clearUser: () => void
+  updateUserResult: (resultId: string, nextCategory: Category | null) => void
+  refreshUserData: () => Promise<void>
 }
 
 interface UserProviderProps {
@@ -69,36 +72,53 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }
   }, [user?.signedAvatarUrl])
 
-  useEffect(() => {
-    // Load user data from localStorage on initial render
-    const storedUser = localStorage.getItem('userData')
-    if (storedUser) setUser(JSON.parse(storedUser))
+  const clearUser = useCallback(() => {
+    setUser(null)
+  }, [])
+
+  const updateUserResult = useCallback(
+    (resultId: string, nextCategory: Category | null) => {
+      setUser((prevUser) =>
+        prevUser ? { ...prevUser, resultId, nextCategory } : null
+      )
+    },
+    []
+  )
+
+  const refreshUserData = useCallback(async () => {
+    try {
+      const response = await fetch('/auth/api/verify', {
+        method: 'GET',
+        credentials: 'include',
+      })
+
+      if (response.ok) {
+        const userData = await response.json()
+        setUser(userData)
+      }
+      // If the request fails, clear the user data
+      else setUser(null)
+    } catch (error) {
+      console.error('Failed to refresh user data:', error)
+      setUser(null)
+    }
   }, [])
 
   useEffect(() => {
-    if (user?.signedAvatarExpiration) {
-      const timeUntilExpiration = user.signedAvatarExpiration - Date.now()
-      if (timeUntilExpiration > 0) {
-        const timer = setTimeout(refreshSignedAvatarUrl, timeUntilExpiration)
-        return () => clearTimeout(timer)
-      }
-      refreshSignedAvatarUrl()
-    }
-  }, [user?.signedAvatarExpiration, refreshSignedAvatarUrl])
-
-  const setUserAndStore = (userData: UserData | null) => {
-    setUser(userData)
-    if (userData) localStorage.setItem('userData', JSON.stringify(userData))
-    else localStorage.removeItem('userData')
-  }
+    // Check for user data on initial load
+    if (!user) refreshUserData()
+  }, [user, refreshUserData])
 
   const value = useMemo(
     () => ({
       user,
-      setUser: setUserAndStore,
+      setUser,
       refreshSignedAvatarUrl,
+      clearUser,
+      updateUserResult,
+      refreshUserData,
     }),
-    [user, refreshSignedAvatarUrl]
+    [user, refreshSignedAvatarUrl, clearUser, updateUserResult, refreshUserData]
   )
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>

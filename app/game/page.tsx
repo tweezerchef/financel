@@ -17,40 +17,36 @@ export default function Game() {
   const router = useRouter()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const { user, setUser } = useUserContext()
+  const { user, setUser, clearUser } = useUserContext()
 
   useEffect(() => {
     const validateSession = async () => {
       try {
-        const response = await fetch('/auth/api/refresh', {
+        const verifyRoute =
+          user?.type === 'guest'
+            ? '/auth/api/verify/guest'
+            : '/auth/api/verify/user'
+        const response = await fetch(verifyRoute, {
           method: 'POST',
-          credentials: 'include', // This is important to include cookies
+          credentials: 'include',
         })
 
         if (response.ok) {
-          const { token } = await response.json()
-          // Store the token in memory (not localStorage)
-          sessionStorage.setItem('accessToken', token)
+          const userData = await response.json()
           setIsAuthenticated(true)
-          // If we don't have user data in context, fetch it
-          if (!user) {
-            // You'll need to implement this API endpoint
-            const userResponse = await fetch('/api/user', {
-              headers: { Authorization: `Bearer ${token}` },
-            })
-            if (userResponse.ok) {
-              const userData = await userResponse.json()
-              setUser(userData)
-            }
-          }
-        } else {
-          console.log('Invalid session, redirecting to login')
-          setUser(null)
-          router.push('/')
-        }
+          setUser({
+            id: userData.id,
+            type: userData.type,
+            resultId: userData.resultId,
+            nextCategory: userData.nextCategory,
+            username: userData.username,
+            signedAvatarUrl: userData.signedAvatarUrl,
+            signedAvatarExpiration: userData.signedAvatarExpiration,
+          })
+        } else throw new Error('Invalid session')
       } catch (error) {
         console.error('Error validating session:', error)
-        setUser(null)
+        clearUser()
         router.push('/')
       } finally {
         setIsLoading(false)
@@ -58,12 +54,12 @@ export default function Game() {
     }
 
     validateSession()
-  }, [router, setUser, user])
+  }, [router, setUser, clearUser, user])
 
   if (isLoading) return <div>Loading...</div>
 
   if (!isAuthenticated) {
-    console.log('Not authenticated, component will return null')
+    console.log('Not authenticated, redirecting to login')
     return null
   }
 
