@@ -3,6 +3,7 @@ interface ArrowDeciderReturn {
   difference: number
   direction: 'up' | 'down' | 'same'
   percentClose: number
+  isCorrect: boolean
 }
 
 function calculateArrowAmount(
@@ -65,32 +66,32 @@ export function stockArrowDecider(
   guess: number,
   actual: number
 ): ArrowDeciderReturn {
-  if (guess === actual)
+  console.log('guess', guess)
+  console.log('actual', actual)
+
+  // Always consider only the first three digits
+  const truncatedActual = Math.trunc(actual * 10) / 10
+  console.log('truncatedActual', truncatedActual)
+
+  if (guess === truncatedActual)
     return {
+      isCorrect: true,
       difference: 0,
       direction: 'same',
       amount: 0,
-      percentClose: 0,
+      percentClose: 100,
     }
 
-  const difference = Math.abs(guess - actual)
-  const result = calculateArrowAmount(difference, actual)
+  const difference = Math.abs(guess - truncatedActual)
+  const result = calculateArrowAmount(difference, truncatedActual)
 
-  const direction = guess > actual ? 'up' : 'down'
-
-  // Handle the new return type from calculateArrowAmount
-  if (typeof result === 'object')
-    return {
-      direction,
-      amount: result.arrows,
-      difference: result.difference,
-      percentClose: result.percentClose,
-    }
+  const direction = guess > truncatedActual ? 'up' : 'down'
 
   return {
-    difference: result,
+    isCorrect: false,
+    percentClose: result.percentClose,
     direction,
-    amount: result,
-    percentClose: 0,
+    amount: result.arrows,
+    difference: result.difference,
   }
 }
