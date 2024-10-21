@@ -7,22 +7,6 @@ import { currencyArrowDecider } from './currencyArrowDecider'
 
 import prisma from '../../../../lib/prisma/prisma'
 
-function compareGuessWithRate(
-  guess: number,
-  currencyPrice: number,
-  decimal: number
-): [number, number][] {
-  const guessStr = guess.toFixed(decimal).replace('.', '')
-  const currencyStr = currencyPrice.toFixed(decimal).replace('.', '')
-  const result: [number, number][] = []
-
-  for (let i = 0; i < decimal; i++)
-    if (guessStr[i] === currencyStr[i])
-      result.push([i, parseInt(guessStr[i], 10)])
-
-  return result
-}
-
 export async function GET() {
   const irDateInfo = { info: 'Interest Rate Date Info' }
   return NextResponse.json({ irDateInfo }, { status: 200 })
@@ -48,9 +32,7 @@ export async function POST(request: NextRequest) {
 
     const result = currencyArrowDecider(guess, currencyValue)
     console.log('percentClose', result.percentClose)
-    const correctDigits = compareGuessWithRate(guess, currencyValue, decimal)
-    const isCorrect =
-      correctDigits.length === decimal && guess === currencyValue
+    const { isCorrect } = result
     const isComplete = isCorrect || guessCount === 6
 
     const now = new Date()
@@ -83,7 +65,6 @@ export async function POST(request: NextRequest) {
         correct: isCorrect,
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
-        correctDigits,
         dollarValue: isCorrect || isComplete ? currencyValue : undefined,
       },
       { status: 200 }

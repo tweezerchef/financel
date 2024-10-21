@@ -16,10 +16,7 @@ import { Keyboard } from '../../components/keyboard/Keyboard'
 import { StockGuessDisplay } from './components/StockGuessDisplay'
 import classes from './ui/StockGuess.module.css'
 
-type DayOf = 'image' | 'day'
-
 interface StockGuessProps {
-  challengeDate: DayOf
   setAmountAway: React.Dispatch<React.SetStateAction<number | null>>
   setGuessCount: React.Dispatch<React.SetStateAction<number | null>>
 }
@@ -43,11 +40,7 @@ interface StockModalProps {
   chartData: Array<{ date: string; price: number }>
 }
 
-export function StockGuess({
-  challengeDate,
-  setAmountAway,
-  setGuessCount,
-}: StockGuessProps) {
+export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
   const { dailyChallengeStock, fetchDailyChallenge } =
     useDailyChallengeContext()
   const [guesses, setGuesses] = useState<Array<Guess>>([])
@@ -68,7 +61,7 @@ export function StockGuess({
     },
     validate: {
       guess: (value) =>
-        /^\d{1,4}(\.\d{1,2})?$/.test(value)
+        /^\d{1,3}(\.\d{1,2})?$/.test(value)
           ? null
           : 'Please enter a valid number with up to 4 digits and up to 2 decimal places',
     },
@@ -98,7 +91,8 @@ export function StockGuess({
       const { decimal } = dailyChallengeStock
 
       // Pad the guess to 4 digits
-      const postGuess = formattedGuess(values.guess, decimal ?? 2)
+      const paddedGuess = values.guess.padStart(3, '0').slice(-3)
+      const postGuess = formattedGuess(paddedGuess, decimal ?? 2)
 
       const unformattedGuess = values.guess // Default to 2 if decimal is undefined
 
@@ -169,7 +163,7 @@ export function StockGuess({
               close: () => console.log('Modal closed'),
               correct,
               actual: `$ ${stockValue}`,
-              tries: guessCount.current,
+              tries: guessCount.current - 1,
               time: timeTaken,
               type: 'Stock Price',
               chartData: chartData || [],
@@ -233,6 +227,7 @@ export function StockGuess({
         {opened !== undefined && modalProps && finalGuess !== null && (
           <NextModal
             {...modalProps}
+            correct={modalProps.correct}
             type="Stock Price"
             opened={opened}
             challengeDate={formattedChallengeDate}
@@ -246,7 +241,7 @@ export function StockGuess({
               form={form}
               field="guess"
               handleSubmit={memoizedHandleSubmit}
-              maxDigits={4}
+              maxDigits={3}
             />
           </form>
         ) : (

@@ -16,10 +16,7 @@ import { Keyboard } from '../../components/keyboard/Keyboard'
 import { CurrencyGuessDisplay } from './components/CurrencyGuessDisplay'
 import classes from './ui/CurrencyGuess.module.css'
 
-type DayOf = 'image' | 'day'
-
 interface CurrencyGuessProps {
-  challengeDate: DayOf
   setAmountAway: React.Dispatch<React.SetStateAction<number | null>>
   setGuessCount: React.Dispatch<React.SetStateAction<number | null>>
 }
@@ -44,7 +41,6 @@ interface CurrencyModalProps {
 }
 
 export function CurrencyGuess({
-  challengeDate,
   setAmountAway,
   setGuessCount,
 }: CurrencyGuessProps) {
@@ -68,7 +64,7 @@ export function CurrencyGuess({
     },
     validate: {
       guess: (value) =>
-        /^\d{1,4}(\.\d{1,2})?$/.test(value)
+        /^\d{1,3}(\.\d{1,2})?$/.test(value)
           ? null
           : 'Please enter a valid number with up to 4 digits and up to 2 decimal places',
     },
@@ -97,12 +93,11 @@ export function CurrencyGuess({
 
       const { decimal, range } = dailyChallengeCurrency
 
-      // Pad the guess to 4 digits
-      const postGuess = formattedGuess(values.guess, decimal ?? 2)
+      // Ensure the guess is a 3-digit string
+      const paddedGuess = values.guess.padStart(3, '0').slice(-3)
+      const postGuess = formattedGuess(paddedGuess, decimal ?? 2)
 
-      // Calculate the numeric guess by inserting the decimal point at the correct position
-
-      const unformattedGuess = values.guess // Default to 2 if decimal is undefined
+      const unformattedGuess = values.guess // Keep the original guess for display
 
       try {
         setIsAnimating(true)
@@ -165,8 +160,6 @@ export function CurrencyGuess({
           (isComplete && !isAnimating) ||
           (guessCount.current === 7 && !isAnimating)
         ) {
-          // Convert the guess to a number, preserving decimal places
-
           setFinalGuess(postGuess)
           setTimeout(() => {
             setModalProps({
@@ -174,7 +167,7 @@ export function CurrencyGuess({
               close: () => console.log('Modal closed'),
               correct,
               actual: `$ ${dollarValue}`,
-              tries: guessCount.current,
+              tries: guessCount.current - 1,
               time: timeTaken,
               type: 'Currency Price',
               chartData: chartData || [],
@@ -237,6 +230,7 @@ export function CurrencyGuess({
         {opened !== undefined && modalProps && finalGuess !== null && (
           <NextModal
             {...modalProps}
+            correct={modalProps.correct}
             type="Currency Price"
             opened={opened}
             challengeDate={formattedChallengeDate}
@@ -250,7 +244,7 @@ export function CurrencyGuess({
               form={form}
               field="guess"
               handleSubmit={memoizedHandleSubmit}
-              maxDigits={4}
+              maxDigits={3}
             />
           </form>
         ) : (
