@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
-import { serialize } from 'cookie'
 import { v4 as uuidv4 } from 'uuid'
+import { cookies } from 'next/headers'
 import prisma from '../../../lib/prisma/prisma'
 import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
 
@@ -67,29 +66,21 @@ export async function POST(req: NextRequest) {
     // Generate a new session ID
     const sessionId = uuidv4()
 
-    // Create tokens first
-    const accessToken = jwt.sign(
-      { userId: id, type: 'registered', sessionId },
-      process.env.JWT_SECRET!,
-      { expiresIn: '15m' }
-    )
-    const refreshToken = jwt.sign(
-      { userId: id, type: 'registered', sessionId },
-      process.env.REFRESH_TOKEN_SECRET!,
-      { expiresIn: '7d' }
-    )
+    // Generate a refresh token
+    const refreshToken = uuidv4()
 
-    // Then create the session using the same sessionId
+    // Create the session
     await prisma.session.create({
       data: {
         id: sessionId,
         userId: id,
-        refreshToken,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        refreshToken,
       },
     })
 
-    const refreshTokenCookie = serialize('refreshToken', refreshToken, {
+    const cookieStore = await cookies()
+    cookieStore.set('sessionId', sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -97,24 +88,16 @@ export async function POST(req: NextRequest) {
       path: '/',
     })
 
-    return NextResponse.json(
-      {
-        token: accessToken,
-        id,
-        type: 'registered',
-        resultId,
-        nextCategory,
-        username,
-        signedAvatarUrl: signedUrl,
-        signedAvatarExpiration: signedUrlExpiration,
-        message: 'Logged in successfully',
-      },
-      {
-        headers: {
-          'Set-Cookie': refreshTokenCookie,
-        },
-      }
-    )
+    return NextResponse.json({
+      id,
+      type: 'registered',
+      resultId,
+      nextCategory,
+      username,
+      signedAvatarUrl: signedUrl,
+      signedAvatarExpiration: signedUrlExpiration,
+      message: 'Logged in successfully',
+    })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
