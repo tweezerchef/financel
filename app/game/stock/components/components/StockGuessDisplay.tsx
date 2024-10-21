@@ -10,6 +10,7 @@ interface CurrencyGuessDisplayProps {
   result?: { amount: ResponseNumbers; direction: Direction } | null
   isSpinning: boolean
   decimal: number
+  isClose: boolean
 }
 
 export const StockGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
@@ -17,6 +18,7 @@ export const StockGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
   result,
   isSpinning,
   decimal,
+  isClose,
 }) => {
   const [displayedResults, setDisplayedResults] = useState<
     Array<{ id: string; value: string }>
@@ -71,24 +73,28 @@ export const StockGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
           value={guess[0] || ''}
           isSpinning={staggeredSpinning[0]}
           isNumber
+          isClose={isClose}
         />
         {decimal === 1 && <span className={classes.decimal}>.</span>}
         <SingleDisplay
           value={guess[1] || ''}
           isSpinning={staggeredSpinning[1]}
           isNumber
+          isClose={isClose}
         />
         {decimal === 2 && <span className={classes.decimal}>.</span>}
         <SingleDisplay
           value={guess[2] || ''}
           isSpinning={staggeredSpinning[2]}
           isNumber
+          isClose={isClose}
         />
         {decimal === 3 && <span className={classes.decimal}>.</span>}
         <SingleDisplay
           value={guess[3] || ''}
           isSpinning={staggeredSpinning[3]}
           isNumber
+          isClose={isClose}
         />
       </Group>
       <Group className={classes.resultGroup}>
@@ -98,6 +104,7 @@ export const StockGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
             value={value}
             isSpinning={staggeredSpinning[index + 3]}
             isNumber={false}
+            isClose={isClose}
           />
         ))}
         {Array(5 - displayedResults.length)
@@ -110,6 +117,7 @@ export const StockGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
                 staggeredSpinning[index + 3 + displayedResults.length]
               }
               isNumber={false}
+              isClose={isClose}
             />
           ))}
       </Group>

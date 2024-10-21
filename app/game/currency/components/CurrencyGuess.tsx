@@ -52,16 +52,16 @@ export function CurrencyGuess({
     useDailyChallengeContext()
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
-
   const [modalProps, setModalProps] = useState<CurrencyModalProps | null>(null)
   const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
-  const { user } = useUserContext()
-  const { resultId } = user ?? {}
   const [finalGuess, setFinalGuess] = useState<number | null>(null)
   const [formattedChallengeDate, setFormattedChallengeDate] =
     useState<string>('')
   const { chartData, decimal } = dailyChallengeCurrency ?? {}
+  const { user } = useUserContext()
+  const { resultId } = user ?? {}
+
   const form = useForm({
     initialValues: {
       guess: '',
@@ -99,11 +99,10 @@ export function CurrencyGuess({
 
       // Pad the guess to 4 digits
       const postGuess = formattedGuess(values.guess, decimal ?? 2)
-      console.log('postGuess', postGuess)
+
       // Calculate the numeric guess by inserting the decimal point at the correct position
 
       const unformattedGuess = values.guess // Default to 2 if decimal is undefined
-      console.log('unformattedGuess', unformattedGuess)
 
       try {
         setIsAnimating(true)
@@ -137,7 +136,6 @@ export function CurrencyGuess({
           correct,
           timeTaken,
           difference,
-          correctDigits,
           dollarValue,
         } = result
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
