@@ -1,48 +1,41 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
+import { cookies } from 'next/headers'
+
 import prisma from '../../../lib/prisma/prisma'
 import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
 
 export async function GET(req: NextRequest) {
   try {
-    const refreshToken = req.cookies.get('refreshToken')?.value
+    const cookieStore = await cookies()
+    const sessionId = cookieStore.get('sessionId')?.value
 
-    if (!refreshToken)
+    if (!sessionId)
       return NextResponse.json(
-        { message: 'No refresh token provided' },
+        { message: 'No session ID provided' },
         { status: 401 }
       )
 
-    const decoded = jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET!
-    ) as jwt.JwtPayload
+    const session = await prisma.session.findUnique({
+      where: { id: sessionId },
+      include: { user: true, guest: true },
+    })
 
-    let userData
+    if (!session)
+      return NextResponse.json({ message: 'Invalid session' }, { status: 401 })
 
-    if (decoded.type === 'registered')
-      userData = await prisma.user.findUnique({
-        where: { id: decoded.userId },
-        select: {
-          id: true,
-          username: true,
-          avatar: true,
-        },
-      })
-    else if (decoded.type === 'guest')
-      userData = await prisma.guest.findUnique({
-        where: { id: decoded.userId },
-        select: {
-          id: true,
-        },
-      })
+    const userData = session.user || session.guest
 
     if (!userData)
       return NextResponse.json({ message: 'User not found' }, { status: 404 })
 
+    const userType = session.user ? 'registered' : 'guest'
+
     // Fetch the latest result for the user
     const latestResult = await prisma.result.findFirst({
-      where: { userId: decoded.userId },
+      where: {
+        [userType === 'registered' ? 'userId' : 'guestId']: userData.id,
+      },
       orderBy: { date: 'desc' },
       select: {
         id: true,
@@ -59,11 +52,7 @@ export async function GET(req: NextRequest) {
     let signedAvatarUrl = null
     let signedAvatarExpiration = null
 
-    if (
-      decoded.type === 'registered' &&
-      'avatar' in userData &&
-      userData.avatar
-    )
+    if (userType === 'registered' && 'avatar' in userData && userData.avatar)
       if (
         typeof userData.avatar === 'string' &&
         userData.avatar.trim() !== ''
@@ -77,7 +66,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       id: userData.id,
-      type: decoded.type,
+      type: userType,
       resultId: latestResult?.id || null,
       nextCategory,
       username: 'username' in userData ? userData.username : null,

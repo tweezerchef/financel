@@ -1,8 +1,9 @@
 /* eslint-disable no-restricted-syntax */
 import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
-import { serialize } from 'cookie'
+// import jwt from 'jsonwebtoken'
+// import { serialize } from 'cookie'
 import { v4 as uuidv4 } from 'uuid'
+import { cookies } from 'next/headers'
 import prisma from '../../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
@@ -39,19 +40,10 @@ export async function POST(req: NextRequest) {
     // Generate a new session ID
     const sessionId = uuidv4()
 
-    // Create tokens
-    const accessToken = jwt.sign(
-      { userId: guest.id, type: 'guest', sessionId },
-      process.env.JWT_SECRET!,
-      { expiresIn: '15m' }
-    )
-    const refreshToken = jwt.sign(
-      { userId: guest.id, type: 'guest', sessionId },
-      process.env.REFRESH_TOKEN_SECRET!,
-      { expiresIn: '7d' }
-    )
+    // Generate a refresh token
+    const refreshToken = uuidv4()
 
-    // Create a new session in the database using the same sessionId
+    // Create the session
     await prisma.session.create({
       data: {
         id: sessionId,
@@ -61,7 +53,8 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    const refreshTokenCookie = serialize('refreshToken', refreshToken, {
+    const cookieStore = await cookies()
+    cookieStore.set('sessionId', sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -79,21 +72,13 @@ export async function POST(req: NextRequest) {
         return !categoryResult || !categoryResult.completed
       }) || null
 
-    return NextResponse.json(
-      {
-        token: accessToken,
-        id: guest.id,
-        type: 'guest',
-        resultId: result.id,
-        nextCategory,
-        message: 'Logged in as guest successfully',
-      },
-      {
-        headers: {
-          'Set-Cookie': refreshTokenCookie,
-        },
-      }
-    )
+    return NextResponse.json({
+      id: guest.id,
+      type: 'guest',
+      resultId: result.id,
+      nextCategory,
+      message: 'Logged in as guest successfully',
+    })
   } catch (error) {
     console.error('Error in guest login:', error)
     return NextResponse.json({ message: 'An error occurred' }, { status: 500 })

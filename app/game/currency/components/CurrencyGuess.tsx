@@ -29,6 +29,7 @@ interface Guess {
   guess: string
   result: { amount: ResponseNumbers; direction: Direction } | null
   isSpinning: boolean
+  isClose: boolean
 }
 
 interface CurrencyModalProps {
@@ -51,15 +52,16 @@ export function CurrencyGuess({
     useDailyChallengeContext()
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
-  const [resultId, setResultId] = useState<string | null>(null)
   const [modalProps, setModalProps] = useState<CurrencyModalProps | null>(null)
   const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
-  const { user } = useUserContext()
   const [finalGuess, setFinalGuess] = useState<number | null>(null)
   const [formattedChallengeDate, setFormattedChallengeDate] =
     useState<string>('')
   const { chartData, decimal } = dailyChallengeCurrency ?? {}
+  const { user } = useUserContext()
+  const { resultId } = user ?? {}
+
   const form = useForm({
     initialValues: {
       guess: '',
@@ -75,17 +77,6 @@ export function CurrencyGuess({
   useEffect(() => {
     if (!dailyChallengeCurrency) fetchDailyChallenge()
   }, [dailyChallengeCurrency, fetchDailyChallenge])
-
-  useEffect(() => {
-    if (user?.resultId) setResultId(user.resultId)
-    else {
-      const storedUserData = localStorage.getItem('userData')
-      if (storedUserData) {
-        const parsedUserData = JSON.parse(storedUserData)
-        setResultId(parsedUserData.resultId)
-      }
-    }
-  }, [user])
 
   useEffect(() => {
     if (dailyChallengeCurrency?.date) {
@@ -108,11 +99,10 @@ export function CurrencyGuess({
 
       // Pad the guess to 4 digits
       const postGuess = formattedGuess(values.guess, decimal ?? 2)
-      console.log('postGuess', postGuess)
+
       // Calculate the numeric guess by inserting the decimal point at the correct position
 
       const unformattedGuess = values.guess // Default to 2 if decimal is undefined
-      console.log('unformattedGuess', unformattedGuess)
 
       try {
         setIsAnimating(true)
@@ -134,9 +124,10 @@ export function CurrencyGuess({
 
         const newGuess: Guess = {
           id: uuidv4(),
-          guess: unformattedGuess, // Use the padded guess string here
+          guess: unformattedGuess,
           result: null,
           isSpinning: true,
+          isClose: false,
         }
         const {
           direction,
@@ -145,7 +136,6 @@ export function CurrencyGuess({
           correct,
           timeTaken,
           difference,
-          correctDigits,
           dollarValue,
         } = result
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
@@ -162,6 +152,7 @@ export function CurrencyGuess({
                       amount,
                       direction,
                     },
+                    isClose: difference < 15,
                   }
                 : g
             )
@@ -226,6 +217,7 @@ export function CurrencyGuess({
               result={guess.result}
               isSpinning={guess.isSpinning}
               decimal={decimal ?? 2}
+              isClose={guess.isClose}
             />
           </div>
         ))}
@@ -236,6 +228,7 @@ export function CurrencyGuess({
               result={null}
               isSpinning={false}
               decimal={decimal ?? 2}
+              isClose={false}
             />
           </div>
         )}

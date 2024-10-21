@@ -105,6 +105,48 @@
   color: var(--mantine-color-yellow-3);
 }
 
+.closeArrow {
+  background-image: linear-gradient(
+    to bottom,
+    var(--mantine-color-red-6) 0%,
+    var(--mantine-color-yellow-3) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.flipBoxFront .closeArrow,
+.flipBoxBack .closeArrow {
+  background-image: linear-gradient(
+    to bottom,
+    var(--mantine-color-red-6) 0%,
+    var(--mantine-color-yellow-3) 100%
+  );
+}
+
+.closeContent {
+  background-image: linear-gradient(
+    to bottom,
+    var(--mantine-color-red-6) 0%,
+    var(--mantine-color-yellow-3) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.flipBoxFront .closeContent,
+.flipBoxBack .closeContent {
+  background-image: linear-gradient(
+    to bottom,
+    var(--mantine-color-red-6) 0%,
+    var(--mantine-color-yellow-3) 100%
+  );
+}
+
 /* Updated media queries */
 @media (max-width: 375px) {
   .flipBox {
