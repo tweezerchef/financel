@@ -128,7 +128,7 @@ export function CurrencyGuess({
           direction,
           amount,
           isComplete,
-          isCorrect,
+          correct,
           timeTaken,
           difference,
           dollarValue,
@@ -167,9 +167,9 @@ export function CurrencyGuess({
             setModalProps({
               opened: true,
               close: () => console.log('Modal closed'),
-              correct: isCorrect,
+              correct,
               actual: `$ ${dollarValue}`,
-              tries: guessCount.current,
+              tries: guessCount.current - 1,
               time: timeTaken,
               type: 'Currency Price',
               chartData: chartData || [],
@@ -232,6 +232,7 @@ export function CurrencyGuess({
         {opened !== undefined && modalProps && finalGuess !== null && (
           <NextModal
             {...modalProps}
+            correct={modalProps.correct}
             type="Currency Price"
             opened={opened}
             challengeDate={formattedChallengeDate}
