@@ -15,38 +15,22 @@ const AuthenticatedGame = dynamic(
 
 export default function Game() {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const { user, setUser, clearUser } = useUserContext()
+  const { user, refreshUserData } = useUserContext()
 
   useEffect(() => {
     const validateSession = async () => {
       try {
-        const verifyRoute =
-          user?.type === 'guest'
-            ? '/auth/api/verify/guest'
-            : '/auth/api/verify/user'
-        const response = await fetch(verifyRoute, {
-          method: 'POST',
-          credentials: 'include',
+        const response = await fetch('/auth/api/verify', {
+          method: 'GET',
+          credentials: 'include', // This ensures cookies are sent with the ∂request
         })
 
-        if (response.ok) {
-          const userData = await response.json()
-          setIsAuthenticated(true)
-          setUser({
-            id: userData.id,
-            type: userData.type,
-            resultId: userData.resultId,
-            nextCategory: userData.nextCategory,
-            username: userData.username,
-            signedAvatarUrl: userData.signedAvatarUrl,
-            signedAvatarExpiration: userData.signedAvatarExpiration,
-          })
-        } else throw new Error('Invalid session')
+        if (!response.ok) throw new Error('Invalid session')
+
+        if (!user) await refreshUserData()
       } catch (error) {
         console.error('Error validating session:', error)
-        clearUser()
         router.push('/')
       } finally {
         setIsLoading(false)
@@ -54,14 +38,11 @@ export default function Game() {
     }
 
     validateSession()
-  }, [router, setUser, clearUser, user])
+  }, [user, refreshUserData, router])
 
   if (isLoading) return <div>Loading...</div>
 
-  if (!isAuthenticated) {
-    console.log('Not authenticated, redirecting to login')
-    return null
-  }
+  if (!user) return null
 
   return <AuthenticatedGame />
 }

@@ -13,3 +13,6 @@ export async function runDailyChallenge() {
     process.exit(0)
   }
 }
+
+// Add this line to execute the function when the script is run
+runDailyChallenge()

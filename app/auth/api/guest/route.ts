@@ -36,7 +36,10 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // Generate a new session ID
     const sessionId = uuidv4()
+
+    // Create tokens
     const accessToken = jwt.sign(
       { userId: guest.id, type: 'guest', sessionId },
       process.env.JWT_SECRET!,
@@ -48,7 +51,7 @@ export async function POST(req: NextRequest) {
       { expiresIn: '7d' }
     )
 
-    // Create a new session in the database
+    // Create a new session in the database using the same sessionId
     await prisma.session.create({
       data: {
         id: sessionId,
