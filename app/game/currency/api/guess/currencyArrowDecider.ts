@@ -3,6 +3,7 @@ interface ArrowDeciderReturn {
   difference: number
   direction: 'up' | 'down' | 'same'
   percentClose: number
+  isCorrect: boolean
 }
 
 function calculateArrowAmount(
@@ -65,8 +66,16 @@ export function currencyArrowDecider(
   guess: number,
   actual: number
 ): ArrowDeciderReturn {
-  if (guess === actual)
+  console.log('guess', guess)
+  console.log('actual', actual)
+
+  // Take only the first 2 decimal places without rounding
+  const truncatedActual = Math.floor(actual * 100) / 100
+  console.log('truncatedActual', truncatedActual)
+
+  if (guess === truncatedActual)
     return {
+      isCorrect: true,
       difference: 0,
       direction: 'same',
       amount: 0,
@@ -79,6 +88,7 @@ export function currencyArrowDecider(
   const direction = guess > actual ? 'up' : 'down'
 
   return {
+    isCorrect: false,
     percentClose: result.percentClose,
     direction,
     amount: result.arrows,
