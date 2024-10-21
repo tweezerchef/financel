@@ -32,7 +32,6 @@ export default function Game() {
           // Store the token in memory (not localStorage)
           sessionStorage.setItem('accessToken', token)
           setIsAuthenticated(true)
-
           // If we don't have user data in context, fetch it
           if (!user) {
             // You'll need to implement this API endpoint
