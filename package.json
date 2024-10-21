@@ -7,7 +7,6 @@
   },
   "scripts": {
     "dev": "next dev --turbo",
-    "import-rates": "ts-node --esm app/dev/api/ratesInput/importInterestRates.ts",
     "daily-challenge": "npx tsx app/lib/dbFunctions/runDailyChallenge.ts",
     "build": "next build",
     "start": "next start",

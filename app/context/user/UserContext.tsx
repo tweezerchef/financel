@@ -44,7 +44,6 @@ export const useUserContext = () => {
   const context = useContext(UserContext)
   if (context === undefined)
     throw new Error('useUserContext must be used within a UserProvider')
-
   return context
 }
 
@@ -95,9 +94,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (response.ok) {
         const userData = await response.json()
         setUser(userData)
-      }
-      // If the request fails, clear the user data
-      else setUser(null)
+      } else setUser(null)
     } catch (error) {
       console.error('Failed to refresh user data:', error)
       setUser(null)
@@ -105,7 +102,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    // Check for user data on initial load
+    // Only fetch user data if it's not already set
     if (!user) refreshUserData()
   }, [user, refreshUserData])
 

@@ -70,6 +70,21 @@ model Guest {
   sessions  Session[]
 }
 
+model Session {
+  id           String   @id @default(uuid())
+  userId       String?
+  guestId      String?
+  user         User?    @relation(fields: [userId], references: [id])
+  guest        Guest?   @relation(fields: [guestId], references: [id])
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@index([guestId])
+}
+
 model DailyChallenge {
   id                     String            @id @default(uuid())
   challengeDate          DateTime          @unique @db.Date
@@ -226,19 +241,4 @@ model ResultCategory {
   result       Result    @relation(fields: [resultId], references: [id])
 
   @@unique([resultId, category])
-}
-
-model Session {
-  id           String   @id @default(uuid())
-  userId       String?
-  guestId      String?
-  user         User?    @relation(fields: [userId], references: [id])
-  guest        Guest?   @relation(fields: [guestId], references: [id])
-  refreshToken String   @unique
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([userId])
-  @@index([guestId])
 }

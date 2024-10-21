@@ -13,11 +13,7 @@ function extractS3Key(url: string): string {
   return match ? match[1] : url
 }
 
-interface Req extends NextRequest {
-  json(): Promise<{ email: string; password: string }>
-}
-
-export async function POST(req: Req) {
+export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json()
     const user = await prisma.user.findUnique({
@@ -36,11 +32,12 @@ export async function POST(req: Req) {
       )
 
     const { id, avatar, username } = user
-    const signedUrl = null
+    let signedUrl = null
     let signedUrlExpiration = null
     if (avatar) {
       const s3Key = extractS3Key(avatar)
-      const { expiresAt } = await getSignedAvatarUrl(s3Key)
+      const { signedUrl: url, expiresAt } = await getSignedAvatarUrl(s3Key)
+      signedUrl = url
       signedUrlExpiration = expiresAt
     }
 
@@ -67,20 +64,22 @@ export async function POST(req: Req) {
         return !categoryResult || !categoryResult.completed
       }) || null
 
+    // Generate a new session ID
     const sessionId = uuidv4()
 
+    // Create tokens first
     const accessToken = jwt.sign(
       { userId: id, type: 'registered', sessionId },
       process.env.JWT_SECRET!,
       { expiresIn: '15m' }
     )
-
     const refreshToken = jwt.sign(
       { userId: id, type: 'registered', sessionId },
       process.env.REFRESH_TOKEN_SECRET!,
       { expiresIn: '7d' }
     )
 
+    // Then create the session using the same sessionId
     await prisma.session.create({
       data: {
         id: sessionId,
@@ -94,7 +93,7 @@ export async function POST(req: Req) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60,
+      maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/',
     })
 
@@ -105,9 +104,9 @@ export async function POST(req: Req) {
         type: 'registered',
         resultId,
         nextCategory,
+        username,
         signedAvatarUrl: signedUrl,
         signedAvatarExpiration: signedUrlExpiration,
-        username,
         message: 'Logged in successfully',
       },
       {
