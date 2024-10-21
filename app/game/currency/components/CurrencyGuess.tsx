@@ -29,6 +29,7 @@ interface Guess {
   guess: string
   result: { amount: ResponseNumbers; direction: Direction } | null
   isSpinning: boolean
+  isClose: boolean
 }
 
 interface CurrencyModalProps {
@@ -134,9 +135,10 @@ export function CurrencyGuess({
 
         const newGuess: Guess = {
           id: uuidv4(),
-          guess: unformattedGuess, // Use the padded guess string here
+          guess: unformattedGuess,
           result: null,
           isSpinning: true,
+          isClose: false,
         }
         const {
           direction,
@@ -162,6 +164,7 @@ export function CurrencyGuess({
                       amount,
                       direction,
                     },
+                    isClose: difference < 15,
                   }
                 : g
             )
@@ -226,6 +229,7 @@ export function CurrencyGuess({
               result={guess.result}
               isSpinning={guess.isSpinning}
               decimal={decimal ?? 2}
+              isClose={guess.isClose}
             />
           </div>
         ))}
@@ -236,6 +240,7 @@ export function CurrencyGuess({
               result={null}
               isSpinning={false}
               decimal={decimal ?? 2}
+              isClose={false}
             />
           </div>
         )}
