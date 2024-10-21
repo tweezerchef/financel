@@ -69,8 +69,8 @@ export function currencyArrowDecider(
   console.log('guess', guess)
   console.log('actual', actual)
 
-  // Take only the first 2 decimal places without rounding
-  const truncatedActual = Math.floor(actual * 100) / 100
+  // Always consider only the first three digits
+  const truncatedActual = Math.trunc(actual * 100) / 100
   console.log('truncatedActual', truncatedActual)
 
   if (guess === truncatedActual)
@@ -82,10 +82,9 @@ export function currencyArrowDecider(
       percentClose: 100,
     }
 
-  const difference = Math.abs(guess - actual)
-  const result = calculateArrowAmount(difference, actual)
-
-  const direction = guess > actual ? 'up' : 'down'
+  const difference = Math.abs(guess - truncatedActual)
+  const result = calculateArrowAmount(difference, truncatedActual)
+  const direction = guess > truncatedActual ? 'up' : 'down'
 
   return {
     isCorrect: false,

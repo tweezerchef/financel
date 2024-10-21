@@ -160,8 +160,6 @@ export function CurrencyGuess({
           (isComplete && !isAnimating) ||
           (guessCount.current === 7 && !isAnimating)
         ) {
-          // Convert the guess to a number, preserving decimal places
-
           setFinalGuess(postGuess)
           setTimeout(() => {
             setModalProps({

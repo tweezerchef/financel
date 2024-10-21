@@ -6,10 +6,7 @@ import { StockGuess } from './components/StockGuess'
 
 import classes from './ui/StockPage.module.css'
 
-type DayOf = 'image' | 'day'
-
 export default function Stock() {
-  const [challengeDate] = useState<DayOf>('image')
   const [amountAway, setAmountAway] = useState<number | null>(null)
   const [guessCount, setGuessCount] = useState<number | null>(null)
 
@@ -20,7 +17,6 @@ export default function Stock() {
       </div>
       <div className={classes.guess}>
         <StockGuess
-          challengeDate={challengeDate}
           setAmountAway={setAmountAway}
           setGuessCount={setGuessCount}
         />
