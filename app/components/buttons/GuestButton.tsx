@@ -21,9 +21,7 @@ export const GuestButton = () => {
       const data = await response.json()
       console.log('Guest login response:', data)
       if (response.ok) {
-        console.log('Guest login successful, setting token')
-        localStorage.setItem('guestToken', data.token)
-        localStorage.setItem('nextCategory', data.nextCategory)
+        console.log('Guest login successful, setting user data')
         setUser({
           id: data.id,
           type: 'guest',

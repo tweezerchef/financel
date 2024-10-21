@@ -10,13 +10,11 @@ const s3Client = new S3Client({
 })
 
 export async function getSignedAvatarUrl(
-  key: string,
-  contentType: string
-): Promise<string> {
+  key: string
+): Promise<{ signedUrl: string; expiresAt: number }> {
   const params = {
     Bucket: process.env.SERVER_AWS_S3_BUCKET_NAME,
     Key: key,
-    ContentType: contentType,
   }
 
   try {
@@ -24,9 +22,10 @@ export async function getSignedAvatarUrl(
     const signedUrl = await getSignedUrl(s3Client, command, {
       expiresIn: 3600,
     })
-    return signedUrl
+    const expiresAt = Date.now() + 3600 * 1000 // 1 hour from now
+    return { signedUrl, expiresAt }
   } catch (error) {
     console.error('Error generating signed URL:', error)
-    throw new Error('Failed to generate signed URL for avatar upload')
+    throw new Error('Failed to generate signed URL for avatar')
   }
 }

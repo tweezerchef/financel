@@ -7,7 +7,6 @@
   },
   "scripts": {
     "dev": "next dev --turbo",
-    "import-rates": "ts-node --esm app/dev/api/ratesInput/importInterestRates.ts",
     "daily-challenge": "npx tsx app/lib/dbFunctions/runDailyChallenge.ts",
     "build": "next build",
     "start": "next start",
@@ -32,6 +31,7 @@
     "bcrypt": "^5.1.1",
     "chart.js": "^4.4.4",
     "clsx": "^2.1.1",
+    "cookie": "^1.0.1",
     "csv-parse": "^5.5.6",
     "date-fns": "^4.1.0",
     "eslint-plugin-react-compiler": "^0.0.0-experimental-53bb89e-20240515",
