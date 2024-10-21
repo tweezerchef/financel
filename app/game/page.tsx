@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
-import { useLocalStorage } from './lib/useLocalStorage'
 import { useUserContext } from '../context/user/UserContext'
 
 const AuthenticatedGame = dynamic(
@@ -16,59 +15,34 @@ const AuthenticatedGame = dynamic(
 
 export default function Game() {
   const router = useRouter()
-  const [token, , tokenIsLoading] = useLocalStorage('token')
-  const [guestToken, , guestTokenIsLoading] = useLocalStorage('guestToken')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const { setUser } = useUserContext()
+  const [isLoading, setIsLoading] = useState(true)
+  const { user, refreshUserData } = useUserContext()
 
   useEffect(() => {
-    const validateToken = async () => {
-      if (tokenIsLoading || guestTokenIsLoading) {
-        console.log('Tokens still loading, waiting...')
-        return
-      }
-
-      if (!token && !guestToken) {
-        console.log('No tokens found, redirecting to login')
-        router.push('/')
-        return
-      }
-
-      const activeToken = token || guestToken
-
+    const validateSession = async () => {
       try {
-        // Here you would typically make an API call to validate the token
-        // For now, we'll just check if it exists
-        const isValid = !!activeToken
-        console.log('Token validation result:', isValid)
+        const response = await fetch('/auth/api/verify', {
+          method: 'GET',
+          credentials: 'include', // This ensures cookies are sent with the ∂request
+        })
 
-        if (isValid) setIsAuthenticated(true)
-        else {
-          console.log('Invalid token, clearing and redirecting to login')
-          localStorage.removeItem('token')
-          localStorage.removeItem('guestToken')
-          setUser(null)
-          router.push('/')
-        }
+        if (!response.ok) throw new Error('Invalid session')
+
+        if (!user) await refreshUserData()
       } catch (error) {
-        console.error('Error validating token:', error)
-        setIsAuthenticated(false)
-        localStorage.removeItem('token')
-        localStorage.removeItem('guestToken')
-        setUser(null)
+        console.error('Error validating session:', error)
         router.push('/')
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    validateToken()
-  }, [token, guestToken, tokenIsLoading, guestTokenIsLoading, router, setUser])
+    validateSession()
+  }, [user, refreshUserData, router])
 
-  if (tokenIsLoading || guestTokenIsLoading) return <div>Loading...</div>
+  if (isLoading) return <div>Loading...</div>
 
-  if (!isAuthenticated) {
-    console.log('Not authenticated, component will return null')
-    return null
-  }
+  if (!user) return null
 
   return <AuthenticatedGame />
 }

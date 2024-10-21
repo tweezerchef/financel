@@ -64,12 +64,13 @@ export async function POST(req: NextRequest) {
 
     const avatarUrl = `https://${process.env.SERVER_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${key}`
     const updatedUser = await updateUserAvatar(userId, avatarUrl)
-    const signedUrl = await getSignedAvatarUrl(key, avatar.type)
+    const { signedUrl, expiresAt } = await getSignedAvatarUrl(key)
 
     return NextResponse.json({
       updatedUser,
       avatarUrl,
       signedUrl,
+      signedUrlExpiration: expiresAt,
       message: 'User created successfully and avatar uploaded',
     })
   } catch (error) {

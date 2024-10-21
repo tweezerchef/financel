@@ -48,35 +48,32 @@ export function Login(props: PaperProps) {
     setIsLoading(true)
     const { email, password } = values
     try {
-      const requestOptions = {
+      const response = await fetch('auth/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-      }
+        credentials: 'include', // This is important to include cookies
+      })
+      const data = await response.json()
 
-      // login logic
-      const response = await fetch('auth/api/login', requestOptions)
-      const user = await response.json()
-
-      if (response.ok && user.token) {
-        localStorage.setItem('token', user.token)
+      if (response.ok) {
         setUser({
-          id: user.id,
-          type: 'registered',
-          resultId: user.resultId,
-          nextCategory: user.nextCategory,
-          signedAvatarUrl: user.signedAvatarUrl,
-          signedAvatarExpiration: user.signedAvatarExpiration,
-          username: user.username,
+          id: data.id,
+          type: data.type,
+          resultId: data.resultId,
+          nextCategory: data.nextCategory,
+          signedAvatarUrl: data.signedAvatarUrl,
+          signedAvatarExpiration: data.signedAvatarExpiration,
+          username: data.username,
         })
         router.push('/game')
       } else {
-        console.error('Guest login failed:', user.message)
-        alert(user.message)
+        console.error('Login failed:', data.message)
+        alert(data.message)
       }
     } catch (error) {
-      console.error('Guest login error:', error)
-      alert('An error occurred during guest login.')
+      console.error('Login error:', error)
+      alert('An error occurred during login.')
     } finally {
       setIsLoading(false)
     }
