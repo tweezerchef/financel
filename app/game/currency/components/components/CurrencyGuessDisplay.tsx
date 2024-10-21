@@ -89,13 +89,6 @@ export const CurrencyGuessDisplay: FC<CurrencyGuessDisplayProps> = ({
           isNumber
           isClose={isClose}
         />
-        {decimal === 3 && <span className={classes.decimal}>.</span>}
-        <SingleDisplay
-          value={guess[3] || ''}
-          isSpinning={staggeredSpinning[3]}
-          isNumber
-          isClose={isClose}
-        />
       </Group>
       <Group className={classes.resultGroup}>
         {displayedResults.map(({ id, value }, index) => (
