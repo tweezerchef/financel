@@ -8,26 +8,6 @@ import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
 
 import prisma from '../../../../lib/prisma/prisma'
 
-function compareGuessWithRate(
-  guess: number,
-  currencyPrice: number,
-  decimal: number
-): [number, number][] {
-  const guessStr = guess.toFixed(decimal).replace('.', '')
-  const rateStr = currencyPrice.toFixed(decimal).replace('.', '')
-  const result: [number, number][] = []
-
-  for (let i = 0; i < decimal; i++)
-    if (guessStr[i] === rateStr[i]) result.push([i, parseInt(guessStr[i], 10)])
-
-  return result
-}
-
-export async function GET() {
-  const irDateInfo = { info: 'Interest Rate Date Info' }
-  return NextResponse.json({ irDateInfo }, { status: 200 })
-}
-
 export async function POST(request: NextRequest) {
   try {
     const today = new Date()
@@ -47,8 +27,8 @@ export async function POST(request: NextRequest) {
     console.log('stockValue', stockValue)
 
     const result = stockArrowDecider(guess, stockValue)
-    const correctDigits = compareGuessWithRate(guess, stockValue, decimal)
-    const isCorrect = correctDigits.length === decimal && guess === stockValue
+    console.log('percentClose', result.percentClose)
+    const { isCorrect } = result
     const isComplete = isCorrect || guessCount === 6
 
     const now = new Date()
@@ -83,7 +63,6 @@ export async function POST(request: NextRequest) {
         correct: isCorrect,
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
-        correctDigits,
         stockValue: isCorrect || isComplete ? stockValue : undefined,
       },
       { status: 200 }

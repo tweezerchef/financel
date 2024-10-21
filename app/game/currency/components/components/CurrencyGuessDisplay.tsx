@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus */
-import React, { FC, useState, useEffect, useCallback } from 'react'
+import { FC, useState, useEffect, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from '../../../components/display/SingleDisplay'
