@@ -14,10 +14,11 @@ interface SingleDisplayProps {
   value: string
   isSpinning: boolean
   isNumber: boolean
+  isClose?: boolean // Make this optional
 }
 
 export const SingleDisplay: FC<SingleDisplayProps> = memo(
-  ({ value, isSpinning, isNumber }) => {
+  ({ value, isSpinning, isNumber, isClose }) => {
     const [isFlipped, setIsFlipped] = useState(false)
     const [content, setContent] = useState({ front: '', back: '' })
     const [isFrontTopHalf, setIsFrontTopHalf] = useState(true)
@@ -70,6 +71,11 @@ export const SingleDisplay: FC<SingleDisplayProps> = memo(
       [isFrontTopHalf]
     )
 
+    const contentClass = useMemo(() => {
+      if (isClose) return styles.closeContent // Apply gradient to both numbers and arrows
+      return styles.content
+    }, [isClose])
+
     return (
       <div className={styles.flipBox}>
         <div
@@ -82,7 +88,7 @@ export const SingleDisplay: FC<SingleDisplayProps> = memo(
             {isSpinning ? (
               <div className={frontContentClass}>{content.front}</div>
             ) : (
-              <div className={styles.content} />
+              <div className={contentClass} />
             )}
             <div className={styles.divider} />
           </div>
@@ -90,7 +96,7 @@ export const SingleDisplay: FC<SingleDisplayProps> = memo(
             {isSpinning ? (
               <div className={backContentClass}>{content.back}</div>
             ) : (
-              <div className={styles.content}>{value}</div>
+              <div className={contentClass}>{value}</div>
             )}
             <div className={styles.divider} />
           </div>

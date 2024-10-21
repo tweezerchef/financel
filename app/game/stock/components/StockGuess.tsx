@@ -29,6 +29,7 @@ interface Guess {
   guess: string
   result: { amount: ResponseNumbers; direction: Direction } | null
   isSpinning: boolean
+  isClose: boolean
 }
 
 interface StockModalProps {
@@ -47,19 +48,20 @@ export function StockGuess({
   setAmountAway,
   setGuessCount,
 }: StockGuessProps) {
-  const { user } = useUserContext()
   const { dailyChallengeStock, fetchDailyChallenge } =
     useDailyChallengeContext()
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
-  const [resultId, setResultId] = useState<string | null>(null)
   const [modalProps, setModalProps] = useState<StockModalProps | null>(null)
   const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
   const [finalGuess, setFinalGuess] = useState<number | null>(null)
   const [formattedChallengeDate, setFormattedChallengeDate] =
     useState<string>('')
+  const { user } = useUserContext()
+  const { resultId } = user ?? {}
   const { chartData, decimal } = dailyChallengeStock ?? {}
+
   const form = useForm({
     initialValues: {
       guess: '',
@@ -77,15 +79,12 @@ export function StockGuess({
   }, [dailyChallengeStock, fetchDailyChallenge])
 
   useEffect(() => {
-    if (user?.resultId) setResultId(user.resultId)
-  }, [user?.resultId])
-
-  useEffect(() => {
     if (dailyChallengeStock?.date) {
       const formattedDate = formatDateForChart(dailyChallengeStock.date)
       setFormattedChallengeDate(formattedDate)
     }
-  }, [dailyChallengeStock?.date])
+  }, [dailyChallengeStock])
+
   const handleSubmit = useCallback(
     async (values: { guess: string }) => {
       if (
@@ -100,8 +99,6 @@ export function StockGuess({
 
       // Pad the guess to 4 digits
       const postGuess = formattedGuess(values.guess, decimal ?? 2)
-
-      // Calculate the numeric guess by inserting the decimal point at the correct position
 
       const unformattedGuess = values.guess // Default to 2 if decimal is undefined
 
@@ -127,6 +124,7 @@ export function StockGuess({
           guess: unformattedGuess, // Use the padded guess string here
           result: null,
           isSpinning: true,
+          isClose: false,
         }
         const {
           direction,
@@ -151,6 +149,7 @@ export function StockGuess({
                       amount,
                       direction,
                     },
+                    isClose: difference < 15,
                   }
                 : g
             )
@@ -214,6 +213,7 @@ export function StockGuess({
               result={guess.result}
               isSpinning={guess.isSpinning}
               decimal={decimal ?? 2}
+              isClose={guess.isClose}
             />
           </div>
         ))}
@@ -224,6 +224,7 @@ export function StockGuess({
               result={null}
               isSpinning={false}
               decimal={decimal ?? 2}
+              isClose={false}
             />
           </div>
         )}
