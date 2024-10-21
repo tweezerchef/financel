@@ -5,11 +5,7 @@ import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
 export async function POST(req: NextRequest) {
   try {
     const { avatarKey } = await req.json()
-    const signedUrl = await getSignedAvatarUrl(
-      avatarKey,
-      inferContentType(avatarKey)
-    )
-    const expiresAt = Date.now() + 3600 * 1000 // 1 hour from now
+    const { signedUrl, expiresAt } = await getSignedAvatarUrl(avatarKey)
 
     return NextResponse.json({ signedUrl, expiresAt })
   } catch (error) {
@@ -21,19 +17,19 @@ export async function POST(req: NextRequest) {
   }
 }
 
-function inferContentType(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  switch (ext) {
-    case 'jpg':
-    case 'jpeg':
-      return 'image/jpeg'
-    case 'png':
-      return 'image/png'
-    case 'gif':
-      return 'image/gif'
-    case 'webp':
-      return 'image/webp'
-    default:
-      return 'application/octet-stream'
-  }
-}
+// function inferContentType(filename: string): string {
+//   const ext = filename.split('.').pop()?.toLowerCase()
+//   switch (ext) {
+//     case 'jpg':
+//     case 'jpeg':
+//       return 'image/jpeg'
+//     case 'png':
+//       return 'image/png'
+//     case 'gif':
+//       return 'image/gif'
+//     case 'webp':
+//       return 'image/webp'
+//     default:
+//       return 'application/octet-stream'
+//   }
+// }

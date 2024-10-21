@@ -1,39 +1,94 @@
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
+import prisma from '../../../lib/prisma/prisma'
+import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
 
-interface DecodedToken {
-  id: string
-  type: 'guest' | 'registered'
-  resultId: string
-  iat: number
-  exp: number
-}
-
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const { token } = await req.json()
+    const refreshToken = req.cookies.get('refreshToken')?.value
 
-    if (!token)
+    if (!refreshToken)
       return NextResponse.json(
-        { message: 'No token provided' },
-        { status: 400 }
+        { message: 'No refresh token provided' },
+        { status: 401 }
       )
 
-    if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET!
+    ) as jwt.JwtPayload
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as DecodedToken
+    let userData
 
-    // Return relevant information from the decoded token
-    return NextResponse.json({
-      message: 'Token is valid',
-      user: {
-        id: decoded.id,
-        type: decoded.type,
-        resultId: decoded.resultId,
+    if (decoded.type === 'registered')
+      userData = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        select: {
+          id: true,
+          username: true,
+          avatar: true,
+        },
+      })
+    else if (decoded.type === 'guest')
+      userData = await prisma.guest.findUnique({
+        where: { id: decoded.userId },
+        select: {
+          id: true,
+        },
+      })
+
+    if (!userData)
+      return NextResponse.json({ message: 'User not found' }, { status: 404 })
+
+    // Fetch the latest result for the user
+    const latestResult = await prisma.result.findFirst({
+      where: { userId: decoded.userId },
+      orderBy: { date: 'desc' },
+      select: {
+        id: true,
+        categories: {
+          orderBy: { category: 'asc' },
+          select: { category: true, completed: true },
+        },
       },
     })
+
+    const nextCategory =
+      latestResult?.categories.find((c) => !c.completed)?.category || null
+
+    let signedAvatarUrl = null
+    let signedAvatarExpiration = null
+
+    if (
+      decoded.type === 'registered' &&
+      'avatar' in userData &&
+      userData.avatar
+    )
+      if (
+        typeof userData.avatar === 'string' &&
+        userData.avatar.trim() !== ''
+      ) {
+        const { signedUrl, expiresAt } = await getSignedAvatarUrl(
+          userData.avatar
+        )
+        signedAvatarUrl = signedUrl
+        signedAvatarExpiration = expiresAt
+      }
+
+    return NextResponse.json({
+      id: userData.id,
+      type: decoded.type,
+      resultId: latestResult?.id || null,
+      nextCategory,
+      username: 'username' in userData ? userData.username : null,
+      signedAvatarUrl,
+      signedAvatarExpiration,
+    })
   } catch (error) {
-    console.error('Token verification failed:', error)
-    return NextResponse.json({ message: 'Invalid token' }, { status: 401 })
+    console.error('Error fetching user data:', error)
+    return NextResponse.json(
+      { message: 'An error occurred while fetching user data' },
+      { status: 500 }
+    )
   }
 }

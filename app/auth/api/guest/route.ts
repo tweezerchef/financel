@@ -37,13 +37,13 @@ export async function POST(req: NextRequest) {
     })
 
     const sessionId = uuidv4()
-    const token = jwt.sign(
-      { guestId: guest.id, sessionId },
+    const accessToken = jwt.sign(
+      { userId: guest.id, type: 'guest', sessionId },
       process.env.JWT_SECRET!,
       { expiresIn: '15m' }
     )
     const refreshToken = jwt.sign(
-      { guestId: guest.id, sessionId },
+      { userId: guest.id, type: 'guest', sessionId },
       process.env.REFRESH_TOKEN_SECRET!,
       { expiresIn: '7d' }
     )
@@ -78,8 +78,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        token, // Still send the access token in the response
+        token: accessToken,
         id: guest.id,
+        type: 'guest',
         resultId: result.id,
         nextCategory,
         message: 'Logged in as guest successfully',

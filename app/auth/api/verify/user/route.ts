@@ -5,6 +5,7 @@ import prisma from '../../../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
   try {
+    // Get the refresh token from the cookie
     const refreshToken = req.cookies.get('refreshToken')?.value
 
     if (!refreshToken)
@@ -13,19 +14,22 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       )
 
+    // Verify the refresh token
     const decoded = jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET!
     ) as jwt.JwtPayload
 
-    if (decoded.type !== 'guest')
+    if (decoded.type !== 'registered')
       return NextResponse.json(
         { message: 'Invalid token type' },
         { status: 401 }
       )
 
+    // Check if the session exists and is valid
     const session = await prisma.session.findUnique({
       where: { id: decoded.sessionId },
+      include: { user: true },
     })
 
     if (
@@ -38,52 +42,67 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       )
 
+    // Generate a new access token
     const newAccessToken = jwt.sign(
-      { userId: decoded.userId, type: 'guest', sessionId: decoded.sessionId },
+      {
+        userId: decoded.userId,
+        type: 'registered',
+        sessionId: decoded.sessionId,
+      },
       process.env.JWT_SECRET!,
       { expiresIn: '15m' }
     )
 
+    // Optionally, you can also refresh the refresh token
     const newRefreshToken = jwt.sign(
-      { userId: decoded.userId, type: 'guest', sessionId: decoded.sessionId },
+      {
+        userId: decoded.userId,
+        type: 'registered',
+        sessionId: decoded.sessionId,
+      },
       process.env.REFRESH_TOKEN_SECRET!,
       { expiresIn: '7d' }
     )
 
+    // Update the session in the database
     await prisma.session.update({
       where: { id: decoded.sessionId },
       data: {
         refreshToken: newRefreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
     })
 
+    // Set the new refresh token as a cookie
     const refreshTokenCookie = serialize('refreshToken', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60,
+      maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/',
     })
 
-    // Fetch the guest data
-    const guest = await prisma.guest.findUnique({
+    // Fetch the user data
+    const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,
+        username: true,
         // Add any other fields you need
       },
     })
 
-    if (!guest)
-      return NextResponse.json({ message: 'Guest not found' }, { status: 404 })
+    if (!user)
+      return NextResponse.json({ message: 'User not found' }, { status: 404 })
 
+    // Return the new access token and set the new refresh token cookie
     return NextResponse.json(
       {
         token: newAccessToken,
-        id: guest.id,
-        type: 'guest',
-        // Add any other guest data you need to return
+        id: user.id,
+        type: 'registered',
+        username: user.username,
+        // Add any other user data you need to return
       },
       {
         headers: {
