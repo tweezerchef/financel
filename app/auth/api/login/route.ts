@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
+import { serialize } from 'cookie'
+import { v4 as uuidv4 } from 'uuid'
 import prisma from '../../../lib/prisma/prisma'
 import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
 
@@ -92,19 +94,57 @@ export async function POST(req: Req) {
     // Create a token
     if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
 
-    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+    // Generate a session ID
+    const sessionId = uuidv4()
+
+    // Create a short-lived JWT (e.g., 15 minutes)
+    const token = jwt.sign({ id, sessionId }, process.env.JWT_SECRET!, {
+      expiresIn: '15m',
     })
-    return NextResponse.json({
-      token,
-      id,
-      resultId,
-      nextCategory,
-      signedAvatarUrl: signedUrl,
-      signedAvatarExpiration: signedUrlExpiration,
-      username,
-      message: 'Logged in successfully',
+
+    // Create a long-lived refresh token (e.g., 7 days)
+    const refreshToken = jwt.sign(
+      { id, sessionId },
+      process.env.REFRESH_TOKEN_SECRET!,
+      { expiresIn: '7d' }
+    )
+
+    // Store session data in the database
+    await prisma.session.create({
+      data: {
+        id: sessionId,
+        userId: id,
+        refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      },
     })
+
+    // Set the refresh token as an HTTP-only cookie
+    const refreshTokenCookie = serialize('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/',
+    })
+
+    return NextResponse.json(
+      {
+        token,
+        id,
+        resultId,
+        nextCategory,
+        signedAvatarUrl: signedUrl,
+        signedAvatarExpiration: signedUrlExpiration,
+        username,
+        message: 'Logged in successfully',
+      },
+      {
+        headers: {
+          'Set-Cookie': refreshTokenCookie,
+        },
+      }
+    )
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(

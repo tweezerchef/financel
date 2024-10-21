@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
-import { useLocalStorage } from './lib/useLocalStorage'
 import { useUserContext } from '../context/user/UserContext'
 
 const AuthenticatedGame = dynamic(
@@ -16,54 +15,53 @@ const AuthenticatedGame = dynamic(
 
 export default function Game() {
   const router = useRouter()
-  const [token, , tokenIsLoading] = useLocalStorage('token')
-  const [guestToken, , guestTokenIsLoading] = useLocalStorage('guestToken')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const { setUser } = useUserContext()
+  const [isLoading, setIsLoading] = useState(true)
+  const { user, setUser } = useUserContext()
 
   useEffect(() => {
-    const validateToken = async () => {
-      if (tokenIsLoading || guestTokenIsLoading) {
-        console.log('Tokens still loading, waiting...')
-        return
-      }
-
-      if (!token && !guestToken) {
-        console.log('No tokens found, redirecting to login')
-        router.push('/')
-        return
-      }
-
-      const activeToken = token || guestToken
-
+    const validateSession = async () => {
       try {
-        // Here you would typically make an API call to validate the token
-        // For now, we'll just check if it exists
-        const isValid = !!activeToken
-        console.log('Token validation result:', isValid)
+        const response = await fetch('/auth/api/refresh', {
+          method: 'POST',
+          credentials: 'include', // This is important to include cookies
+        })
 
-        if (isValid) setIsAuthenticated(true)
-        else {
-          console.log('Invalid token, clearing and redirecting to login')
-          localStorage.removeItem('token')
-          localStorage.removeItem('guestToken')
+        if (response.ok) {
+          const { token } = await response.json()
+          // Store the token in memory (not localStorage)
+          sessionStorage.setItem('accessToken', token)
+          setIsAuthenticated(true)
+
+          // If we don't have user data in context, fetch it
+          if (!user) {
+            // You'll need to implement this API endpoint
+            const userResponse = await fetch('/api/user', {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+            if (userResponse.ok) {
+              const userData = await userResponse.json()
+              setUser(userData)
+            }
+          }
+        } else {
+          console.log('Invalid session, redirecting to login')
           setUser(null)
           router.push('/')
         }
       } catch (error) {
-        console.error('Error validating token:', error)
-        setIsAuthenticated(false)
-        localStorage.removeItem('token')
-        localStorage.removeItem('guestToken')
+        console.error('Error validating session:', error)
         setUser(null)
         router.push('/')
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    validateToken()
-  }, [token, guestToken, tokenIsLoading, guestTokenIsLoading, router, setUser])
+    validateSession()
+  }, [router, setUser, user])
 
-  if (tokenIsLoading || guestTokenIsLoading) return <div>Loading...</div>
+  if (isLoading) return <div>Loading...</div>
 
   if (!isAuthenticated) {
     console.log('Not authenticated, component will return null')

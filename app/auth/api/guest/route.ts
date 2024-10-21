@@ -1,44 +1,69 @@
 /* eslint-disable no-restricted-syntax */
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
+import { serialize } from 'cookie'
+import { v4 as uuidv4 } from 'uuid'
 import prisma from '../../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
-  const today = new Date()
-  const dateOnly = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  )
   try {
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    const ip = req.headers.get('x-forwarded-for') || 'unknown'
 
-    if (!ip)
-      return NextResponse.json(
-        { message: 'Unable to determine client IP' },
-        { status: 400 }
-      )
+    let guest = await prisma.guest.findUnique({ where: { ip } })
 
-    // Combine guest find/create and result find/create operations
-    const [guest, result] = await prisma.$transaction(async (prisma) => {
-      const guest = await prisma.guest.upsert({
-        where: { ip },
-        update: { lastPlay: new Date() },
-        create: { ip, lastPlay: new Date() },
+    if (!guest)
+      guest = await prisma.guest.create({
+        data: { ip },
       })
 
-      const result = await prisma.result.upsert({
-        where: { guestId_date: { guestId: guest.id, date: dateOnly } },
-        update: {},
-        create: { guestId: guest.id, date: dateOnly },
-        include: {
-          categories: {
-            orderBy: { category: 'asc' },
+    const today = new Date()
+    const dateOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    )
+
+    const result = await prisma.result.upsert({
+      where: { guestId_date: { guestId: guest.id, date: dateOnly } },
+      update: {},
+      create: { guestId: guest.id, date: dateOnly },
+      include: {
+        categories: {
+          orderBy: {
+            category: 'asc',
           },
         },
-      })
+      },
+    })
 
-      return [guest, result]
+    const sessionId = uuidv4()
+    const token = jwt.sign(
+      { guestId: guest.id, sessionId },
+      process.env.JWT_SECRET!,
+      { expiresIn: '15m' }
+    )
+    const refreshToken = jwt.sign(
+      { guestId: guest.id, sessionId },
+      process.env.REFRESH_TOKEN_SECRET!,
+      { expiresIn: '7d' }
+    )
+
+    // Create a new session in the database
+    await prisma.session.create({
+      data: {
+        id: sessionId,
+        guestId: guest.id,
+        refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      },
+    })
+
+    const refreshTokenCookie = serialize('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/',
     })
 
     // Determine the next uncompleted category
@@ -51,19 +76,20 @@ export async function POST(req: NextRequest) {
         return !categoryResult || !categoryResult.completed
       }) || null
 
-    if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not defined')
-
-    const token = jwt.sign({ id: guest.id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    })
-    console.log('token', token)
-    return NextResponse.json({
-      token,
-      id: guest.id,
-      resultId: result.id,
-      nextCategory,
-      message: 'Logged in as guest successfully',
-    })
+    return NextResponse.json(
+      {
+        token, // Still send the access token in the response
+        id: guest.id,
+        resultId: result.id,
+        nextCategory,
+        message: 'Logged in as guest successfully',
+      },
+      {
+        headers: {
+          'Set-Cookie': refreshTokenCookie,
+        },
+      }
+    )
   } catch (error) {
     console.error('Error in guest login:', error)
     return NextResponse.json({ message: 'An error occurred' }, { status: 500 })
