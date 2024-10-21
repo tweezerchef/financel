@@ -52,11 +52,12 @@ export function CurrencyGuess({
     useDailyChallengeContext()
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
-  const [resultId, setResultId] = useState<string | null>(null)
+
   const [modalProps, setModalProps] = useState<CurrencyModalProps | null>(null)
   const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
   const { user } = useUserContext()
+  const { resultId } = user ?? {}
   const [finalGuess, setFinalGuess] = useState<number | null>(null)
   const [formattedChallengeDate, setFormattedChallengeDate] =
     useState<string>('')
@@ -76,17 +77,6 @@ export function CurrencyGuess({
   useEffect(() => {
     if (!dailyChallengeCurrency) fetchDailyChallenge()
   }, [dailyChallengeCurrency, fetchDailyChallenge])
-
-  useEffect(() => {
-    if (user?.resultId) setResultId(user.resultId)
-    else {
-      const storedUserData = localStorage.getItem('userData')
-      if (storedUserData) {
-        const parsedUserData = JSON.parse(storedUserData)
-        setResultId(parsedUserData.resultId)
-      }
-    }
-  }, [user])
 
   useEffect(() => {
     if (dailyChallengeCurrency?.date) {

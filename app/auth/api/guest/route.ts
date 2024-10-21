@@ -40,11 +40,15 @@ export async function POST(req: NextRequest) {
     // Generate a new session ID
     const sessionId = uuidv4()
 
+    // Generate a refresh token
+    const refreshToken = uuidv4()
+
+    // Create the session
     await prisma.session.create({
       data: {
         id: sessionId,
         guestId: guest.id,
-        refreshToken: '', // We're not using refresh tokens with this approach
+        refreshToken,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
     })
