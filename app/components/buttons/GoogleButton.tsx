@@ -6,17 +6,22 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useUserContext } from '../../context/user/UserContext'
 
-// Add this type declaration at the top of the file, after the imports
+// Update the global declaration to include TokenClient
 declare global {
   interface Window {
     google?: {
       accounts: {
         oauth2: {
-          initTokenClient: (config: unknown) => unknown
+          initTokenClient: (config: unknown) => TokenClient
+          TokenClient: any
         }
       }
     }
   }
+}
+
+interface TokenClient {
+  requestAccessToken(): void
 }
 
 function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
@@ -62,43 +67,42 @@ export function GoogleButton(
       await loadGoogleSignIn()
 
       // Initialize Google Sign-In
-      const auth2 = (window.google as any).accounts.oauth2.initTokenClient({
+      const auth2 = window.google!.accounts.oauth2.initTokenClient({
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
         scope: 'email profile',
-        callback: async (response: any) => {
-          if (response.access_token) {
-            // Send the token to your backend
-            const result = await fetch('/auth/api/google', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ credential: response.credential }),
-              credentials: 'include',
-            })
-
-            const data = await result.json()
-
-            if (result.ok) {
-              setUser({
-                id: data.id,
-                type: 'registered',
-                resultId: data.resultId,
-                nextCategory: data.nextCategory,
-                username: data.username,
-                signedAvatarUrl: data.signedAvatarUrl,
-                signedAvatarExpiration: data.signedAvatarExpiration,
+        callback: async (response: { access_token: any }) => {
+          if (response.access_token)
+            try {
+              const res = await fetch('/auth/api/google', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ credential: response.access_token }),
               })
-              router.push('/game')
-            } else {
-              console.error('Google login failed:', data.message)
-              alert(data.message)
+              if (res.ok) {
+                const data = await res.json()
+                // Handle successful login
+                setUser({
+                  id: data.id,
+                  type: data.type,
+                  resultId: data.resultId,
+                  nextCategory: data.nextCategory,
+                  signedAvatarUrl: data.signedAvatarUrl,
+                  signedAvatarExpiration: data.signedAvatarExpiration,
+                  username: data.username,
+                })
+                router.push('/game')
+              }
+            } catch (error) {
+              console.error('Error during Google sign-in:', error)
             }
-          }
         },
       })
 
-      auth2.requestAccessToken()
+      // Explicitly type auth2 as TokenClient
+      const tokenClient = auth2 as TokenClient
+      tokenClient.requestAccessToken()
     } catch (error) {
       console.error('Google login error:', error)
       alert('An error occurred during Google login.')
