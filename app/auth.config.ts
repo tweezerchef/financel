@@ -1,21 +1,25 @@
-import type { NextAuthConfig } from 'next-auth'
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-export const authConfig = {
+import { NextAuthOptions } from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+
+export const authOptions: NextAuthOptions = {
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
   pages: {
     signIn: '/login',
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user
-      const isOnGame = nextUrl.pathname.startsWith('/game')
-      if (isOnGame) {
-        if (isLoggedIn) return true
-        return false // Redirect unauthenticated users to login page
-      }
-      if (isLoggedIn) return Response.redirect(new URL('/game', nextUrl))
-
+    async signIn({ user, account, profile, email, credentials }) {
+      // Optional custom logic
       return true
     },
+    async redirect({ url, baseUrl }) {
+      return baseUrl
+    },
   },
-  providers: [], // Add providers with an empty array for now
-} satisfies NextAuthConfig
+}

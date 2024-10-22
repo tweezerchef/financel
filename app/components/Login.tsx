@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'
 import { RegisterButton } from './buttons/RegisterButton'
 import classes from './ui/Login.module.css'
 import { useUserContext } from '../context/user/UserContext'
+import { GoogleButton } from './buttons/GoogleButton'
 
 type FormProps = {
   email: string
@@ -84,7 +85,10 @@ export function Login(props: PaperProps) {
         <RegisterButton />
       </Center>
 
-      <Divider label="Or continue with email" labelPosition="center" my="lg" />
+      <Divider label="Login" labelPosition="center" my="lg" />
+      <Center>
+        <GoogleButton />
+      </Center>
 
       <form onSubmit={form.onSubmit((values) => formSubmit(values))}>
         <Stack>
