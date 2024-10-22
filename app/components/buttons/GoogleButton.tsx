@@ -1,4 +1,23 @@
+/* eslint-disable no-promise-executor-return */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-use-before-define */
 import { Button, ButtonProps } from '@mantine/core'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useUserContext } from '../../context/user/UserContext'
+
+// Add this type declaration at the top of the file, after the imports
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        oauth2: {
+          initTokenClient: (config: unknown) => unknown
+        }
+      }
+    }
+  }
+}
 
 function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -32,5 +51,87 @@ function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 export function GoogleButton(
   props: ButtonProps & React.ComponentPropsWithoutRef<'button'>
 ) {
-  return <Button leftSection={<GoogleIcon />} variant="default" {...props} />
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const { setUser } = useUserContext()
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true)
+    try {
+      // Load the Google Sign-In API
+      await loadGoogleSignIn()
+
+      // Initialize Google Sign-In
+      const auth2 = (window.google as any).accounts.oauth2.initTokenClient({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+        scope: 'email profile',
+        callback: async (response: any) => {
+          if (response.access_token) {
+            // Send the token to your backend
+            const result = await fetch('/auth/api/google', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ credential: response.credential }),
+              credentials: 'include',
+            })
+
+            const data = await result.json()
+
+            if (result.ok) {
+              setUser({
+                id: data.id,
+                type: 'registered',
+                resultId: data.resultId,
+                nextCategory: data.nextCategory,
+                username: data.username,
+                signedAvatarUrl: data.signedAvatarUrl,
+                signedAvatarExpiration: data.signedAvatarExpiration,
+              })
+              router.push('/game')
+            } else {
+              console.error('Google login failed:', data.message)
+              alert(data.message)
+            }
+          }
+        },
+      })
+
+      auth2.requestAccessToken()
+    } catch (error) {
+      console.error('Google login error:', error)
+      alert('An error occurred during Google login.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Button
+      leftSection={<GoogleIcon />}
+      variant="default"
+      onClick={handleGoogleLogin}
+      disabled={isLoading}
+      {...props}
+    >
+      Continue with Google
+    </Button>
+  )
+}
+
+// Helper function to load the Google Sign-In API
+function loadGoogleSignIn(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (typeof window === 'undefined') return reject()
+    if (window.google?.accounts) return resolve()
+
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = () => resolve()
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
 }
