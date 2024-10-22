@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { OAuth2Client } from 'google-auth-library'
 import { v4 as uuidv4 } from 'uuid'
 import prisma from '../../../lib/prisma/prisma'
-
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 export async function POST(req: NextRequest) {
   try {
     const { credential } = await req.json()
-    const ticket = await client.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    })
+    const response = await fetch(
+      'https://www.googleapis.com/oauth2/v3/userinfo',
+      {
+        headers: {
+          Authorization: `Bearer ${credential}`,
+        },
+      }
+    )
 
-    const payload = ticket.getPayload()
+    const payload = await response.json()
     if (!payload?.email)
       return NextResponse.json({ message: 'Invalid token' }, { status: 400 })
 
