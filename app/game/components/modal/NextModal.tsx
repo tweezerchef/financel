@@ -126,7 +126,9 @@ export function NextModal({
         : type === 'Stock Price'
           ? 'final'
           : ''
+
   console.log('finalGuess', finalGuess)
+
   const renderChart = () => {
     if (!chartData) return null
 

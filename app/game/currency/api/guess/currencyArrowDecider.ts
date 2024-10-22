@@ -71,6 +71,7 @@ export function currencyArrowDecider(
 
   // Always consider only the first three digits
   const truncatedActual = Math.trunc(actual * 100) / 100
+
   console.log('truncatedActual', truncatedActual)
 
   if (guess === truncatedActual)
