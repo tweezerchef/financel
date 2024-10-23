@@ -9,7 +9,6 @@ import {
   useState,
   ReactNode,
   useCallback,
-  useEffect,
 } from 'react'
 
 type UserType = 'guest' | 'registered'
@@ -102,10 +101,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }, [])
 
-  useEffect(() => {
-    // Only fetch user data if it's not already set
-    if (!user) refreshUserData()
-  }, [user, refreshUserData])
+  // useEffect(() => {
+  //   // Only fetch user data if it's not already set
+  //   if (!user) refreshUserData()
+  // }, [user, refreshUserData])
 
   const value = useMemo(
     () => ({
