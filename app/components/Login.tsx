@@ -20,6 +20,7 @@ import { GoogleButton } from './buttons/GoogleButton'
 
 interface LoginProps extends PaperProps {
   onAuthStart: () => void
+  isAuthenticating?: boolean
 }
 
 type FormProps = {
@@ -28,7 +29,11 @@ type FormProps = {
   password: string
 }
 
-export function Login({ onAuthStart, ...props }: LoginProps) {
+export function Login({
+  onAuthStart,
+  isAuthenticating = false,
+  ...props
+}: LoginProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
@@ -76,25 +81,29 @@ export function Login({ onAuthStart, ...props }: LoginProps) {
       } else {
         console.error('Login failed:', data.message)
         alert(data.message)
+        onAuthStart() // Turn off loading state on error
       }
     } catch (error) {
       console.error('Login error:', error)
       alert('An error occurred during login.')
+      onAuthStart() // Turn off loading state on error
     } finally {
       setIsLoading(false)
-      onAuthStart()
     }
   }
 
   return (
     <Paper p="md" {...props} className={classes.login}>
       <Center mt="sm">
-        <RegisterButton />
+        <RegisterButton disabled={isAuthenticating || isLoading} />
       </Center>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
       <Center>
-        <GoogleButton onAuthStart={onAuthStart} />
+        <GoogleButton
+          onAuthStart={onAuthStart}
+          disabled={isAuthenticating || isLoading}
+        />
       </Center>
 
       <form onSubmit={form.onSubmit((values) => formSubmit(values))}>
@@ -109,6 +118,7 @@ export function Login({ onAuthStart, ...props }: LoginProps) {
             }
             error={form.errors.email && 'Invalid email'}
             radius="md"
+            disabled={isAuthenticating || isLoading}
           />
 
           <PasswordInput
@@ -124,11 +134,16 @@ export function Login({ onAuthStart, ...props }: LoginProps) {
               'Password should include at least 6 characters'
             }
             radius="md"
+            disabled={isAuthenticating || isLoading}
           />
         </Stack>
 
         <Center mt="xl">
-          <Button type="submit" radius="xl" disabled={isLoading}>
+          <Button
+            type="submit"
+            radius="xl"
+            disabled={isAuthenticating || isLoading}
+          >
             Login
           </Button>
         </Center>

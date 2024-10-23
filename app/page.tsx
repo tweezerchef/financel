@@ -1,3 +1,5 @@
+// page.tsx
+
 'use client'
 
 import { useState } from 'react'
@@ -9,10 +11,17 @@ import classes from './ui/Page.module.css'
 export default function Home() {
   const [isAuthenticating, setIsAuthenticating] = useState(false)
 
+  const handleAuthStart = () => {
+    setIsAuthenticating((prev) => !prev)
+  }
+
   return (
     <main className={classes.main}>
       <Header />
-      <Login onAuthStart={() => setIsAuthenticating(true)} />
+      <Login
+        onAuthStart={handleAuthStart}
+        isAuthenticating={isAuthenticating}
+      />
       {isAuthenticating && <LoadingOverlay />}
     </main>
   )

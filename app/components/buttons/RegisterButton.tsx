@@ -1,13 +1,19 @@
-import { Button } from '@mantine/core'
+'use client'
+
+import { Button, ButtonProps } from '@mantine/core'
 import Link from 'next/link'
 import { useState } from 'react'
 
-export function RegisterButton() {
+interface RegisterButtonProps extends ButtonProps {
+  disabled?: boolean
+}
+
+export function RegisterButton({ disabled, ...props }: RegisterButtonProps) {
   const [loading, setLoading] = useState(false)
 
   const handleClick = () => {
+    if (disabled) return
     setLoading(true)
-    // Simulate a delay before navigation // Adjust this delay as needed
   }
 
   return (
@@ -18,7 +24,9 @@ export function RegisterButton() {
         radius="xl"
         onClick={handleClick}
         loading={loading}
+        disabled={disabled}
         loaderProps={{ type: 'bars' }}
+        {...props}
       >
         Register
       </Button>
