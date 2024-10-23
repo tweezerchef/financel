@@ -16,6 +16,7 @@ type UserType = 'guest' | 'registered'
 type Category = 'INTEREST_RATE' | 'CURRENCY' | 'STOCK'
 
 interface UserData {
+  googleId?: string
   id: string
   type: UserType
   resultId: string
