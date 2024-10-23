@@ -3,6 +3,7 @@
   width: 100%;
   overflow: hidden;
   position: relative;
+  background-color: #000;
 }
 
 .slideWrapper {
@@ -31,60 +32,79 @@
   left: 0;
   right: 0;
   background-color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 46px; /* Default height for largest font size */
+  height: 46px;
+  overflow: hidden;
 }
 
 .legendContent {
-  color: #fffb00;
+  display: flex;
+  width: 200%;
+  height: 100%;
+}
+
+.legendContent span {
+  flex: 0 0 50%;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  text-align: center;
+  justify-content: center;
+  color: #fffb00;
   font-family: tickerFont;
-  width: 100%;
-  padding: 5px 0;
+  white-space: nowrap;
 }
 
+.animate {
+  animation: ticker 1s linear;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 /* Media queries for responsive font sizing and layout */
-@media (max-width: 1200px) {
-  .legend {
-    font-size: 16px;
-    height: 27px;
-  }
-  .slideWrapper {
-    bottom: 27px;
-  }
-}
 
-@media (max-width: 900px) {
-  .legend {
-    font-size: 16px;
-    height: 27px;
-  }
-  .slideWrapper {
-    bottom: 27px;
-  }
-}
-
-@media (max-width: 600px) {
+@media (max-width: 500px) {
   .legend {
     font-size: 16px;
     padding: 3px 0;
-    height: 35px;
+    height: 40px;
   }
+  .slideWrapper {
+    bottom: 40px;
+  }
+  .legendContent span {
+    margin: 2px 0;
+  }
+}
+@media (max-width: 450px) {
+  .legend {
+    font-size: 14px;
+    height: 38px;
+  }
+  .slideWrapper {
+    bottom: 38px;
+  }
+}
+
+@media (max-width: 389px) {
   .slideWrapper {
     bottom: 35px;
   }
-  .legend span {
-    margin: 2px 0;
+  .legend {
+    height: 35px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 375px) {
+  .slideWrapper {
+    bottom: 27px;
+  }
   .legend {
-    font-size: 14px;
+    height: 27px;
+    font-size: 12px;
   }
 }
