@@ -1,37 +1,40 @@
-/* eslint-disable no-promise-executor-return */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-use-before-define */
+'use client'
+
 import { Button, ButtonProps } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useUserContext } from '../../context/user/UserContext'
 
-// Update the global declaration to include TokenClient
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        oauth2: {
-          initTokenClient: (config: unknown) => TokenClient
-          TokenClient: any
-        }
-      }
-    }
-  }
+type Category = 'STOCK' | 'INTEREST_RATE' | 'CURRENCY'
+
+// Types
+interface GoogleTokenResponse {
+  access_token: string
+}
+
+interface GoogleAuthResponse {
+  id: string
+  type: 'registered' | 'unregistered'
+  resultId?: string
+  nextCategory: string | null
+  signedAvatarUrl: string | null
+  signedAvatarExpiration: string | null
+  username: string
+  googleId?: string
 }
 
 interface TokenClient {
   requestAccessToken(): void
 }
 
-function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+// Google icon component
+function GoogleIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid"
       viewBox="0 0 256 262"
-      style={{ width: '0.9rem', height: '0.9rem' }}
-      {...props}
+      className="w-4 h-4"
     >
       <path
         fill="#4285F4"
@@ -53,70 +56,75 @@ function GoogleIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   )
 }
 
-export function GoogleButton(
-  props: ButtonProps & React.ComponentPropsWithoutRef<'button'>
-) {
+export function GoogleButton(props: ButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true)
-    try {
-      // Load the Google Sign-In API
-      await loadGoogleSignIn()
+  const loadGoogleSignIn = async (): Promise<void> => {
+    if (typeof window === 'undefined') return
 
-      // Initialize Google Sign-In
-      const auth2 = window.google!.accounts.oauth2.initTokenClient({
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-        scope: 'email profile',
-        callback: async (response: { access_token: any }) => {
-          if (response.access_token)
-            try {
-              const res = await fetch('/auth/api/google', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ credential: response.access_token }),
-              })
-              if (res.ok) {
-                const data = await res.json()
-                if (data.type === 'unregistered') {
-                  setUser({
-                    id: data.id,
-                    googleId: data.googleId,
-                    type: 'registered', // Change 'unregistered' to 'registered'
-                    resultId: '',
-                    nextCategory: null,
-                    username: '',
-                    signedAvatarUrl: null,
-                    signedAvatarExpiration: null,
-                  })
-                  router.push('/registration/google')
-                } else {
-                  // Handle successful login
-                  setUser({
-                    id: data.id,
-                    type: data.type,
-                    resultId: data.resultId,
-                    nextCategory: data.nextCategory,
-                    signedAvatarUrl: data.signedAvatarUrl,
-                    signedAvatarExpiration: data.signedAvatarExpiration,
-                    username: data.username,
-                  })
-                  // Route based on user type
-                  router.push('/game')
-                }
-              }
-            } catch (error) {
-              console.error('Error during Google sign-in:', error)
-            }
-        },
+    if (window.google?.accounts) return
+
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.defer = true
+      script.onload = () => resolve()
+      script.onerror = reject
+      document.head.appendChild(script)
+    })
+  }
+
+  const handleAuthResponse = async (response: GoogleTokenResponse) => {
+    try {
+      const res = await fetch('/auth/api/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: response.access_token }),
       })
 
-      // Explicitly type auth2 as TokenClient
-      const tokenClient = auth2 as TokenClient
+      if (!res.ok) throw new Error('Authentication failed')
+
+      const data: GoogleAuthResponse = await res.json()
+
+      setUser({
+        id: data.id,
+        type: 'registered',
+        resultId: data.resultId ?? '',
+        nextCategory: data.nextCategory as Category | null,
+        signedAvatarUrl: data.signedAvatarUrl,
+        signedAvatarExpiration: data.signedAvatarExpiration
+          ? Number(data.signedAvatarExpiration)
+          : null,
+        username: data.username,
+        ...(data.googleId && { googleId: data.googleId }),
+      })
+
+      router.push(
+        data.type === 'unregistered' ? '/registration/google' : '/game'
+      )
+    } catch (error) {
+      console.error('Authentication error:', error)
+      throw error
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true)
+
+    try {
+      await loadGoogleSignIn()
+
+      const tokenClient = window.google?.accounts.oauth2.initTokenClient({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+        scope: 'email profile',
+        callback: async (response: GoogleTokenResponse) => {
+          if (response.access_token) await handleAuthResponse(response)
+        },
+      }) as TokenClient
+
       tokenClient.requestAccessToken()
     } catch (error) {
       console.error('Google login error:', error)
@@ -137,20 +145,4 @@ export function GoogleButton(
       Continue with Google
     </Button>
   )
-}
-
-// Helper function to load the Google Sign-In API
-function loadGoogleSignIn(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (typeof window === 'undefined') return reject()
-    if (window.google?.accounts) return resolve()
-
-    const script = document.createElement('script')
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    script.onload = () => resolve()
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
 }
