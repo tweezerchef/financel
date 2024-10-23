@@ -2,7 +2,7 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Container, Transition } from '@mantine/core'
 import { DayOfImage } from './components/DayOfImage'
 import classes from './ui/InterestRateDayOf.module.css'
@@ -27,14 +27,13 @@ export function InterestRateDayOf({
   guessCount,
 }: InterestRateDayOfProps) {
   const [dayOfSlide, setDayOfSlide] = useState<DayOf>('image')
-  const [isLoading, setIsLoading] = useState(true)
+  const [oldLegendContent, setOldLegendContent] = useState<string>('')
+  const [newLegendContent, setNewLegendContent] = useState<string>('')
+  const [isAnimating, setIsAnimating] = useState(false)
   const { dailyChallengeInterestRate } = useDailyChallengeContext()
   const { date, category } = dailyChallengeInterestRate || {}
+  const legendRef = useRef<HTMLDivElement>(null)
   console.log('date', date, 'category', category)
-
-  useEffect(() => {
-    if (dailyChallengeInterestRate) setIsLoading(false)
-  }, [dailyChallengeInterestRate])
 
   useEffect(() => {
     if (dayOfSlide === 'image') {
@@ -45,7 +44,26 @@ export function InterestRateDayOf({
     }
   }, [dayOfSlide])
 
-  if (isLoading) return <div>Loading...</div> // Or any loading component
+  useEffect(() => {
+    if (amountAway !== null && guessCount !== null) {
+      const content = `${
+        parseFloat(amountAway) >= 2.51 ? 'Greater Than' : 'Less Than'
+      }: ${parseFloat(amountAway) >= 2.51 ? '2.5' : amountAway} Points Away | Guesses Left: ${guessCount}`
+
+      setOldLegendContent(newLegendContent || content)
+      setNewLegendContent(content)
+      setIsAnimating(true)
+
+      const animationDuration = 1000
+
+      const timeoutId = setTimeout(() => {
+        setIsAnimating(false)
+        setOldLegendContent(content)
+      }, animationDuration)
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [amountAway, guessCount, newLegendContent])
 
   return (
     <Container className={classes.dayOfContainer}>
@@ -80,24 +98,13 @@ export function InterestRateDayOf({
           )}
         </Transition>
       </div>
-      <div className={classes.legend}>
-        <Transition
-          mounted={!!amountAway && !!guessCount}
-          transition="slide-up"
-          duration={400}
-          timingFunction="ease"
+      <div className={classes.legend} ref={legendRef}>
+        <div
+          className={`${classes.legendContent} ${isAnimating ? classes.animate : ''}`}
         >
-          {(styles) => (
-            <div style={styles} className={classes.legendContent}>
-              <span>
-                {parseFloat(amountAway!) >= 2.51 ? 'Greater Than' : 'Less Than'}
-                : {parseFloat(amountAway!) >= 2.51 ? '2.5' : amountAway} Points
-                Away
-              </span>
-              <span> Guesses Left: {guessCount}</span>
-            </div>
-          )}
-        </Transition>
+          <span>{oldLegendContent}</span>
+          <span>{newLegendContent}</span>
+        </div>
       </div>
     </Container>
   )

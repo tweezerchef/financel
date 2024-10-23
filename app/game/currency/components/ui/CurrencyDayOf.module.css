@@ -64,27 +64,7 @@
   }
 }
 /* Media queries for responsive font sizing and layout */
-@media (max-width: 1200px) {
-  .legend {
-    font-size: 16px;
-    height: 27px;
-  }
-  .slideWrapper {
-    bottom: 27px;
-  }
-}
-
-@media (max-width: 900px) {
-  .legend {
-    font-size: 16px;
-    height: 27px;
-  }
-  .slideWrapper {
-    bottom: 27px;
-  }
-}
-
-@media (max-width: 600px) {
+@media (max-width: 500px) {
   .legend {
     font-size: 16px;
     padding: 3px 0;
@@ -97,14 +77,23 @@
     margin: 2px 0;
   }
 }
-@media (max-width: 400px) {
-  .legendContent span {
+
+@media (max-width: 399px) {
+  .slideWrapper {
+    bottom: 35px;
+  }
+  .legend {
+    height: 35px;
     font-size: 14px;
   }
 }
 
 @media (max-width: 375px) {
+  .slideWrapper {
+    bottom: 27px;
+  }
   .legend {
+    height: 27px;
     font-size: 12px;
   }
 }
