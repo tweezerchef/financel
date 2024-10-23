@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
-import { uuid } from 'uuidv4'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
-import { getSignedAvatarUrl } from '../../lib/aws/getSignedAvatarUrl'
-import { updateUserAvatar } from '../../lib/dbFunctions/updateUserAvatar'
+import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
+import { updateUserAvatar } from '../../../lib/dbFunctions/updateUserAvatar'
 
-import prisma from '../../lib/prisma/prisma'
+import prisma from '../../../lib/prisma/prisma'
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData()
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
   const username = formData.get('username') as string
   const avatar = formData.get('avatar') as File
+  const id = formData.get('id') as string
+  const googleId = formData.get('googleId') as string
 
   const s3Client = new S3Client({
     region: process.env.SERVER_AWS_REGION,
@@ -24,21 +23,12 @@ export async function POST(req: NextRequest) {
     },
   })
   // Check if the user already exists
-  const user = await prisma.user.findUnique({
-    where: { email },
-  })
-  if (user)
-    return NextResponse.json(
-      { message: 'User already exists with this email address.' },
-      { status: 400 }
-    )
-  const emailToken = uuid()
-  /// email validation will be added here
+  const password = ''
   const hashedPassword = await bcrypt.hash(password, 10)
   // Create the user
-  const newUser = await prisma.user.create({
+  const newUser = await prisma.user.update({
+    where: { id },
     data: {
-      email,
       password: hashedPassword,
       username,
     },
