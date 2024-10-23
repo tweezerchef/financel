@@ -9,6 +9,7 @@ type Category = 'STOCK' | 'INTEREST_RATE' | 'CURRENCY'
 
 interface GoogleButtonProps extends ButtonProps {
   onAuthStart?: () => void
+  disabled?: boolean
 }
 
 interface GoogleTokenResponse {
@@ -58,7 +59,11 @@ function GoogleIcon() {
   )
 }
 
-export function GoogleButton({ onAuthStart, ...props }: GoogleButtonProps) {
+export function GoogleButton({
+  onAuthStart,
+  disabled,
+  ...props
+}: GoogleButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
@@ -149,8 +154,12 @@ export function GoogleButton({ onAuthStart, ...props }: GoogleButtonProps) {
     <Button
       leftSection={<GoogleIcon />}
       variant="default"
+      size="md"
+      radius="xl"
       onClick={handleGoogleLogin}
-      disabled={isLoading}
+      disabled={disabled}
+      loading={isLoading}
+      loaderProps={{ type: 'bars' }}
       {...props}
     >
       Continue with Google
