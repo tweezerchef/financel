@@ -82,17 +82,32 @@ export function GoogleButton(
               })
               if (res.ok) {
                 const data = await res.json()
-                // Handle successful login
-                setUser({
-                  id: data.id,
-                  type: data.type,
-                  resultId: data.resultId,
-                  nextCategory: data.nextCategory,
-                  signedAvatarUrl: data.signedAvatarUrl,
-                  signedAvatarExpiration: data.signedAvatarExpiration,
-                  username: data.username,
-                })
-                router.push('/game')
+                if (data.type === 'unregistered') {
+                  setUser({
+                    id: data.id,
+                    googleId: data.googleId,
+                    type: 'registered', // Change 'unregistered' to 'registered'
+                    resultId: '',
+                    nextCategory: null,
+                    username: '',
+                    signedAvatarUrl: null,
+                    signedAvatarExpiration: null,
+                  })
+                  router.push('/registration/google')
+                } else {
+                  // Handle successful login
+                  setUser({
+                    id: data.id,
+                    type: data.type,
+                    resultId: data.resultId,
+                    nextCategory: data.nextCategory,
+                    signedAvatarUrl: data.signedAvatarUrl,
+                    signedAvatarExpiration: data.signedAvatarExpiration,
+                    username: data.username,
+                  })
+                  // Route based on user type
+                  router.push('/game')
+                }
               }
             } catch (error) {
               console.error('Error during Google sign-in:', error)

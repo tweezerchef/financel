@@ -34,8 +34,19 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    if (!user)
-      return NextResponse.json({ message: 'User not found' }, { status: 404 })
+    if (!user) {
+      const newUser = await prisma.user.create({
+        data: { email: payload.email, password: '' },
+      })
+      return NextResponse.json(
+        {
+          id: newUser.id,
+          type: 'unregistered',
+          message: 'Register to continue',
+        },
+        { status: 200 } // Changed from 100 to 200 for standard success response
+      )
+    }
 
     const { id, avatar, username } = user
     let signedUrl = null
@@ -96,6 +107,7 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({
+      googleId: payload.id,
       id,
       type: 'registered',
       resultId,
