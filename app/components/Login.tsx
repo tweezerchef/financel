@@ -18,16 +18,21 @@ import classes from './ui/Login.module.css'
 import { useUserContext } from '../context/user/UserContext'
 import { GoogleButton } from './buttons/GoogleButton'
 
+interface LoginProps extends PaperProps {
+  onAuthStart: () => void
+}
+
 type FormProps = {
   email: string
   username?: string
   password: string
 }
 
-export function Login(props: PaperProps) {
+export function Login({ onAuthStart, ...props }: LoginProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
+
   const form = useForm({
     initialValues: {
       email: '',
@@ -35,7 +40,6 @@ export function Login(props: PaperProps) {
       password: '',
       terms: true,
     },
-
     validate: {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
       password: (val) =>
@@ -47,13 +51,14 @@ export function Login(props: PaperProps) {
 
   const formSubmit = async (values: FormProps) => {
     setIsLoading(true)
+    onAuthStart()
     const { email, password } = values
     try {
       const response = await fetch('auth/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', // This is important to include cookies
+        credentials: 'include',
       })
       const data = await response.json()
 
@@ -77,8 +82,10 @@ export function Login(props: PaperProps) {
       alert('An error occurred during login.')
     } finally {
       setIsLoading(false)
+      onAuthStart()
     }
   }
+
   return (
     <Paper p="md" {...props} className={classes.login}>
       <Center mt="sm">
@@ -87,7 +94,7 @@ export function Login(props: PaperProps) {
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
       <Center>
-        <GoogleButton />
+        <GoogleButton onAuthStart={onAuthStart} />
       </Center>
 
       <form onSubmit={form.onSubmit((values) => formSubmit(values))}>
