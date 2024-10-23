@@ -108,7 +108,11 @@ export default function Registration() {
                 form.setFieldValue('file', file)
               }}
             >
-              {(props) => <Button {...props}>Upload avatar</Button>}
+              {(props) => (
+                <Button {...props}>
+                  {form.values.file ? 'Choose Different File' : 'Upload avatar'}
+                </Button>
+              )}
             </FileButton>
           </div>
         </form>
