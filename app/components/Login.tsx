@@ -18,16 +18,26 @@ import classes from './ui/Login.module.css'
 import { useUserContext } from '../context/user/UserContext'
 import { GoogleButton } from './buttons/GoogleButton'
 
+interface LoginProps extends PaperProps {
+  onAuthStart: () => void
+  isAuthenticating?: boolean
+}
+
 type FormProps = {
   email: string
   username?: string
   password: string
 }
 
-export function Login(props: PaperProps) {
+export function Login({
+  onAuthStart,
+  isAuthenticating = false,
+  ...props
+}: LoginProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
+
   const form = useForm({
     initialValues: {
       email: '',
@@ -35,7 +45,6 @@ export function Login(props: PaperProps) {
       password: '',
       terms: true,
     },
-
     validate: {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
       password: (val) =>
@@ -47,13 +56,14 @@ export function Login(props: PaperProps) {
 
   const formSubmit = async (values: FormProps) => {
     setIsLoading(true)
+    onAuthStart()
     const { email, password } = values
     try {
       const response = await fetch('auth/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', // This is important to include cookies
+        credentials: 'include',
       })
       const data = await response.json()
 
@@ -71,23 +81,29 @@ export function Login(props: PaperProps) {
       } else {
         console.error('Login failed:', data.message)
         alert(data.message)
+        onAuthStart() // Turn off loading state on error
       }
     } catch (error) {
       console.error('Login error:', error)
       alert('An error occurred during login.')
+      onAuthStart() // Turn off loading state on error
     } finally {
       setIsLoading(false)
     }
   }
+
   return (
     <Paper p="md" {...props} className={classes.login}>
       <Center mt="sm">
-        <RegisterButton />
+        <RegisterButton disabled={isAuthenticating || isLoading} />
       </Center>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
       <Center>
-        <GoogleButton />
+        <GoogleButton
+          onAuthStart={onAuthStart}
+          disabled={isAuthenticating || isLoading}
+        />
       </Center>
 
       <form onSubmit={form.onSubmit((values) => formSubmit(values))}>
@@ -102,6 +118,7 @@ export function Login(props: PaperProps) {
             }
             error={form.errors.email && 'Invalid email'}
             radius="md"
+            disabled={isAuthenticating || isLoading}
           />
 
           <PasswordInput
@@ -117,11 +134,16 @@ export function Login(props: PaperProps) {
               'Password should include at least 6 characters'
             }
             radius="md"
+            disabled={isAuthenticating || isLoading}
           />
         </Stack>
 
         <Center mt="xl">
-          <Button type="submit" radius="xl" disabled={isLoading}>
+          <Button
+            type="submit"
+            radius="xl"
+            disabled={isAuthenticating || isLoading}
+          >
             Login
           </Button>
         </Center>

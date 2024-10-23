@@ -7,7 +7,11 @@ import { useUserContext } from '../../context/user/UserContext'
 
 type Category = 'STOCK' | 'INTEREST_RATE' | 'CURRENCY'
 
-// Types
+interface GoogleButtonProps extends ButtonProps {
+  onAuthStart?: () => void
+  disabled?: boolean
+}
+
 interface GoogleTokenResponse {
   access_token: string
 }
@@ -27,7 +31,6 @@ interface TokenClient {
   requestAccessToken(): void
 }
 
-// Google icon component
 function GoogleIcon() {
   return (
     <svg
@@ -56,7 +59,11 @@ function GoogleIcon() {
   )
 }
 
-export function GoogleButton(props: ButtonProps) {
+export function GoogleButton({
+  onAuthStart,
+  disabled,
+  ...props
+}: GoogleButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
@@ -107,12 +114,14 @@ export function GoogleButton(props: ButtonProps) {
       )
     } catch (error) {
       console.error('Authentication error:', error)
+      onAuthStart?.() // Turn off loading state if there's an error
       throw error
     }
   }
 
   const handleGoogleLogin = async () => {
     setIsLoading(true)
+    onAuthStart?.() // Start loading state
 
     try {
       await loadGoogleSignIn()
@@ -121,7 +130,13 @@ export function GoogleButton(props: ButtonProps) {
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
         scope: 'email profile',
         callback: async (response: GoogleTokenResponse) => {
-          if (response.access_token) await handleAuthResponse(response)
+          try {
+            if (response.access_token) await handleAuthResponse(response)
+          } catch (error) {
+            console.error('Google login error:', error)
+            alert('An error occurred during Google login.')
+            onAuthStart?.() // Turn off loading state on error
+          }
         },
       }) as TokenClient
 
@@ -129,6 +144,7 @@ export function GoogleButton(props: ButtonProps) {
     } catch (error) {
       console.error('Google login error:', error)
       alert('An error occurred during Google login.')
+      onAuthStart?.() // Turn off loading state on error
     } finally {
       setIsLoading(false)
     }
@@ -138,8 +154,12 @@ export function GoogleButton(props: ButtonProps) {
     <Button
       leftSection={<GoogleIcon />}
       variant="default"
+      size="md"
+      radius="xl"
       onClick={handleGoogleLogin}
-      disabled={isLoading}
+      disabled={disabled}
+      loading={isLoading}
+      loaderProps={{ type: 'bars' }}
       {...props}
     >
       Continue with Google
