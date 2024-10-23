@@ -1,18 +1,18 @@
 .container {
+  min-height: 100dvh;
   width: 100vw;
   height: 100dvh;
-  max-width: 600px;
-  max-height: 900px;
+  max-width: 900px;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
   padding: 0;
   margin: 0;
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 600px) {
   .container {
-    min-height: 900px;
+    min-height: 800px;
+    justify-content: space-between;
   }
 }
 
@@ -22,14 +22,13 @@
   align-items: center;
   justify-content: space-between;
   background-color: #000000; /* Set your desired background color */
-  border-bottom: 2px solid #ccc; /* Bottom border */
-  border-radius: 0 0 10px 10px; /* Rounded bottom corners */
+  border-bottom: 1px var(--mantine-color-yellow-3) solid; /* Bottom border */
   padding: 0 20px; /* Horizontal padding */
   margin: 0;
 }
 
 .mainContent {
-  background-color: #f0f4f8;
+  background-color: #9da2a6;
   color: #333333;
   flex: 1;
   display: flex;
@@ -40,7 +39,12 @@
   padding: 0;
   margin: 0;
 }
-
+@media screen and (min-width: 600px) {
+  .mainContent {
+    margin: auto 0; /* Center vertically */
+    justify-content: space-between;
+  }
+}
 .footer {
   overflow: hidden;
   height: min(50px, 7dvh);

@@ -12,7 +12,6 @@
   justify-content: space-between;
   align-items: center;
   padding-top: var(--mantine-spacing-xs);
-  padding-bottom: var(--mantine-spacing-xs);
 }
 
 .links {
