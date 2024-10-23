@@ -5,22 +5,26 @@
   justify-content: center;
   height: 100%;
   padding-top: 0;
+  background: transparent;
 }
 
 .paper {
   width: 100%;
   max-width: 350px;
   text-align: center;
-  background: linear-gradient(to bottom right, #ffffff, #f0f0f0);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .date {
-  margin-bottom: 0.5rem;
-  color: #333;
+  margin-bottom: 0.2rem;
+  font-size: 35px;
+  color: #ffffff;
 }
 
 .bondType {
-  color: #555;
+  color: #ffffff;
+  font-size: 25px;
 }
 
 /* Add styles for input area and keyboard */

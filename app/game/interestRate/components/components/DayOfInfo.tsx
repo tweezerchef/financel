@@ -37,13 +37,7 @@ export function DayOfInfo({ date, category }: DayOfInfoProps) {
 
   return (
     <Container className={classes.container}>
-      <Paper
-        shadow="md"
-        withBorder
-        radius="md"
-        p="md"
-        className={classes.paper}
-      >
+      <Paper className={classes.paper}>
         <div className={classes.textContainer}>
           <Text size="lg" className={classes.date}>
             {finalDate}
