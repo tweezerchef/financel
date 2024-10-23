@@ -13,7 +13,6 @@ import {
 import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
-import { DailyChallengeInitializer } from './lib/DailyChallengeInitializer'
 import { UserProvider } from './context/user/UserContext'
 import { DailyChallengeProvider } from './context/dailyChallenge/DailyChallengeContext'
 
@@ -80,9 +79,7 @@ export default function RootLayout({
             <div className={classes.rootContainer}>
               <UserProvider>
                 <DailyChallengeProvider>
-                  <DailyChallengeInitializer>
-                    <Center>{children}</Center>
-                  </DailyChallengeInitializer>
+                  <Center>{children}</Center>
                 </DailyChallengeProvider>
               </UserProvider>
             </div>
