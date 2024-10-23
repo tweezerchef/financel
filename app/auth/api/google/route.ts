@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { v4 as uuidv4 } from 'uuid'
 import prisma from '../../../lib/prisma/prisma'
+import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
 
+function extractS3Key(url: string): string {
+  const match = url.match(/amazonaws\.com\/(.+)/)
+  return match ? match[1] : url
+}
 export async function POST(req: NextRequest) {
   try {
     const { credential } = await req.json()
@@ -21,37 +26,89 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email: payload.email },
+      select: {
+        id: true,
+        password: true,
+        avatar: true,
+        username: true,
+      },
     })
 
     if (!user)
       return NextResponse.json({ message: 'User not found' }, { status: 404 })
 
-    // Create session
-    const sessionId = uuidv4()
-    await prisma.session.create({
-      data: {
-        id: sessionId,
-        userId: user.id,
-        refreshToken: uuidv4(), // Add this line
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    const { id, avatar, username } = user
+    let signedUrl = null
+    let signedUrlExpiration = null
+    if (avatar) {
+      const s3Key = extractS3Key(avatar)
+      const { signedUrl: url, expiresAt } = await getSignedAvatarUrl(s3Key)
+      signedUrl = url
+      signedUrlExpiration = expiresAt
+    }
+
+    const result = await prisma.result.upsert({
+      where: { userId_date: { userId: user.id, date: new Date() } },
+      update: {},
+      create: { userId: user.id, date: new Date() },
+      include: {
+        categories: {
+          orderBy: {
+            category: 'asc',
+          },
+        },
       },
     })
 
-    // Set session cookie
+    const resultId = result.id
+    const categoryOrder = ['INTEREST_RATE', 'CURRENCY', 'STOCK']
+    const nextCategory =
+      categoryOrder.find((category) => {
+        const categoryResult = result.categories.find(
+          (c) => c.category === category
+        )
+        return !categoryResult || !categoryResult.completed
+      }) || null
+
+    // Generate a new session ID
+    const sessionId = uuidv4()
+
+    // Generate a refresh token
+    const refreshToken = uuidv4()
+
+    // Create the session
+    await prisma.session.create({
+      data: {
+        id: sessionId,
+        userId: id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        refreshToken,
+      },
+    })
+
     const cookieStore = await cookies()
     cookieStore.set('sessionId', sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60,
+      maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/',
     })
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({
+      id,
+      type: 'registered',
+      resultId,
+      nextCategory,
+      username,
+      signedAvatarUrl: signedUrl,
+      signedAvatarExpiration: signedUrlExpiration,
+      message: 'Logged in successfully',
+    })
   } catch (error) {
-    console.error('Google auth error:', error)
+    console.error('Login error:', error)
     return NextResponse.json(
-      { message: 'Authentication failed' },
+      { message: 'An error occurred during login.' },
       { status: 500 }
     )
   }
