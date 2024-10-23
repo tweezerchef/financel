@@ -7,10 +7,10 @@ export async function runDailyChallenge() {
     console.log('Daily challenge creation completed.')
     if (result) console.log('Challenge created:', result.id)
     else console.log('No challenge was created.')
+    return result
   } catch (error) {
     console.error('Error creating daily challenge:', error)
-  } finally {
-    process.exit(0)
+    throw error
   }
 }
 

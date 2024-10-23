@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev --turbo",
-    "daily-challenge": "npx tsx app/lib/dbFunctions/runDailyChallenge.ts",
+    "daily-challenge": "npx tsx app/lib/dbFunctions/localRunDailyChallenge.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
