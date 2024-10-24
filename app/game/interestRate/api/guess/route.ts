@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
             category: 'INTEREST_RATE',
           },
         },
-        data: { score },
+        data: { score, completed: true },
       })
     }
 
