@@ -1,68 +1,44 @@
-/* eslint-disable no-plusplus */
-import { Result, ResultCategory } from '@prisma/client'
-import prisma from '../prisma/prisma'
-
-const calculateScore = (
-  result: Result & { categories: ResultCategory[] }
-): number => {
-  if (result.categories.length === 0) return 0 // Return 0 if there are no categories
-
-  const categoryScores = result.categories.map((category) => {
-    if (!category.completed || category.timeTaken === null) return 0 // Return 0 for incomplete or invalid categories
-
-    let score = 100
-
-    // Deduct points based on tries (up to 6 tries)
-    const tryDeductions = [0, 5, 10, 15, 20, 25, 30]
-    score -= tryDeductions[Math.min(category.tries, 6)]
-
-    // Deduct points based on time (1 point per 10 seconds)
-    score -= Math.ceil(category.timeTaken / 10)
-
-    // Adjust score based on correctness and percentClose
-    if (!category.correct)
-      if (category.percentClose !== null) {
-        // Use percentClose for the final incorrect guess
-        const percentClose = Number(category.percentClose)
-        score *= (100 - percentClose) / 100
-      }
-      // If percentClose is not available for an incorrect guess, apply a significant penalty
-      else score *= 0.1 // 90% penalty
-
-    // Ensure score doesn't go below 0
-    return Math.max(0, score)
-  })
-
-  // Calculate average score across all categories
-  const totalScore = categoryScores.reduce((sum, score) => sum + score, 0)
-  const averageScore = totalScore / categoryScores.length
-
-  return averageScore // Remove rounding to keep full precision
+interface ScoreParams {
+  correctNumber: number
+  guessedNumber: number
+  numGuesses: number
+  timeTaken: number
+  maxGuesses?: number
+  maxTime?: number
 }
 
-// Function to update the score in the database
-async function updateResultScore(resultId: string): Promise<void> {
-  const result = await prisma.result.findUnique({
-    where: { id: resultId },
-    include: { categories: true },
-  })
+export const scoreFunction = ({
+  correctNumber,
+  guessedNumber,
+  numGuesses,
+  timeTaken,
+  maxGuesses = 6,
+  maxTime = 30000,
+}: ScoreParams): number => {
+  // Base score
+  const baseScore = 1000
 
-  if (!result) throw new Error(`Result with id ${resultId} not found`)
+  // 1. Number of guesses (if correct)
+  let guessScore = 0
+  if (guessedNumber === correctNumber)
+    guessScore = baseScore * 1.25 * (1 + (maxGuesses - numGuesses) / maxGuesses)
 
-  const score = calculateScore(result)
+  // 2. Percentage accuracy (if incorrect, else if correct)
+  let accuracyScore = 0
+  if (guessedNumber !== correctNumber) {
+    const accuracy = 1 - Math.abs(correctNumber - guessedNumber) / correctNumber
+    accuracyScore = baseScore * 0.5 * accuracy
+  } else accuracyScore = baseScore * 0.5 * 1
 
-  await prisma.result.update({
-    where: { id: resultId },
-    data: { score }, // Store the full precision score
-  })
-}
+  // 4. Time taken
+  const timeFactor = Math.max(0, (maxTime - timeTaken) / maxTime)
+  const timeScore = baseScore * 0.4 * timeFactor
 
-// Example usage
-export async function scoreFunction(resultId: string): Promise<void> {
-  try {
-    await updateResultScore(resultId)
-    console.log(`Score updated for result ${resultId}`)
-  } finally {
-    await prisma.$disconnect()
-  }
+  // 5. Combine scores
+  const finalScore =
+    guessedNumber === correctNumber
+      ? guessScore + timeScore + accuracyScore
+      : accuracyScore + timeScore
+
+  return Math.ceil(finalScore)
 }

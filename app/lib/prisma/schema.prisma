@@ -238,6 +238,7 @@ model ResultCategory {
   endTime      DateTime?
   timeTaken    Int?
   percentClose Decimal?  @db.Decimal(10, 2)
+  score        Decimal?  @db.Decimal(10, 2)
   result       Result    @relation(fields: [resultId], references: [id])
 
   @@unique([resultId, category])

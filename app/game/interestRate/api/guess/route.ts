@@ -4,18 +4,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ResultCategory } from '@prisma/client'
 import { arrowDecider } from './arrowDecider'
+import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
 import prisma from '../../../../lib/prisma/prisma'
-
-function compareGuessWithRate(guess: number, rate: number): [number, number][] {
-  const guessStr = guess.toFixed(2).replace('.', '')
-  const rateStr = rate.toFixed(2).replace('.', '')
-  const result: [number, number][] = []
-
-  for (let i = 0; i < 3; i++)
-    if (guessStr[i] === rateStr[i]) result.push([i, parseInt(guessStr[i], 10)])
-
-  return result
-}
 
 export async function GET() {
   const irDateInfo = { info: 'Interest Rate Date Info' }
@@ -32,29 +22,30 @@ export async function POST(request: NextRequest) {
     )
     const { guess, resultId, guessCount } = await request.json()
 
-    if (typeof guess !== 'number') throw new Error('Guess must be a number')
-    if (!resultId) throw new Error('resultId is required')
+    if (typeof guess !== 'number' || !resultId)
+      throw new Error(
+        'Invalid input: Guess must be a number and resultId is required'
+      )
 
     const dailyChallenge = await getDailyChallenge(dateOnly)
-
     const rateNumber = dailyChallenge.interestRate.rate.toNumber()
-    const difference = Math.abs(guess - rateNumber)
-    const percentageDifference = (difference / rateNumber) * 100
+    console.log('rateNumber', rateNumber)
+    console.log('guess', guess)
+    const isCorrect = guess === rateNumber
     const result = arrowDecider(guess, rateNumber)
-    const correctDigits = compareGuessWithRate(guess, rateNumber)
-    const isCorrect = correctDigits.length === 3 && guess === rateNumber
+
     const isComplete = isCorrect || guessCount === 6
+    console.log('isComplete', isComplete)
 
     const now = new Date()
 
-    const [updatedCategory, _] = await Promise.all([
+    const [updatedCategory] = await Promise.all([
       updateResultCategory(
         resultId,
         guess,
         isCorrect,
         guessCount,
         isComplete,
-        percentageDifference,
         now
       ),
       prisma.result.update({
@@ -62,9 +53,27 @@ export async function POST(request: NextRequest) {
         data: { date: dateOnly },
       }),
     ])
+
     let timeTaken
-    if (isComplete)
+    if (isComplete) {
+      console.log('isComplete')
       timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
+      const score = scoreFunction({
+        correctNumber: rateNumber,
+        guessedNumber: guess,
+        numGuesses: guessCount,
+        timeTaken: timeTaken ?? 0,
+      })
+      await prisma.resultCategory.update({
+        where: {
+          resultId_category: {
+            resultId,
+            category: 'INTEREST_RATE',
+          },
+        },
+        data: { score, completed: true },
+      })
+    }
 
     return NextResponse.json(
       {
@@ -75,7 +84,6 @@ export async function POST(request: NextRequest) {
         correct: isCorrect,
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
-        correctDigits,
         rateNumber: isCorrect || isComplete ? rateNumber : undefined,
       },
       { status: 200 }
@@ -113,11 +121,15 @@ async function updateResultCategory(
   isCorrect: boolean,
   guessCount: number,
   isComplete: boolean,
-  percentClose: number,
   now: Date
 ) {
   return prisma.resultCategory.upsert({
-    where: { resultId_category: { resultId, category: 'INTEREST_RATE' } },
+    where: {
+      resultId_category: {
+        resultId,
+        category: 'INTEREST_RATE',
+      },
+    },
     create: {
       resultId,
       category: 'INTEREST_RATE',
@@ -127,7 +139,6 @@ async function updateResultCategory(
       completed: isComplete,
       endTime: isComplete ? now : undefined,
       startTime: now,
-      percentClose,
     },
     update: {
       guess,
@@ -135,7 +146,6 @@ async function updateResultCategory(
       tries: guessCount,
       completed: isComplete,
       endTime: isComplete ? now : undefined,
-      percentClose,
     },
   })
 }
