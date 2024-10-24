@@ -60,6 +60,21 @@ export async function POST(request: NextRequest) {
         where: { id: updatedCategory.id },
         data: { score, completed: true },
       })
+      const relatedCategories = await prisma.resultCategory.findMany({
+        where: { resultId },
+        select: { score: true },
+      })
+
+      const totalScore = relatedCategories.reduce(
+        (acc, category) => acc + (category.score?.toNumber() ?? 0),
+        0
+      )
+
+      // Update the score in the Result table
+      await prisma.result.update({
+        where: { id: resultId },
+        data: { score: totalScore },
+      })
     }
 
     return NextResponse.json(
