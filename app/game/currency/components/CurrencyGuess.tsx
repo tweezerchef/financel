@@ -14,7 +14,7 @@ import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyC
 import { NextModal } from '../../components/modal/NextModal'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { CurrencyGuessDisplay } from './components/CurrencyGuessDisplay'
-import classes from './ui/CurrencyGuess.module.css'
+import classes from '../../ui/Guess.module.css'
 
 interface CurrencyGuessProps {
   setAmountAway: React.Dispatch<React.SetStateAction<number | null>>
