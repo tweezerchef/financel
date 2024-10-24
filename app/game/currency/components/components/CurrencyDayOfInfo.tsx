@@ -1,5 +1,5 @@
 import { Text, Paper, Container } from '@mantine/core'
-import classes from './ui/CurrencyDayOfInfo.module.css'
+import classes from '../../../ui/DayOfInfo.module.css'
 import { formatDate } from '../../../lib/formatDate'
 import { addOrdinalSuffix } from '../../../lib/addOrdinalSuffix'
 

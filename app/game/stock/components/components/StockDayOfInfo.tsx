@@ -1,5 +1,5 @@
 import { Text, Paper, Container } from '@mantine/core'
-import classes from './ui/StockDayOfInfo.module.css'
+import classes from '../../../ui/DayOfInfo.module.css'
 import { formatDateForChart } from '../../../lib/formatDateForChart'
 import { addOrdinalSuffix } from '../../../lib/addOrdinalSuffix'
 

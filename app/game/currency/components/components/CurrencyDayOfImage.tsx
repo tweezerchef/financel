@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import classes from './ui/CurrencyDayOfInfo.module.css'
+import classes from '../../../ui/DayOfImage.module.css'
 
 export function CurrencyDayOfImage() {
   return (

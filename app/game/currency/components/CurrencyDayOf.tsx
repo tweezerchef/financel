@@ -6,7 +6,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { Container, Transition } from '@mantine/core'
 import { CurrencyDayOfImage } from './components/CurrencyDayOfImage'
-import classes from './ui/CurrencyDayOf.module.css'
+import classes from '../../ui/DayOf.module.css'
 import { CurrencyDayOfInfo } from './components/CurrencyDayOfInfo'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 
