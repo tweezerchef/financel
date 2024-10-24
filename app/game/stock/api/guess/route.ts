@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       today.getMonth(),
       today.getDate()
     )
-    const { guess, resultId, guessCount, decimal } = await request.json()
+    const { guess, resultId, guessCount } = await request.json()
 
     if (typeof guess !== 'number') throw new Error('Guess must be a number')
     if (!resultId) throw new Error('resultId is required')
@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
-        result.percentClose,
         now
       ),
       prisma.result.update({
@@ -51,7 +50,16 @@ export async function POST(request: NextRequest) {
     let timeTaken
     if (isComplete) {
       timeTaken = await calculateTimeTaken(isComplete, updatedCategory, now)
-      await scoreFunction(resultId)
+      const score = scoreFunction({
+        correctNumber: stockValue,
+        guessedNumber: guess,
+        numGuesses: guessCount,
+        timeTaken: timeTaken ?? 0,
+      })
+      await prisma.resultCategory.update({
+        where: { id: updatedCategory.id },
+        data: { score, completed: true },
+      })
     }
 
     return NextResponse.json(
@@ -102,7 +110,6 @@ async function updateResultCategory(
   isCorrect: boolean,
   guessCount: number,
   isComplete: boolean,
-  percentClose: number,
   now: Date
 ) {
   return prisma.resultCategory.upsert({
@@ -116,7 +123,6 @@ async function updateResultCategory(
       completed: isComplete,
       endTime: isComplete ? now : undefined,
       startTime: now,
-      percentClose,
     },
     update: {
       guess,
@@ -124,7 +130,6 @@ async function updateResultCategory(
       tries: guessCount,
       completed: isComplete,
       endTime: isComplete ? now : undefined,
-      percentClose,
     },
   })
 }
