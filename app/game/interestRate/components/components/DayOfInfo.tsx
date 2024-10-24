@@ -39,12 +39,8 @@ export function DayOfInfo({ date, category }: DayOfInfoProps) {
     <Container className={classes.container}>
       <Paper className={classes.paper}>
         <div className={classes.textContainer}>
-          <Text size="lg" className={classes.date}>
-            {finalDate}
-          </Text>
-          <Text size="md" className={classes.bondType}>
-            {duration}
-          </Text>
+          <Text className={classes.date}>{finalDate}</Text>
+          <Text className={classes.bondType}>{duration}</Text>
         </div>
       </Paper>
     </Container>
