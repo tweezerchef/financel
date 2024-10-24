@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { CurrencyDayOf } from './components/CurrencyDayOf'
 import { CurrencyGuess } from './components/CurrencyGuess'
 import { useDailyChallengeContext } from '../../context/dailyChallenge/DailyChallengeContext'
-import classes from './ui/CurrencyPage.module.css'
+import classes from '../ui/Game.module.css'
 
 type DayOf = 'image' | 'day'
 
