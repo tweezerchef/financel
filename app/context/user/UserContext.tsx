@@ -103,7 +103,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    // Only fetch user data if it's not already set
     if (!user) refreshUserData()
   }, [user, refreshUserData])
 
