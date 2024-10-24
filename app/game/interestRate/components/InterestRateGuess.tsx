@@ -51,7 +51,6 @@ export function InterestRateGuess({
 }: InterestRateGuessProps) {
   const [guesses, setGuesses] = useState<Array<Guess>>([])
   const [isAnimating, setIsAnimating] = useState(false)
-  const [resultId, setResultId] = useState<string | null>(null)
   const [modalProps, setModalProps] = useState<IRmodalProps | null>(null)
   const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
@@ -71,17 +70,20 @@ export function InterestRateGuess({
       guess: (value) => (value.length === 3 ? null : 'Please enter 3 digits'),
     },
   })
+  const { resultId } = user || {}
 
-  useEffect(() => {
-    if (user?.resultId) setResultId(user.resultId)
-    else {
-      const storedUserData = localStorage.getItem('userData')
-      if (storedUserData) {
-        const parsedUserData = JSON.parse(storedUserData)
-        setResultId(parsedUserData.resultId)
-      }
-    }
-  }, [user])
+  // useEffect(() => {
+  //   if (user?.resultId) setResultId(user.resultId)
+  //   else {
+  //     const storedUserData = localStorage.getItem('userData')
+  //     if (storedUserData) {
+  //       const parsedUserData = JSON.parse(storedUserData)
+  //       setResultId(parsedUserData.resultId)
+  //     }
+  //   }
+  // }, [user])
+  console.log('resultId', resultId)
+  console.log('user', user)
 
   useEffect(() => {
     if (dailyChallengeInterestRate?.date) {
