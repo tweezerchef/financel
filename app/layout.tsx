@@ -5,7 +5,6 @@ import localFont from 'next/font/local'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import {
   Center,
-  ColorSchemeScript,
   MantineProvider,
   createTheme,
   MantineColorsTuple,
@@ -71,12 +70,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${classes.html} ${tickerFont.className}`}>
-      <head>
-        <ColorSchemeScript />
-      </head>
+      <head />
       <body className={classes.body}>
         <main>
-          <MantineProvider theme={theme}>
+          <MantineProvider theme={theme} defaultColorScheme="light">
             <div className={classes.rootContainer}>
               <UserProvider>
                 <DailyChallengeProvider>
