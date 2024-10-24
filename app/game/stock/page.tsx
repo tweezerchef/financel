@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { StockDayOf } from './components/StockDayOf'
 import { StockGuess } from './components/StockGuess'
 
-import classes from './ui/StockPage.module.css'
+import classes from '../ui/Game.module.css'
 
 export default function Stock() {
   const [amountAway, setAmountAway] = useState<number | null>(null)

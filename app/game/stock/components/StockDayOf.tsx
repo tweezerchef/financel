@@ -3,7 +3,7 @@ import { Container, Transition } from '@mantine/core'
 import { StockDayOfImage } from './components/StockDayOfImage'
 import { StockDayOfInfo } from './components/StockDayOfInfo'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
-import classes from './ui/StockDayOf.module.css'
+import classes from '../../ui/DayOf.module.css'
 
 interface StockDayOfProps {
   amountAway: number | null

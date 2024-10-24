@@ -3,7 +3,7 @@ import { FC, useState, useEffect, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from '../../../components/display/SingleDisplay'
-import classes from './ui/StockGuessDisplay.module.css'
+import classes from '../../../ui/GuessDisplay.module.css'
 
 interface CurrencyGuessDisplayProps {
   guess: string

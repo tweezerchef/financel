@@ -1,0 +1,31 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  background-color: #f0f0f0; /* Light grey background */
+}
+
+.guessDisplayBox {
+  flex: 1;
+  overflow-y: auto;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+  margin: 10px; /* Add some margin */
+}
+
+.guessDisplay {
+  padding: 10px; /* Increased padding */
+}
+
+.guessBox {
+  border-top: 1px solid #e0e0e0; /* Lighter border color */
+  background-color: #f8f8f8; /* Slightly different background for guessBox */
+  padding: 10px;
+  border-radius: 0 0 8px 8px; /* Rounded corners at the bottom */
+}
+
+/* Add this new style for better spacing */
+.guessDisplay > * {
+  margin-bottom: 10px;
+}
