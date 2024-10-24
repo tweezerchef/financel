@@ -70,7 +70,10 @@ export function stockArrowDecider(
   console.log('actual', actual)
 
   // Always consider only the first three digits
-  const truncatedActual = Math.trunc(actual * 10) / 10
+  const significantDigits = 3
+  const factor =
+    10 ** (significantDigits - Math.ceil(Math.log10(Math.abs(actual))))
+  const truncatedActual = Math.floor(actual * factor) / factor
   console.log('truncatedActual', truncatedActual)
 
   if (guess === truncatedActual)
