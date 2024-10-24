@@ -17,16 +17,10 @@ export function StockDayOfInfo({ date, stockName }: StockDayOfInfoProps) {
 
   return (
     <Container className={classes.container}>
-      <Paper
-        shadow="md"
-        withBorder
-        radius="md"
-        p="md"
-        className={classes.paper}
-      >
+      <Paper className={classes.paper}>
         <div className={classes.textContainer}>
           <Text className={classes.date}>{finalDate}</Text>
-          <Text className={classes.stockName}>{stockName}</Text>
+          <Text className={classes.bondType}>{stockName}</Text>
         </div>
       </Paper>
     </Container>
