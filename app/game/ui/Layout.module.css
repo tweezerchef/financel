@@ -1,7 +1,6 @@
 .container {
   min-height: 100dvh;
   width: 100vw;
-  height: 100dvh;
   max-width: 900px;
   display: flex;
   flex-direction: column;
@@ -11,7 +10,6 @@
 
 @media screen and (min-width: 600px) {
   .container {
-    min-height: 800px;
     justify-content: space-between;
   }
 }
