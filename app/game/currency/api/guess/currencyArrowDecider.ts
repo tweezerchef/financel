@@ -62,6 +62,14 @@ function calculateArrowAmount(
   }
 }
 
+function truncateToSignificantFigures(num: number, n: number): number {
+  if (num === 0) return 0
+
+  const magnitude = Math.floor(Math.log10(Math.abs(num)))
+  const factor = 10 ** (magnitude - n + 1)
+  return Math.floor(num / factor) * factor
+}
+
 export function currencyArrowDecider(
   guess: number,
   actual: number
@@ -69,11 +77,14 @@ export function currencyArrowDecider(
   console.log('guess', guess)
   console.log('actual', actual)
 
-  // Ensure three significant digits by truncating
-  const significantDigits = 3
-  const factor =
-    10 ** (significantDigits - Math.ceil(Math.log10(Math.abs(actual))))
-  const truncatedActual = Math.floor(actual * factor) / factor
+  // Decide significant digits based on whether the number is less than 1
+  const significantDigits = actual < 1 ? 2 : 3
+
+  // Truncate to the appropriate number of significant figures
+  const truncatedActual = truncateToSignificantFigures(
+    actual,
+    significantDigits
+  )
   console.log('truncatedActual', truncatedActual)
 
   if (guess === truncatedActual)
