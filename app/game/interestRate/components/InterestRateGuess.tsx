@@ -150,7 +150,7 @@ export function InterestRateGuess({
           (guessCount.current === 7 && !isAnimating)
         ) {
           setFinalGuess(parseFloat(formattedGuess))
-          updateScore('Interest Rate', score)
+          updateScore('INTEREST_RATE', score)
           setTimeout(() => {
             setModalProps({
               opened: true,

@@ -161,7 +161,7 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
           (guessCount.current === 7 && !isAnimating)
         ) {
           setFinalGuess(postGuess)
-          updateScore('Stock', score)
+          updateScore('STOCK', score)
           updateScore('Final', totalScore)
           setTimeout(() => {
             setModalProps({
