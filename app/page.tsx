@@ -17,7 +17,10 @@ export default function Home() {
 
   return (
     <main className={classes.main}>
-      <Header />
+      <Header
+        onAuthStart={handleAuthStart}
+        isAuthenticating={isAuthenticating}
+      />
       <Login
         onAuthStart={handleAuthStart}
         isAuthenticating={isAuthenticating}
