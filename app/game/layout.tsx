@@ -2,6 +2,7 @@ import { Container } from '@mantine/core'
 import { Footer } from './components/layout/Footer'
 import classes from './ui/Layout.module.css'
 import { Navbar } from './components/layout/Navbar'
+import { ScoreProvider } from '../context/user/ScoreContext'
 
 export default function Layout({
   children,
@@ -13,7 +14,9 @@ export default function Layout({
       <div className={classes.header}>
         <Navbar />
       </div>
-      <div className={classes.mainContent}>{children}</div>
+      <ScoreProvider>
+        <div className={classes.mainContent}>{children}</div>
+      </ScoreProvider>
       <Footer className={classes.footer} />
     </Container>
   )

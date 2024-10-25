@@ -15,7 +15,7 @@
 }
 
 .guessDisplay {
-  padding: 10px; /* Increased padding */
+  padding: 0.25dvh; /* Increased padding */
 }
 
 .guessBox {
@@ -23,9 +23,4 @@
   background-color: #f8f8f8; /* Slightly different background for guessBox */
   padding: 10px;
   border-radius: 0 0 8px 8px; /* Rounded corners at the bottom */
-}
-
-/* Add this new style for better spacing */
-.guessDisplay > * {
-  margin-bottom: 10px;
 }
