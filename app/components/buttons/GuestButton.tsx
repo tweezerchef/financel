@@ -6,7 +6,15 @@ import { Button } from '@mantine/core'
 import classes from './ui/GuestButton.module.css'
 import { useUserContext } from '../../context/user/UserContext'
 
-export const GuestButton = () => {
+interface GuestButtonProps {
+  onAuthStart: () => void
+  isAuthenticating?: boolean
+}
+
+export const GuestButton = ({
+  onAuthStart,
+  isAuthenticating = false,
+}: GuestButtonProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
@@ -36,10 +44,12 @@ export const GuestButton = () => {
       } else {
         console.error('Guest login failed:', data.message)
         alert(data.message)
+        onAuthStart()
       }
     } catch (error) {
       console.error('Guest login error:', error)
       alert('An error occurred during guest login.')
+      onAuthStart()
     } finally {
       setIsLoading(false)
     }
@@ -51,7 +61,7 @@ export const GuestButton = () => {
       variant="blue"
       size="lg"
       onClick={handleGuestLogin}
-      disabled={isLoading}
+      disabled={isLoading || isAuthenticating}
     >
       {isLoading ? 'Logging in...' : 'Continue as Guest'}
     </Button>
