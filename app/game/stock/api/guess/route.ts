@@ -48,9 +48,11 @@ export async function POST(request: NextRequest) {
       }),
     ])
     let timeTaken
+    let score
+    let totalScore
     if (isComplete) {
       timeTaken = await calculateTimeTaken(isComplete, updatedCategory, now)
-      const score = scoreFunction({
+      score = scoreFunction({
         correctNumber: stockValue,
         guessedNumber: guess,
         numGuesses: guessCount,
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest) {
         select: { score: true },
       })
 
-      const totalScore = relatedCategories.reduce(
+      totalScore = relatedCategories.reduce(
         (acc, category) => acc + (category.score?.toNumber() ?? 0),
         0
       )
@@ -87,6 +89,8 @@ export async function POST(request: NextRequest) {
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
         stockValue: isCorrect || isComplete ? stockValue : undefined,
+        score: isComplete ? score : undefined,
+        totalScore: isComplete ? totalScore : undefined,
       },
       { status: 200 }
     )

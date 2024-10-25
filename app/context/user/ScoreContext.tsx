@@ -10,12 +10,13 @@ import {
   FC,
 } from 'react'
 
-type Category = 'Interest Rate' | 'Currency' | 'Stock'
+type Category = 'Interest Rate' | 'Currency' | 'Stock' | 'Final'
 
 interface ScoreContextType {
   interestScore: number
   currencyScore: number
   stockScore: number
+  finalScore: number
   updateScore: (category: Category, amount: number) => void
 }
 interface ScoreProviderProps {
@@ -35,11 +36,10 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
   const [interestScore, setInterestScore] = useState(0)
   const [currencyScore, setCurrencyScore] = useState(0)
   const [stockScore, setStockScore] = useState(0)
-
+  const [finalScore, setFinalScore] = useState(0)
   const updateScore = useCallback((category: Category, amount: number) => {
     switch (category) {
       case 'Interest Rate':
-        console.log('Updating interest score:', amount)
         setInterestScore((prevScore) => prevScore + amount)
         break
       case 'Currency':
@@ -48,14 +48,23 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
       case 'Stock':
         setStockScore((prevScore) => prevScore + amount)
         break
+      case 'Final':
+        setFinalScore((prevScore) => prevScore + amount)
+        break
       default:
         throw new Error(`Unknown category: ${category}`)
     }
   }, [])
 
   const scoreValues = useMemo(
-    () => ({ interestScore, currencyScore, stockScore, updateScore }),
-    [interestScore, currencyScore, stockScore, updateScore]
+    () => ({
+      interestScore,
+      currencyScore,
+      stockScore,
+      finalScore,
+      updateScore,
+    }),
+    [interestScore, currencyScore, stockScore, finalScore, updateScore]
   )
 
   return (
