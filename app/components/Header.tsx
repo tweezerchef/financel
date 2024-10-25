@@ -10,7 +10,12 @@ import Image from 'next/image'
 import { GuestButton } from './buttons/GuestButton'
 import classes from './ui/Header.module.css'
 
-export function Header() {
+interface HeaderProps {
+  onAuthStart: () => void
+  isAuthenticating?: boolean
+}
+
+export function Header({ onAuthStart, isAuthenticating }: HeaderProps) {
   return (
     <div className={classes.wrapper}>
       <AspectRatio ratio={500 / 309}>
@@ -36,7 +41,10 @@ export function Header() {
         </Container>
         <Center>
           <div>
-            <GuestButton />
+            <GuestButton
+              onAuthStart={onAuthStart}
+              isAuthenticating={isAuthenticating}
+            />
           </div>
         </Center>
       </div>
