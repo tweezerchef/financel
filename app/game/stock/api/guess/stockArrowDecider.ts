@@ -61,6 +61,13 @@ function calculateArrowAmount(
     percentClose: percentageDifference,
   }
 }
+function truncateToSignificantFigures(num: number, n: number): number {
+  if (num === 0) return 0
+
+  const magnitude = Math.floor(Math.log10(Math.abs(num)))
+  const factor = 10 ** (magnitude - n + 1)
+  return Math.floor(num / factor) * factor
+}
 
 export function stockArrowDecider(
   guess: number,
@@ -69,11 +76,13 @@ export function stockArrowDecider(
   console.log('guess', guess)
   console.log('actual', actual)
 
+  const significantDigits = actual < 1 ? 2 : 3
+
   // Always consider only the first three digits
-  const significantDigits = 3
-  const factor =
-    10 ** (significantDigits - Math.ceil(Math.log10(Math.abs(actual))))
-  const truncatedActual = Math.floor(actual * factor) / factor
+  const truncatedActual = truncateToSignificantFigures(
+    actual,
+    significantDigits
+  )
   console.log('truncatedActual', truncatedActual)
 
   if (guess === truncatedActual)
