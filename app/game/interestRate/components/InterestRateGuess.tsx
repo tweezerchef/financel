@@ -18,6 +18,7 @@ import { GuessDisplay } from './components/GuessDisplay'
 import { NextModal } from '../../components/modal/NextModal'
 import { useUserContext } from '../../../context/user/UserContext'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
+import { useScoreContext } from '../../../context/user/ScoreContext'
 import classes from '../../ui/Guess.module.css'
 
 interface IRmodalProps {
@@ -54,6 +55,7 @@ export function InterestRateGuess({
   const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
   const { user } = useUserContext()
+  const { updateScore } = useScoreContext()
   const { dailyChallengeInterestRate } = useDailyChallengeContext()
   const { chartData } = dailyChallengeInterestRate || {}
   const [finalGuess, setFinalGuess] = useState<number | null>(null)
@@ -118,6 +120,7 @@ export function InterestRateGuess({
           timeTaken,
           difference,
           rateNumber,
+          score,
         } = result
 
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
@@ -148,6 +151,7 @@ export function InterestRateGuess({
         ) {
           setFinalGuess(parseFloat(formattedGuess))
           setTimeout(() => {
+            updateScore('Interest Rate', score)
             setModalProps({
               opened: true,
               close: () => console.log('Modal closed'),
@@ -173,6 +177,7 @@ export function InterestRateGuess({
       form,
       setAmountAway,
       setGuessCount,
+      updateScore,
       chartData,
       handlers,
     ]
