@@ -5,7 +5,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Container, Transition } from '@mantine/core'
 import { DayOfImage } from './components/DayOfImage'
-import classes from './ui/InterestRateDayOf.module.css'
+import classes from '../../ui/DayOf.module.css'
 import { DayOfInfo } from './components/DayOfInfo'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 
