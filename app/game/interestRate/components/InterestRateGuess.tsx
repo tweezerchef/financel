@@ -18,7 +18,7 @@ import { GuessDisplay } from './components/GuessDisplay'
 import { NextModal } from '../../components/modal/NextModal'
 import { useUserContext } from '../../../context/user/UserContext'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
-import classes from './ui/InterestRateGuess.module.css'
+import classes from '../../ui/Guess.module.css'
 
 interface IRmodalProps {
   opened: boolean

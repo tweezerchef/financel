@@ -1,7 +1,7 @@
 import { Text, Paper, Container } from '@mantine/core'
 import { formatDateForChart } from '../../../lib/formatDateForChart'
 import { addOrdinalSuffix } from '../../../lib/addOrdinalSuffix'
-import classes from './ui/DayOfInfo.module.css'
+import classes from '../../../ui/DayOfInfo.module.css'
 
 interface DayOfInfoProps {
   date: string
