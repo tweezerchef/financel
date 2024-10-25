@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ResultCategory } from '@prisma/client'
 import { arrowDecider } from './arrowDecider'
 import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
+
 import prisma from '../../../../lib/prisma/prisma'
 
 export async function GET() {
