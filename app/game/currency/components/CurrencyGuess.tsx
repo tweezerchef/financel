@@ -163,7 +163,7 @@ export function CurrencyGuess({
           (guessCount.current === 7 && !isAnimating)
         ) {
           setFinalGuess(postGuess)
-          updateScore('Currency', score)
+          updateScore('CURRENCY', score)
           setTimeout(() => {
             setModalProps({
               opened: true,
