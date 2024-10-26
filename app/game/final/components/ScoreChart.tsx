@@ -17,28 +17,39 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export function ScoreChart() {
   const chartRef = useRef<ChartJS<'bar', number[], string>>(null)
-  const { interestScore, currencyScore, stockScore, finalScore } =
-    useScoreContext()
+  const {
+    interestScore,
+    currencyScore,
+    stockScore,
+    finalScore,
+    averageInterestRate,
+    averageCurrency,
+    averageStock,
+    averageFinal,
+  } = useScoreContext()
   const [copyStatus, setCopyStatus] = useState<string>('')
+  console.log(averageInterestRate)
 
   const chartData = {
     labels: ['Interest', 'Currency', 'Stock', 'Final'],
     datasets: [
       {
-        label: 'Score',
+        label: 'User Score',
         data: [interestScore, currencyScore, stockScore, finalScore],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.5)',
-          'rgba(54, 162, 235, 0.5)',
-          'rgba(255, 206, 86, 0.5)',
-          'rgba(75, 192, 192, 0.5)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        borderColor: 'rgb(255, 99, 132)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Average Score',
+        data: [
+          averageInterestRate,
+          averageCurrency,
+          averageStock,
+          averageFinal,
         ],
-        borderColor: [
-          'rgb(255, 99, 132)',
-          'rgb(54, 162, 235)',
-          'rgb(255, 206, 86)',
-          'rgb(75, 192, 192)',
-        ],
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderColor: 'rgb(54, 162, 235)',
         borderWidth: 1,
       },
     ],
@@ -57,8 +68,12 @@ export function ScoreChart() {
       },
     },
     scales: {
+      x: {
+        stacked: false,
+      },
       y: {
         beginAtZero: true,
+        stacked: false,
       },
     },
   }

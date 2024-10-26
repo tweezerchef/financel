@@ -19,6 +19,9 @@ interface ScoreContextType {
   stockScore: number
   finalScore: number
   averageInterestRate: number
+  averageCurrency: number
+  averageStock: number
+  averageFinal: number
   updateScore: (category: Category, amount: number) => void
 }
 interface ScoreProviderProps {
@@ -81,14 +84,14 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
   }, [])
   const refreshScore = useCallback(async () => {
     try {
-      const response = await fetch('/auth/api/verify/score', {
+      const scoreResponse = await fetch('/auth/api/verify/score', {
         credentials: 'include',
       })
-      if (response.ok) {
-        const data = await response.json()
+      if (scoreResponse.ok) {
+        const scoreData = await scoreResponse.json()
         // Update this part to correctly set individual category scores
-        if (Array.isArray(data.categoryScores))
-          data.categoryScores.forEach(
+        if (Array.isArray(scoreData.categoryScores))
+          scoreData.categoryScores.forEach(
             (cat: { category: string; score: number }) => {
               switch (cat.category) {
                 case 'INTEREST_RATE':
@@ -106,12 +109,29 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
             }
           )
 
-        setFinalScore(data.finalScore || 0)
+        setFinalScore(scoreData.finalScore || 0)
+      }
+
+      // New code to fetch and update averages
+      const averageResponse = await fetch('/auth/api/verify/average', {
+        credentials: 'include',
+      })
+      if (averageResponse.ok) {
+        const averageData = await averageResponse.json()
+        if (Array.isArray(averageData.categoryAverages))
+          averageData.categoryAverages.forEach(
+            (cat: { category: string; average: number }) => {
+              updateAverage(cat.category as Category, cat.average)
+            }
+          )
+
+        if (averageData.finalAverage !== undefined)
+          updateAverage('Final', averageData.finalAverage)
       }
     } catch (error) {
-      console.error('Failed to refresh score:', error)
+      console.error('Failed to refresh score and averages:', error)
     }
-  }, [])
+  }, [updateAverage])
 
   useEffect(() => {
     if (

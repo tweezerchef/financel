@@ -13,23 +13,35 @@ export async function GET() {
       { message: 'No session ID provided' },
       { status: 401 }
     )
+
   const session = await prisma.session.findUnique({
     where: { id: sessionId },
   })
 
   if (!session)
     return NextResponse.json({ message: 'Invalid session' }, { status: 401 })
-  const categories = ['INTEREST_RATE', 'CURRENCY', 'STOCK', 'FINAL'] as const
+
+  const categories = ['INTEREST_RATE', 'CURRENCY', 'STOCK'] as const
   type Category = (typeof categories)[number]
 
-  const avg: Record<Category, number> = {} as Record<Category, number>
+  const categoryAverages: { category: Category; average: number }[] = []
+  let finalAverage = 0
 
   for (const category of categories) {
     const stat = await prisma.categoryStatistics.findUnique({
       where: { category },
     })
-    avg[category] = stat ? Number(stat.totalScore) / stat.count : 0
+    const average = stat ? Number(stat.totalScore) / stat.count : 0
+    categoryAverages.push({ category, average })
   }
 
-  return NextResponse.json({ message: 'Hello, world!' })
+  const finalStat = await prisma.categoryStatistics.findUnique({
+    where: { category: 'FINAL' },
+  })
+  finalAverage = finalStat ? Number(finalStat.totalScore) / finalStat.count : 0
+
+  return NextResponse.json({
+    categoryAverages,
+    finalAverage,
+  })
 }
