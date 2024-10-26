@@ -1,17 +1,7 @@
-import { Metadata } from 'next'
 import Image from 'next/image'
 
-type Props = {
+interface Props {
   params: { id: string }
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = params
-
-  const res = await fetch(`http://localhost:3000/api/chartMetadata/${id}`)
-  const metadata = await res.json()
-
-  return metadata
 }
 
 export default function ChartPage({ params }: Props) {
