@@ -62,6 +62,19 @@ export async function POST(request: NextRequest) {
         where: { id: updatedCategory.id },
         data: { score, completed: true },
       })
+      const stockScore = await prisma.categoryStatistics.upsert({
+        where: { category: 'STOCK' },
+        create: {
+          category: 'STOCK',
+          totalScore: score,
+          count: 1,
+        },
+        update: {
+          totalScore: { increment: score },
+          count: { increment: 1 },
+        },
+      })
+      console.log('stockScore', stockScore)
       const relatedCategories = await prisma.resultCategory.findMany({
         where: { resultId },
         select: { score: true },
@@ -78,7 +91,19 @@ export async function POST(request: NextRequest) {
         data: { score: totalScore },
       })
     }
-
+    const averageScore = await prisma.categoryStatistics.upsert({
+      where: { category: 'FINAL' },
+      create: {
+        category: 'FINAL',
+        totalScore: totalScore ?? 0,
+        count: 1,
+      },
+      update: {
+        totalScore: { increment: totalScore ?? 0 },
+        count: { increment: 1 },
+      },
+    })
+    console.log('averageScore', averageScore)
     return NextResponse.json(
       {
         direction: result.direction,
