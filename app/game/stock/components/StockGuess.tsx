@@ -62,10 +62,16 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
       guess: '',
     },
     validate: {
-      guess: (value) =>
-        /^\d{1,3}(\.\d{1,2})?$/.test(value)
+      guess: (value) => {
+        if ((decimal ?? 2) >= 3)
+          return /^\d{1,3}$/.test(value)
+            ? null
+            : 'Please enter a valid number with up to 3 digits'
+
+        return /^\d{1,3}(\.\d{1,2})?$/.test(value)
           ? null
-          : 'Please enter a valid number with up to 4 digits and up to 2 decimal places',
+          : 'Please enter a valid number with up to 3 digits and up to 2 decimal places'
+      },
     },
   })
 
@@ -93,7 +99,7 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
       const { decimal } = dailyChallengeStock
 
       // Pad the guess to 4 digits
-      const paddedGuess = values.guess.padStart(3, '0').slice(-3)
+      const paddedGuess = values.guess.padStart(3, '0')
       const postGuess = formattedGuess(paddedGuess, decimal ?? 2)
 
       const unformattedGuess = values.guess // Default to 2 if decimal is undefined

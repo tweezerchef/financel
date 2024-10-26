@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         },
         data: { score, completed: true },
       })
-      const newScore = await prisma.categoryStatistics.upsert({
+      await prisma.categoryStatistics.upsert({
         where: { category: 'INTEREST_RATE' },
         create: {
           category: 'INTEREST_RATE',
