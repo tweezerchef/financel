@@ -7,6 +7,12 @@
   max-width: 5rem;
   max-height: 6rem;
   perspective: 1000px;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 -2px 4px rgba(255, 255, 255, 0.1) inset;
+  border-radius: 4px;
+  transform: perspective(1000px) rotateX(5deg);
 }
 
 .flipBoxInner {
@@ -14,7 +20,7 @@
   width: 100%;
   height: 100%;
   text-align: center;
-  transition: transform 0.3s;
+  transition: transform 0.13s;
   transform-style: preserve-3d;
 }
 
@@ -34,17 +40,20 @@
   align-items: center;
   font-size: clamp(1.5rem, 5vmin, 3.5rem);
   font-weight: bold;
-  border-radius: 2px;
+  border-radius: 4px;
   overflow: hidden;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2) inset,
+    0 -1px 2px rgba(255, 255, 255, 0.1) inset;
+  background: linear-gradient(to bottom, #1a1a1a, #000000);
+  text-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
 }
 
 .flipBoxFront {
-  background-color: #000000;
   color: var(--mantine-color-yellow-3);
 }
 
 .flipBoxBack {
-  background-color: #000000;
   color: var(--mantine-color-yellow-3);
   transform: rotateX(180deg);
 }
