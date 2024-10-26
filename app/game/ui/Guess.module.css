@@ -3,7 +3,10 @@
   flex-direction: column;
   flex: 1;
   width: 100%;
-  background-color: #f0f0f0; /* Light grey background */
+  background-color: #f8f9fa;
+  background-image: linear-gradient(#e5e5e5 1px, transparent 1px),
+    linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 .guessDisplayBox {
