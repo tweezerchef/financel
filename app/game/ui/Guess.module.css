@@ -24,6 +24,6 @@
 .guessBox {
   border-top: 1px solid #e0e0e0; /* Lighter border color */
   background-color: #f8f8f8; /* Slightly different background for guessBox */
-  padding: 10px;
+  padding: 3px;
   border-radius: 0 0 8px 8px; /* Rounded corners at the bottom */
 }
