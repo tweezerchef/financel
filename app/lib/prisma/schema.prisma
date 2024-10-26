@@ -14,6 +14,7 @@ enum Category {
   STOCK
   INTEREST_RATE
   CURRENCY
+  FINAL
 }
 
 enum Rank {
@@ -242,4 +243,14 @@ model ResultCategory {
   result       Result    @relation(fields: [resultId], references: [id])
 
   @@unique([resultId, category])
+}
+
+model CategoryStatistics {
+  id          String   @id @default(uuid())
+  category    Category @unique
+  totalScore  Decimal  @db.Decimal(20, 2)
+  count       Int      @default(0)
+  lastUpdated DateTime @updatedAt
+
+  @@index([category])
 }

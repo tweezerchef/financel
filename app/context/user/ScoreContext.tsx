@@ -18,6 +18,7 @@ interface ScoreContextType {
   currencyScore: number
   stockScore: number
   finalScore: number
+  averageInterestRate: number
   updateScore: (category: Category, amount: number) => void
 }
 interface ScoreProviderProps {
@@ -38,6 +39,28 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
   const [currencyScore, setCurrencyScore] = useState(0)
   const [stockScore, setStockScore] = useState(0)
   const [finalScore, setFinalScore] = useState(0)
+  const [averageInterestRate, setAverageInterestRate] = useState(0)
+  const [averageCurrency, setAverageCurrency] = useState(0)
+  const [averageStock, setAverageStock] = useState(0)
+  const [averageFinal, setAverageFinal] = useState(0)
+  const updateAverage = useCallback((category: Category, amount: number) => {
+    switch (category) {
+      case 'INTEREST_RATE':
+        setAverageInterestRate(amount)
+        break
+      case 'CURRENCY':
+        setAverageCurrency(amount)
+        break
+      case 'STOCK':
+        setAverageStock(amount)
+        break
+      case 'Final':
+        setAverageFinal(amount)
+        break
+      default:
+        throw new Error(`Unknown category: ${category}`)
+    }
+  }, [])
   const updateScore = useCallback((category: Category, amount: number) => {
     switch (category) {
       case 'INTEREST_RATE':
@@ -108,6 +131,11 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
       currencyScore,
       stockScore,
       finalScore,
+      averageInterestRate,
+      averageCurrency,
+      averageStock,
+      averageFinal,
+      updateAverage,
       updateScore,
       refreshScore,
     }),
@@ -116,7 +144,12 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
       currencyScore,
       stockScore,
       finalScore,
+      averageInterestRate,
+      averageCurrency,
+      averageStock,
+      averageFinal,
       updateScore,
+      updateAverage,
       refreshScore,
     ]
   )
