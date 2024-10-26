@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ResultCategory } from '@prisma/client'
 import { arrowDecider } from './arrowDecider'
 import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
+
 import prisma from '../../../../lib/prisma/prisma'
 
 export async function GET() {
@@ -74,8 +75,25 @@ export async function POST(request: NextRequest) {
         },
         data: { score, completed: true },
       })
+      const newScore = await prisma.categoryStatistics.upsert({
+        where: { category: 'INTEREST_RATE' },
+        create: {
+          category: 'INTEREST_RATE',
+          totalScore: score,
+          count: 1,
+        },
+        update: {
+          totalScore: { increment: score },
+          count: { increment: 1 },
+        },
+      })
     }
+    const stats = await prisma.categoryStatistics.findUnique({
+      where: { category: 'INTEREST_RATE' },
+    })
 
+    const average = stats ? stats.totalScore.toNumber() / stats.count : 0
+    console.log('average', average)
     return NextResponse.json(
       {
         direction: result.direction,
@@ -87,6 +105,7 @@ export async function POST(request: NextRequest) {
         timeTaken: isComplete ? timeTaken : undefined,
         rateNumber: isCorrect || isComplete ? rateNumber : undefined,
         score: isComplete ? score : undefined,
+        average: isComplete ? average : undefined,
       },
       { status: 200 }
     )

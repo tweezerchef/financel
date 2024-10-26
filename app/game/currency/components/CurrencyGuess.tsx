@@ -14,6 +14,7 @@ import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyC
 import { NextModal } from '../../components/modal/NextModal'
 import { Keyboard } from '../../components/keyboard/Keyboard'
 import { CurrencyGuessDisplay } from './components/CurrencyGuessDisplay'
+import { useScoreContext } from '../../../context/user/ScoreContext'
 import classes from '../../ui/Guess.module.css'
 
 interface CurrencyGuessProps {
@@ -57,7 +58,7 @@ export function CurrencyGuess({
   const { chartData, decimal } = dailyChallengeCurrency ?? {}
   const { user } = useUserContext()
   const { resultId } = user ?? {}
-
+  const { updateScore } = useScoreContext()
   const form = useForm({
     initialValues: {
       guess: '',
@@ -132,6 +133,7 @@ export function CurrencyGuess({
           timeTaken,
           difference,
           dollarValue,
+          score,
         } = result
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
         form.reset()
@@ -161,6 +163,7 @@ export function CurrencyGuess({
           (guessCount.current === 7 && !isAnimating)
         ) {
           setFinalGuess(postGuess)
+          updateScore('CURRENCY', score)
           setTimeout(() => {
             setModalProps({
               opened: true,
@@ -173,7 +176,7 @@ export function CurrencyGuess({
               chartData: chartData || [],
             })
             handlers.open()
-          }, 2500)
+          }, 2000)
         }
       } catch (error) {
         console.error('Submission failed:', error)
@@ -188,6 +191,7 @@ export function CurrencyGuess({
       form,
       setAmountAway,
       setGuessCount,
+      updateScore,
       chartData,
       handlers,
     ]

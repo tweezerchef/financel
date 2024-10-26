@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { formattedGuess } from '../../lib/formattedGuess'
 import { formatDateForChart } from '../../lib/formatDateForChart'
 import { useUserContext } from '../../../context/user/UserContext'
+import { useScoreContext } from '../../../context/user/ScoreContext'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
 import { NextModal } from '../../components/modal/NextModal'
 import { Keyboard } from '../../components/keyboard/Keyboard'
@@ -52,6 +53,7 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
   const [formattedChallengeDate, setFormattedChallengeDate] =
     useState<string>('')
   const { user } = useUserContext()
+  const { updateScore } = useScoreContext()
   const { resultId } = user ?? {}
   const { chartData, decimal } = dailyChallengeStock ?? {}
 
@@ -128,6 +130,8 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
           timeTaken,
           difference,
           stockValue,
+          score,
+          totalScore,
         } = result
         setGuesses((prevGuesses) => [...prevGuesses, newGuess])
         form.reset()
@@ -157,6 +161,8 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
           (guessCount.current === 7 && !isAnimating)
         ) {
           setFinalGuess(postGuess)
+          updateScore('STOCK', score)
+          updateScore('Final', totalScore)
           setTimeout(() => {
             setModalProps({
               opened: true,
@@ -184,6 +190,7 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
       form,
       setAmountAway,
       setGuessCount,
+      updateScore,
       chartData,
       handlers,
     ]

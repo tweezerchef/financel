@@ -53,9 +53,10 @@ export async function POST(request: NextRequest) {
       }),
     ])
     let timeTaken
+    let score
     if (isComplete) {
       timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
-      const score = scoreFunction({
+      score = scoreFunction({
         correctNumber: currencyValue,
         guessedNumber: guess,
         numGuesses: guessCount,
@@ -77,6 +78,7 @@ export async function POST(request: NextRequest) {
         category: updatedCategory,
         timeTaken: isComplete ? timeTaken : undefined,
         dollarValue: isCorrect || isComplete ? currencyValue : undefined,
+        score: isComplete ? score : undefined,
       },
       { status: 200 }
     )
