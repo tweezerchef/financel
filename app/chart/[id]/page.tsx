@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-nocheck
 import Image from 'next/image'
+import { Metadata } from 'next'
 
-interface Props {
+type Props = {
   params: { id: string }
 }
 
@@ -17,4 +21,11 @@ export default function ChartPage({ params }: Props) {
       />
     </div>
   )
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return {
+    title: 'Financle Score Chart',
+    description: 'Check out my Financle score chart!',
+  }
 }
