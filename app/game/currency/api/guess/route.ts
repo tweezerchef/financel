@@ -66,6 +66,18 @@ export async function POST(request: NextRequest) {
         where: { id: updatedCategory.id },
         data: { score, completed: true },
       })
+      await prisma.categoryStatistics.upsert({
+        where: { category: 'CURRENCY' },
+        create: {
+          category: 'CURRENCY',
+          totalScore: score,
+          count: 1,
+        },
+        update: {
+          totalScore: { increment: score },
+          count: { increment: 1 },
+        },
+      })
     }
 
     return NextResponse.json(

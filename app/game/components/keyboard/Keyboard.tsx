@@ -25,8 +25,9 @@ export const Keyboard: React.FC<KeyboardProps> = ({
 }) => {
   const handleKeyPress = (value: string) => {
     let newValue = form.values.guess
+
     if (value === '↵') {
-      if (newValue.length === maxDigits)
+      if (newValue.length > 0 && newValue.length <= maxDigits)
         form.onSubmit((values) => handleSubmit(values))()
     } else if (value === '⌫') newValue = newValue.slice(0, -1)
     else if (value !== '.') if (newValue.length < maxDigits) newValue += value
