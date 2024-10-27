@@ -42,6 +42,13 @@ enum LeaderboardType {
   MONTHLY
 }
 
+enum LeaderboardCategory {
+  INTEREST_RATE
+  CURRENCY
+  STOCK
+  FINAL
+}
+
 model User {
   id         String    @id @default(uuid())
   email      String    @unique
@@ -66,6 +73,9 @@ model Guest {
   id        String    @id @default(uuid())
   ip        String    @unique
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  avatar    String?
+  lastLogin DateTime?
   lastPlay  DateTime?
   results   Result[]
   sessions  Session[]
@@ -186,40 +196,44 @@ model CurrencyValue {
 }
 
 model Leaderboard {
-  id                String             @id @default(uuid())
+  id                String              @id @default(uuid())
   type              LeaderboardType
-  startDate         DateTime           @db.Date
-  endDate           DateTime           @db.Date
+  category          LeaderboardCategory // Add category field
+  startDate         DateTime            @db.Date
+  endDate           DateTime            @db.Date
   entries           LeaderboardEntry[]
-  totalParticipants Int                @default(0)
-  lastCalculated    DateTime           @default(now())
+  totalParticipants Int                 @default(0)
+  lastCalculated    DateTime            @default(now())
 
-  @@unique([type, startDate, endDate])
-  @@index([type, startDate, endDate])
+  @@unique([type, category, startDate]) // Include category in unique constraint
+  @@index([type, category, startDate])
 }
 
 model LeaderboardEntry {
-  id            String      @id @default(uuid())
+  id            String  @id @default(uuid())
   leaderboardId String
-  leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id])
-  resultId      String      @unique
-  result        Result      @relation(fields: [resultId], references: [id])
+  resultId      String
   rank          Int
+  score         Decimal @db.Decimal(10, 2)
 
+  leaderboard Leaderboard @relation(fields: [leaderboardId], references: [id])
+  result      Result      @relation(fields: [resultId], references: [id])
+
+  @@unique([leaderboardId, resultId]) // Each result is unique per leaderboard
   @@index([leaderboardId, rank])
 }
 
 model Result {
-  id               String            @id @default(uuid())
-  userId           String?
-  guestId          String?
-  date             DateTime          @db.Date
-  user             User?             @relation(fields: [userId], references: [id])
-  guest            Guest?            @relation(fields: [guestId], references: [id])
-  categories       ResultCategory[]
-  score            Decimal           @default(0)
-  DailyChallenge   DailyChallenge[]
-  leaderboardEntry LeaderboardEntry?
+  id                 String             @id @default(uuid())
+  userId             String?
+  guestId            String?
+  date               DateTime           @db.Date
+  user               User?              @relation(fields: [userId], references: [id])
+  guest              Guest?             @relation(fields: [guestId], references: [id])
+  categories         ResultCategory[]
+  score              Decimal            @default(0)
+  DailyChallenge     DailyChallenge[]
+  leaderboardEntries LeaderboardEntry[] // Updated to a list
 
   @@unique([guestId, date])
   @@unique([userId, date])
