@@ -27,9 +27,10 @@ export function ScoreChart() {
     averageStock,
     averageFinal,
   } = useScoreContext()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [copyStatus, setCopyStatus] = useState<string>('')
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
-  const [tweetUrl, setTweetUrl] = useState<string>('')
+  // const [tweetUrl, setTweetUrl] = useState<string>('')
 
   const chartData = {
     labels: ['Interest', 'Currency', 'Stock', 'Final'],
@@ -135,48 +136,48 @@ export function ScoreChart() {
       }
   }
 
-  const prepareChartForTweet = async () => {
-    if (chartRef.current)
-      try {
-        const chartImage = chartRef.current.toBase64Image()
+  // const prepareChartForTweet = async () => {
+  //   if (chartRef.current)
+  //     try {
+  //       const chartImage = chartRef.current.toBase64Image()
 
-        // Convert base64 to blob
-        const response = await fetch(chartImage)
-        const blob = await response.blob()
+  //       // Convert base64 to blob
+  //       const response = await fetch(chartImage)
+  //       const blob = await response.blob()
 
-        // Create form data
-        const formData = new FormData()
-        formData.append('chart', blob, 'chart.png')
+  //       // Create form data
+  //       const formData = new FormData()
+  //       formData.append('chart', blob, 'chart.png')
 
-        // Send to your server
-        const uploadResponse = await fetch('/api/uploadChart', {
-          method: 'POST',
-          body: formData,
-        })
+  //       // Send to your server
+  //       const uploadResponse = await fetch('/api/uploadChart', {
+  //         method: 'POST',
+  //         body: formData,
+  //       })
 
-        if (!uploadResponse.ok) throw new Error('Chart upload failed')
+  //       if (!uploadResponse.ok) throw new Error('Chart upload failed')
 
-        const { imageUrl } = await uploadResponse.json()
+  //       const { imageUrl } = await uploadResponse.json()
 
-        // Extract the chart ID from the imageUrl
-        const chartId = imageUrl.split('/').pop()
+  //       // Extract the chart ID from the imageUrl
+  //       const chartId = imageUrl.split('/').pop()
 
-        const tweetText = encodeURIComponent(
-          'Check out my Financle score chart!'
-        )
+  //       const tweetText = encodeURIComponent(
+  //         'Check out my Financle score chart!'
+  //       )
 
-        // Use the correct production URL for Twitter sharing
-        const twitterShareDomain = 'https://financle.vercel.app'
-        const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(`${twitterShareDomain}/chart/${chartId}`)}`
+  //       // Use the correct production URL for Twitter sharing
+  //       const twitterShareDomain = 'https://financle.vercel.app'
+  //       const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(`${twitterShareDomain}/chart/${chartId}`)}`
 
-        setTweetUrl(tweetUrl)
-        setCopyStatus('Chart ready for tweeting!')
-        setTimeout(() => setCopyStatus(''), 3000)
-      } catch (err) {
-        console.error('Failed to prepare chart for tweet:', err)
-        setCopyStatus('Failed to prepare chart for tweet. Please try again.')
-      }
-  }
+  //       setTweetUrl(tweetUrl)
+  //       setCopyStatus('Chart ready for tweeting!')
+  //       setTimeout(() => setCopyStatus(''), 3000)
+  //     } catch (err) {
+  //       console.error('Failed to prepare chart for tweet:', err)
+  //       setCopyStatus('Failed to prepare chart for tweet. Please try again.')
+  //     }
+  // }
 
   useEffect(() => {
     // Load Twitter widgets.js
@@ -205,7 +206,7 @@ export function ScoreChart() {
           Prepare Chart for Download
         </button>
       )}
-      <button onClick={prepareChartForTweet}>Prepare Chart for Tweet</button>
+      {/* <button onClick={prepareChartForTweet}>Prepare Chart for Tweet</button>
       {tweetUrl && (
         <a
           href={tweetUrl}
@@ -217,7 +218,7 @@ export function ScoreChart() {
           Tweet Chart
         </a>
       )}
-      {copyStatus && <p>{copyStatus}</p>}
+      {copyStatus && <p>{copyStatus}</p>} */}
     </div>
   )
 }
