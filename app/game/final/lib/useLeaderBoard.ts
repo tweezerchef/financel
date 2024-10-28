@@ -11,7 +11,8 @@ interface LeaderboardEntry {
 
 interface LeaderboardData {
   totalParticipants: number
-  entries: LeaderboardEntry[]
+  topEntries: LeaderboardEntry[]
+  surroundingEntries: LeaderboardEntry[]
   lastCalculated: string
 }
 
@@ -25,7 +26,8 @@ export async function fetchLeaderboard(
     if (response.status === 404)
       return {
         totalParticipants: 0,
-        entries: [],
+        topEntries: [],
+        surroundingEntries: [],
         lastCalculated: new Date().toISOString(),
       }
 

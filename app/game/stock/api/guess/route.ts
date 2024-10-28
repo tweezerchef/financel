@@ -113,27 +113,27 @@ export async function POST(request: NextRequest) {
       })
 
       await calculateDailyLeaderboard()
-      try {
-        // Add retry logic for getting leaderboard rankings
-        let retries = 3
-        let leaderboardRankings = null
+      // try {
+      //   // Add retry logic for getting leaderboard rankings
+      //   let retries = 3
+      //   let leaderboardRankings = null
 
-        while (retries > 0)
-          try {
-            // eslint-disable-next-line no-await-in-loop, no-promise-executor-return
-            // eslint-disable-next-line no-await-in-loop
-            leaderboardRankings = await getLeaderboardRankings(resultId)
-            break
-          } catch (error) {
-            retries--
-            if (retries === 0) throw error
-          }
-      } catch (error) {
-        console.error('Failed to get leaderboard rankings:', error)
-      }
+      //   while (retries > 0)
+      //     try {
+      //       // eslint-disable-next-line no-await-in-loop, no-promise-executor-return
+      //       // eslint-disable-next-line no-await-in-loop
+      //       leaderboardRankings = await getLeaderboardRankings(resultId)
+      //       break
+      //     } catch (error) {
+      //       retries--
+      //       if (retries === 0) throw error
+      //     }
+      // } catch (error) {
+      //   console.error('Failed to get leaderboard rankings:', error)
+      // }
       // eslint-disable-next-line no-promise-executor-return
     }
-    const averageScore = await prisma.categoryStatistics.upsert({
+    await prisma.categoryStatistics.upsert({
       where: { category: 'FINAL' },
       create: {
         category: 'FINAL',

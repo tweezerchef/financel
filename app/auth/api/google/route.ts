@@ -34,6 +34,13 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // Update lastLogin if user exists
+    if (user)
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastLogin: new Date() },
+      })
+
     if (!user) {
       const newUser = await prisma.user.create({
         data: { email: payload.email, password: '' },
