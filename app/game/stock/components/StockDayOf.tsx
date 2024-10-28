@@ -34,16 +34,18 @@ export function StockDayOf({ amountAway, guessCount }: StockDayOfProps) {
 
   useEffect(() => {
     if (amountAway !== null && guessCount !== null) {
-      const content = `${amountAway >= 50.01 ? 'Greater Than' : 'Less Than'}:
-        ${amountAway >= 50.01 ? '50' : parseFloat(amountAway.toString())}
-        Percent Away | Guesses Left: ${guessCount}`
+      const amountAwayStr = amountAway?.toString() ?? '0'
+      const content = `${
+        Number(amountAwayStr) >= 50.01 ? 'Greater Than' : 'Less Than'
+      }: ${
+        Number(amountAwayStr) >= 50.01 ? '50' : amountAwayStr
+      } Percent Away | Guesses Left: ${guessCount}`
 
       setOldLegendContent(newLegendContent || content)
       setNewLegendContent(content)
       setIsAnimating(true)
 
       const animationDuration = 1000
-
       const timeoutId = setTimeout(() => {
         setIsAnimating(false)
         setOldLegendContent(content)
