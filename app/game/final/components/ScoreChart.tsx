@@ -12,6 +12,7 @@ import {
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
 import { useScoreContext } from '../../../context/user/ScoreContext'
+import classes from './ui/ScoreChart.module.css'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -192,33 +193,22 @@ export function ScoreChart() {
   }, [])
 
   return (
-    <div>
-      <div style={{ height: '300px', width: '100%', backgroundColor: 'white' }}>
+    <div className={classes.chartContainer}>
+      <div className={classes.chartWrapper}>
         <Bar ref={chartRef} data={chartData} options={options} />
       </div>
-      <button onClick={copyChartToClipboard}>Copy Chart to Clipboard</button>
-      {downloadUrl ? (
-        <a href={downloadUrl} download="score-chart.png">
-          <button>Download Chart</button>
-        </a>
-      ) : (
-        <button onClick={prepareChartForDownload}>
-          Prepare Chart for Download
-        </button>
-      )}
-      {/* <button onClick={prepareChartForTweet}>Prepare Chart for Tweet</button>
-      {tweetUrl && (
-        <a
-          href={tweetUrl}
-          className="twitter-share-button"
-          data-size="large"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Tweet Chart
-        </a>
-      )}
-      {copyStatus && <p>{copyStatus}</p>} */}
+      <div className={classes.buttonContainer}>
+        <button onClick={copyChartToClipboard}>Copy Chart to Clipboard</button>
+        {downloadUrl ? (
+          <a href={downloadUrl} download="score-chart.png">
+            <button>Download Chart</button>
+          </a>
+        ) : (
+          <button onClick={prepareChartForDownload}>
+            Prepare Chart for Download
+          </button>
+        )}
+      </div>
     </div>
   )
 }
