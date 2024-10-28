@@ -1,6 +1,6 @@
 .chartContainer {
   width: 100%;
-  height: 300px; /* Set a fixed height or use max-height */
+  max-height: 300px; /* Set a fixed height or use max-height */
   display: flex;
   flex-direction: column;
   overflow: hidden;
