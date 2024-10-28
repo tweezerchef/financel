@@ -61,6 +61,11 @@ export function LeaderBoard() {
       <div className={classes.tableWrapper}>
         <Table verticalSpacing="xs" className={classes.table}>
           <Table.Tbody>{toprows}</Table.Tbody>
+        </Table>
+        <Text fz="sm" fw={500} align="center">
+          Surrounding Players
+        </Text>
+        <Table verticalSpacing="xs" className={classes.table}>
           <Table.Tbody>{surroundingrows}</Table.Tbody>
         </Table>
       </div>

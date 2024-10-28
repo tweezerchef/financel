@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,8 +11,9 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
+import { Button } from '@mantine/core'
 import { useScoreContext } from '../../../context/user/ScoreContext'
-import classes from './ui/ScoreChart.module.css'
+// import classes from './ui/ScoreChart.module.css'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -61,22 +62,21 @@ export function ScoreChart() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Score Chart',
-      },
-    },
     scales: {
       x: {
-        stacked: false,
+        title: {
+          display: true,
+          text: 'Category',
+        },
+        display: true,
       },
       y: {
+        title: {
+          display: true,
+          text: 'Score',
+        },
         beginAtZero: true,
-        stacked: false,
+        display: true,
       },
     },
   }
@@ -180,35 +180,35 @@ export function ScoreChart() {
   //     }
   // }
 
-  useEffect(() => {
-    // Load Twitter widgets.js
-    const script = document.createElement('script')
-    script.src = 'https://platform.twitter.com/widgets.js'
-    script.async = true
-    document.body.appendChild(script)
+  // useEffect(() => {
+  //   // Load Twitter widgets.js
+  //   const script = document.createElement('script')
+  //   script.src = 'https://platform.twitter.com/widgets.js'
+  //   script.async = true
+  //   document.body.appendChild(script)
 
-    return () => {
-      document.body.removeChild(script)
-    }
-  }, [])
+  //   return () => {
+  //     document.body.removeChild(script)
+  //   }
+  // }, [])
 
   return (
-    <div className={classes.chartContainer}>
-      <div className={classes.chartWrapper}>
+    <>
+      <div style={{ width: '100%', height: '200px' }}>
         <Bar ref={chartRef} data={chartData} options={options} />
       </div>
-      <div className={classes.buttonContainer}>
-        <button onClick={copyChartToClipboard}>Copy Chart to Clipboard</button>
+      <div>
+        <Button onClick={copyChartToClipboard}>Copy Chart to Clipboard</Button>
         {downloadUrl ? (
           <a href={downloadUrl} download="score-chart.png">
-            <button>Download Chart</button>
+            <Button>Download Chart</Button>
           </a>
         ) : (
-          <button onClick={prepareChartForDownload}>
+          <Button onClick={prepareChartForDownload}>
             Prepare Chart for Download
-          </button>
+          </Button>
         )}
       </div>
-    </div>
+    </>
   )
 }
