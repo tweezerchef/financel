@@ -118,7 +118,10 @@ export async function GET(request: Request) {
             const s3Key = extractS3Key(entry.result.user.avatar)
             const { signedUrl: url } = await getSignedAvatarUrl(s3Key)
             signedUrl = url
-          }
+          } else
+            signedUrl =
+              'https://financle.s3.us-east-2.amazonaws.com/app/favicon.svg'
+
           return {
             rank: entry.rank,
             score: entry.score.toNumber(),
