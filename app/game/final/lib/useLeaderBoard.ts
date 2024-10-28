@@ -1,3 +1,5 @@
+'use client'
+
 import { LeaderboardCategory } from '@prisma/client'
 import { useState, useEffect } from 'react'
 import { useUserContext } from '../../../context/user/UserContext'
