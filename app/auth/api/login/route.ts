@@ -4,13 +4,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { cookies } from 'next/headers'
 import prisma from '../../../lib/prisma/prisma'
 import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
-
+import { extractS3Key } from '../../../lib/aws/extractS3Key'
 // Helper function to infer content type from file extension
-
-function extractS3Key(url: string): string {
-  const match = url.match(/amazonaws\.com\/(.+)/)
-  return match ? match[1] : url
-}
 
 export async function POST(req: NextRequest) {
   try {

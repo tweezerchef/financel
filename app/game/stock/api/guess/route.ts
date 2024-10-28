@@ -7,6 +7,8 @@ import { stockArrowDecider } from './stockArrowDecider'
 import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
 
 import prisma from '../../../../lib/prisma/prisma'
+import { getLeaderboardRankings } from '../../../../lib/dbFunctions/getLeaderboardRankings'
+import { calculateDailyLeaderboard } from '../../../../lib/dbFunctions/calculateDailyLeaderboard'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,10 +26,9 @@ export async function POST(request: NextRequest) {
     const dailyChallenge = await getDailyChallenge(dateOnly)
 
     const stockValue = dailyChallenge.stockPrice?.price.toNumber() ?? 0
-    console.log('stockValue', stockValue)
 
     const result = stockArrowDecider(guess, stockValue)
-    console.log('percentClose', result.percentClose)
+
     const { isCorrect } = result
     const isComplete = isCorrect || guessCount === 6
 
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
         where: { id: updatedCategory.id },
         data: { score, completed: true },
       })
-      const stockScore = await prisma.categoryStatistics.upsert({
+      await prisma.categoryStatistics.upsert({
         where: { category: 'STOCK' },
         create: {
           category: 'STOCK',
@@ -74,7 +75,6 @@ export async function POST(request: NextRequest) {
           count: { increment: 1 },
         },
       })
-      console.log('stockScore', stockScore)
       const relatedCategories = await prisma.resultCategory.findMany({
         where: { resultId },
         select: { score: true },
@@ -85,13 +85,55 @@ export async function POST(request: NextRequest) {
         0
       )
 
+      // Create FINAL category entry
+      await prisma.resultCategory.upsert({
+        where: { resultId_category: { resultId, category: 'FINAL' } },
+        create: {
+          resultId,
+          category: 'FINAL',
+          guess: 0,
+          correct: isCorrect,
+          tries: guessCount,
+          completed: isComplete,
+          score: totalScore,
+          startTime: now,
+          endTime: now,
+        },
+        update: {
+          score: totalScore,
+          completed: true,
+          endTime: now,
+        },
+      })
+
       // Update the score in the Result table
       await prisma.result.update({
         where: { id: resultId },
         data: { score: totalScore },
       })
+
+      await calculateDailyLeaderboard()
+      // try {
+      //   // Add retry logic for getting leaderboard rankings
+      //   let retries = 3
+      //   let leaderboardRankings = null
+
+      //   while (retries > 0)
+      //     try {
+      //       // eslint-disable-next-line no-await-in-loop, no-promise-executor-return
+      //       // eslint-disable-next-line no-await-in-loop
+      //       leaderboardRankings = await getLeaderboardRankings(resultId)
+      //       break
+      //     } catch (error) {
+      //       retries--
+      //       if (retries === 0) throw error
+      //     }
+      // } catch (error) {
+      //   console.error('Failed to get leaderboard rankings:', error)
+      // }
+      // eslint-disable-next-line no-promise-executor-return
     }
-    const averageScore = await prisma.categoryStatistics.upsert({
+    await prisma.categoryStatistics.upsert({
       where: { category: 'FINAL' },
       create: {
         category: 'FINAL',
@@ -103,7 +145,7 @@ export async function POST(request: NextRequest) {
         count: { increment: 1 },
       },
     })
-    console.log('averageScore', averageScore)
+
     return NextResponse.json(
       {
         direction: result.direction,
