@@ -1,17 +1,21 @@
 import { LeaderboardCategory } from '@prisma/client'
 import prisma from '../prisma/prisma'
 
-export async function getUserRanking(resultId: string, category: string) {
-  // First, get the leaderboard for the given category and date
+export async function getUserRanking(
+  resultId: string,
+  category: LeaderboardCategory
+) {
   const today = new Date()
   const startOfDay = new Date(today.setHours(0, 0, 0, 0))
 
-  const leaderboard = await prisma.leaderboard.findFirst({
+  // Use our optimized index on [type, category, startDate]
+  const leaderboard = await prisma.leaderboard.findUnique({
     where: {
-      type: 'TODAY',
-      category: category.toUpperCase() as LeaderboardCategory,
-      startDate: startOfDay,
-      endDate: startOfDay,
+      type_category_startDate: {
+        type: 'TODAY',
+        category,
+        startDate: startOfDay,
+      },
     },
   })
 
@@ -21,7 +25,7 @@ export async function getUserRanking(resultId: string, category: string) {
       totalParticipants: 0,
     }
 
-  // Now, find the leaderboard entry for the user in this leaderboard
+  // Use our index on [leaderboardId, resultId]
   const entry = await prisma.leaderboardEntry.findUnique({
     where: {
       leaderboardId_resultId: {
@@ -29,7 +33,8 @@ export async function getUserRanking(resultId: string, category: string) {
         resultId,
       },
     },
-    include: {
+    select: {
+      rank: true,
       leaderboard: {
         select: {
           totalParticipants: true,
@@ -40,6 +45,6 @@ export async function getUserRanking(resultId: string, category: string) {
 
   return {
     rank: entry?.rank ?? null,
-    totalParticipants: entry?.leaderboard.totalParticipants ?? 0,
+    totalParticipants: leaderboard.totalParticipants,
   }
 }
