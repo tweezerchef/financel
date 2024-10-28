@@ -24,8 +24,8 @@ export function Leaderboard() {
               <Image
                 src={player.avatar}
                 alt={player.username}
-                width={32}
-                height={32}
+                width={48}
+                height={48}
                 className="rounded-full"
               />
             ) : (
@@ -54,8 +54,8 @@ export function Leaderboard() {
                 <Image
                   src={player.avatar}
                   alt={player.username}
-                  width={32}
-                  height={32}
+                  width={48}
+                  height={48}
                   className="rounded-full"
                 />
               ) : (
