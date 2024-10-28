@@ -1,0 +1,17 @@
+.stack {
+  width: 100%;
+  flex: 1;
+  display: flex; /* Ensure it behaves as a flex container */
+  flex-direction: column;
+  min-height: 0; /* Important for nested flex containers */
+  overflow: hidden; /* Prevent overflow from the stack */
+}
+
+.tableWrapper {
+  flex: 1;
+  overflow-y: auto; /* Allow internal scrolling if content overflows */
+}
+
+.table {
+  width: 100%;
+}

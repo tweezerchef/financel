@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,7 +11,9 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
+import { Button } from '@mantine/core'
 import { useScoreContext } from '../../../context/user/ScoreContext'
+// import classes from './ui/ScoreChart.module.css'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -60,22 +62,21 @@ export function ScoreChart() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Score Chart',
-      },
-    },
     scales: {
       x: {
-        stacked: false,
+        title: {
+          display: true,
+          text: 'Category',
+        },
+        display: true,
       },
       y: {
+        title: {
+          display: true,
+          text: 'Score',
+        },
         beginAtZero: true,
-        stacked: false,
+        display: true,
       },
     },
   }
@@ -179,46 +180,35 @@ export function ScoreChart() {
   //     }
   // }
 
-  useEffect(() => {
-    // Load Twitter widgets.js
-    const script = document.createElement('script')
-    script.src = 'https://platform.twitter.com/widgets.js'
-    script.async = true
-    document.body.appendChild(script)
+  // useEffect(() => {
+  //   // Load Twitter widgets.js
+  //   const script = document.createElement('script')
+  //   script.src = 'https://platform.twitter.com/widgets.js'
+  //   script.async = true
+  //   document.body.appendChild(script)
 
-    return () => {
-      document.body.removeChild(script)
-    }
-  }, [])
+  //   return () => {
+  //     document.body.removeChild(script)
+  //   }
+  // }, [])
 
   return (
-    <div>
-      <div style={{ height: '300px', width: '100%', backgroundColor: 'white' }}>
+    <>
+      <div style={{ width: '100%', height: '200px' }}>
         <Bar ref={chartRef} data={chartData} options={options} />
       </div>
-      <button onClick={copyChartToClipboard}>Copy Chart to Clipboard</button>
-      {downloadUrl ? (
-        <a href={downloadUrl} download="score-chart.png">
-          <button>Download Chart</button>
-        </a>
-      ) : (
-        <button onClick={prepareChartForDownload}>
-          Prepare Chart for Download
-        </button>
-      )}
-      {/* <button onClick={prepareChartForTweet}>Prepare Chart for Tweet</button>
-      {tweetUrl && (
-        <a
-          href={tweetUrl}
-          className="twitter-share-button"
-          data-size="large"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Tweet Chart
-        </a>
-      )}
-      {copyStatus && <p>{copyStatus}</p>} */}
-    </div>
+      <div>
+        <Button onClick={copyChartToClipboard}>Copy Chart to Clipboard</Button>
+        {downloadUrl ? (
+          <a href={downloadUrl} download="score-chart.png">
+            <Button>Download Chart</Button>
+          </a>
+        ) : (
+          <Button onClick={prepareChartForDownload}>
+            Prepare Chart for Download
+          </Button>
+        )}
+      </div>
+    </>
   )
 }

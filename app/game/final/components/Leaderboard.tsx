@@ -1,76 +1,74 @@
 'use client'
 
-import Image from 'next/image'
+import { Avatar, Table, Group, Text, Stack } from '@mantine/core'
+// import {
+//   IconPencil,
+//   IconMessages,
+//   IconNote,
+//   IconReportAnalytics,
+//   IconTrash,
+//   IconDots,
+// } from '@tabler/icons-react'
 import { useLeaderboard } from '../lib/useLeaderBoard'
+import classes from './ui/LeaderBoard.module.css'
 
-export function Leaderboard() {
-  const { data, loading, error } = useLeaderboard()
+export function LeaderBoard() {
+  const { data } = useLeaderboard()
 
-  if (loading) return <div>Loading...</div>
-  if (error) return <div>Error loading leaderboard</div>
-  if (!data) return null
+  const toprows = data?.topEntries.map((player) => (
+    <Table.Tr key={player.rank}>
+      <Table.Td>
+        <Group gap="sm">
+          <Text fz="sm" fw={500}>
+            {player.rank}.
+          </Text>
+          <Text fz="sm">{player.score}</Text>
+          <Avatar size={40} src={player.avatar} radius={40} />
+          <div>
+            <Text fz="sm" fw={500}>
+              {player.username}
+            </Text>
+          </div>
+        </Group>
+      </Table.Td>
+    </Table.Tr>
+  ))
+
+  const surroundingrows = data?.surroundingEntries.map((player) => (
+    <Table.Tr key={player.rank}>
+      <Table.Td>
+        <Group gap="sm">
+          <Text fz="sm" fw={500}>
+            {player.rank}.
+          </Text>
+          <Text fz="sm">{player.score}</Text>
+          <Avatar size={40} src={player.avatar} radius={40} />
+          <div>
+            <Text fz="sm" fw={500}>
+              {player.username}
+            </Text>
+          </div>
+        </Group>
+      </Table.Td>
+    </Table.Tr>
+  ))
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2>Top Players ({data.totalParticipants} total)</h2>
-        {data.topEntries.map((player) => (
-          <div
-            key={`${player.rank}-${player.username}`}
-            className="flex items-center gap-3 py-2"
-          >
-            <span className="w-6 text-right">{player.rank}.</span>
-            {player.avatar ? (
-              <Image
-                src={player.avatar}
-                alt={player.username}
-                width={48}
-                height={48}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-gray-200" />
-            )}
-            <span>{player.username}</span>
-            <span className="ml-auto">
-              {typeof player.score === 'number'
-                ? Math.round(player.score).toLocaleString()
-                : '0'}
-            </span>
-          </div>
-        ))}
+    <Stack className={classes.stack}>
+      <Text fz="md" fw={500} align="center">
+        Leaderboard
+      </Text>
+      <div className={classes.tableWrapper}>
+        <Table verticalSpacing="xs" className={classes.table}>
+          <Table.Tbody>{toprows}</Table.Tbody>
+        </Table>
+        <Text fz="sm" fw={500} align="center">
+          Surrounding Players
+        </Text>
+        <Table verticalSpacing="xs" className={classes.table}>
+          <Table.Tbody>{surroundingrows}</Table.Tbody>
+        </Table>
       </div>
-
-      {data.surroundingEntries.length > 0 && (
-        <div>
-          <h2>Your Position</h2>
-          {data.surroundingEntries.map((player) => (
-            <div
-              key={`${player.rank}-${player.username}`}
-              className="flex items-center gap-3 py-2"
-            >
-              <span className="w-6 text-right">{player.rank}.</span>
-              {player.avatar ? (
-                <Image
-                  src={player.avatar}
-                  alt={player.username}
-                  width={48}
-                  height={48}
-                  className="rounded-full"
-                />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-gray-200" />
-              )}
-              <span>{player.username}</span>
-              <span className="ml-auto">
-                {typeof player.score === 'number'
-                  ? Math.round(player.score).toLocaleString()
-                  : '0'}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    </Stack>
   )
 }
