@@ -1,14 +1,6 @@
 'use client'
 
 import { Avatar, Table, Group, Text, Stack } from '@mantine/core'
-// import {
-//   IconPencil,
-//   IconMessages,
-//   IconNote,
-//   IconReportAnalytics,
-//   IconTrash,
-//   IconDots,
-// } from '@tabler/icons-react'
 import { useLeaderboard } from '../lib/useLeaderBoard'
 import classes from './ui/LeaderBoard.module.css'
 
