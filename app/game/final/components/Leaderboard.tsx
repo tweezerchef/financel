@@ -32,7 +32,11 @@ export function Leaderboard() {
               <div className="w-8 h-8 rounded-full bg-gray-200" />
             )}
             <span>{player.username}</span>
-            <span className="ml-auto">{player.score}</span>
+            <span className="ml-auto">
+              {typeof player.score === 'number'
+                ? Math.round(player.score).toLocaleString()
+                : '0'}
+            </span>
           </div>
         ))}
       </div>
@@ -58,7 +62,11 @@ export function Leaderboard() {
                 <div className="w-8 h-8 rounded-full bg-gray-200" />
               )}
               <span>{player.username}</span>
-              <span className="ml-auto">{player.score}</span>
+              <span className="ml-auto">
+                {typeof player.score === 'number'
+                  ? Math.round(player.score).toLocaleString()
+                  : '0'}
+              </span>
             </div>
           ))}
         </div>

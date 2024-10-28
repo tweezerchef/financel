@@ -1,5 +1,6 @@
 import { LeaderboardCategory } from '@prisma/client'
 import { useState, useEffect } from 'react'
+import { useUserContext } from '../../../context/user/UserContext'
 
 interface LeaderboardEntry {
   rank: number
@@ -17,11 +18,15 @@ interface LeaderboardData {
 }
 
 export async function fetchLeaderboard(
+  resultId?: string,
   category: LeaderboardCategory = 'FINAL'
 ): Promise<LeaderboardData> {
-  // Convert category to lowercase for the URL
   const categoryPath = category.toLowerCase()
-  const response = await fetch(`/api/leaderboard/today/${categoryPath}`)
+  // Add resultId to URL if it exists
+  const url = resultId
+    ? `/api/leaderboard/today/${categoryPath}?resultId=${resultId}`
+    : `/api/leaderboard/today/${categoryPath}`
+  const response = await fetch(url)
   if (!response.ok) {
     if (response.status === 404)
       return {
@@ -43,15 +48,16 @@ export function useLeaderboard(category: LeaderboardCategory = 'FINAL') {
   const [data, setData] = useState<LeaderboardData | null>(null)
   const [error, setError] = useState<Error | null>(null)
   const [loading, setLoading] = useState(true)
+  const { user } = useUserContext()
 
   useEffect(() => {
     const loadLeaderboard = async () => {
       try {
         setLoading(true)
-        const leaderboardData = await fetchLeaderboard() // Debug log
+        const leaderboardData = await fetchLeaderboard(user?.resultId, category)
         setData(leaderboardData)
       } catch (err) {
-        console.error('Error loading leaderboard:', err) // Debug log
+        console.error('Error loading leaderboard:', err)
         setError(
           err instanceof Error ? err : new Error('Failed to fetch leaderboard')
         )
@@ -61,9 +67,7 @@ export function useLeaderboard(category: LeaderboardCategory = 'FINAL') {
     }
 
     loadLeaderboard()
-
-    // Refresh every 30 seconds
-  }, [])
+  }, [category, user?.resultId]) // Add user?.resultId to dependencies
 
   return { data, error, loading }
 }
