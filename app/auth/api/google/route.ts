@@ -29,7 +29,8 @@ export async function POST(req: NextRequest) {
       select: {
         id: true,
         password: true,
-        avatar: true,
+        avatarS3: true,
+        avatarUrl: true,
         username: true,
       },
     })
@@ -51,19 +52,23 @@ export async function POST(req: NextRequest) {
           type: 'unregistered',
           message: 'Register to continue',
         },
-        { status: 200 } // Changed from 100 to 200 for standard success response
+        { status: 200 }
       )
     }
 
-    const { id, avatar, username } = user
-    let signedUrl = null
+    const { id, avatarS3, avatarUrl, username } = user
+    let finalAvatarUrl = null
     let signedUrlExpiration = null
-    if (avatar) {
-      const s3Key = extractS3Key(avatar)
-      const { signedUrl: url, expiresAt } = await getSignedAvatarUrl(s3Key)
-      signedUrl = url
+
+    // Prioritize S3 avatar if it exists
+    if (avatarS3) {
+      const s3Key = extractS3Key(avatarS3)
+      const { signedUrl, expiresAt } = await getSignedAvatarUrl(s3Key)
+      finalAvatarUrl = signedUrl
       signedUrlExpiration = expiresAt
-    }
+    } else if (avatarUrl)
+      // Use preset avatar if no S3 avatar exists
+      finalAvatarUrl = avatarUrl
 
     const result = await prisma.result.upsert({
       where: { userId_date: { userId: user.id, date: new Date() } },
@@ -120,7 +125,7 @@ export async function POST(req: NextRequest) {
       resultId,
       nextCategory,
       username,
-      signedAvatarUrl: signedUrl,
+      avatarUrl: finalAvatarUrl,
       signedAvatarExpiration: signedUrlExpiration,
       message: 'Logged in successfully',
     })

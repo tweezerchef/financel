@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 } from 'uuid'
 import { cookies } from 'next/headers'
 import prisma from '../../../lib/prisma/prisma'
 import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
       select: {
         id: true,
         password: true,
-        avatar: true,
+        avatarS3: true,
+        avatarUrl: true,
         username: true,
       },
     })
@@ -25,11 +26,11 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
 
-    const { id, avatar, username } = user
+    const { id, avatarS3, avatarUrl, username } = user
     let signedUrl = null
     let signedUrlExpiration = null
-    if (avatar) {
-      const s3Key = extractS3Key(avatar)
+    if (avatarS3) {
+      const s3Key = extractS3Key(avatarS3)
       const { signedUrl: url, expiresAt } = await getSignedAvatarUrl(s3Key)
       signedUrl = url
       signedUrlExpiration = expiresAt
@@ -59,10 +60,10 @@ export async function POST(req: NextRequest) {
       }) || null
 
     // Generate a new session ID
-    const sessionId = uuidv4()
+    const sessionId = v4()
 
     // Generate a refresh token
-    const refreshToken = uuidv4()
+    const refreshToken = v4()
 
     // Create the session
     await prisma.session.create({
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
       resultId,
       nextCategory,
       username,
-      signedAvatarUrl: signedUrl,
+      signedAvatarUrl: signedUrl || avatarUrl,
       signedAvatarExpiration: signedUrlExpiration,
       message: 'Logged in successfully',
     })

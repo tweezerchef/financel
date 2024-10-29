@@ -51,18 +51,20 @@ export async function GET(req: NextRequest) {
 
     let signedAvatarUrl = null
     let signedAvatarExpiration = null
+    let avatarUrl = null
 
-    if (userType === 'registered' && 'avatar' in userData && userData.avatar)
-      if (
-        typeof userData.avatar === 'string' &&
-        userData.avatar.trim() !== ''
-      ) {
+    if (userType === 'registered' && session.user) {
+      // Handle S3 stored custom avatar
+      if (session.user.avatarS3) {
         const { signedUrl, expiresAt } = await getSignedAvatarUrl(
-          userData.avatar
+          session.user.avatarS3
         )
         signedAvatarUrl = signedUrl
         signedAvatarExpiration = expiresAt
       }
+      // Handle preset avatar
+      if (session.user.avatarUrl) avatarUrl = session.user.avatarUrl
+    }
 
     return NextResponse.json({
       id: userData.id,
@@ -72,6 +74,7 @@ export async function GET(req: NextRequest) {
       username: 'username' in userData ? userData.username : null,
       signedAvatarUrl,
       signedAvatarExpiration,
+      avatarUrl,
     })
   } catch (error) {
     console.error('Error fetching user data:', error)

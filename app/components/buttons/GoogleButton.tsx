@@ -21,7 +21,7 @@ interface GoogleAuthResponse {
   type: 'registered' | 'unregistered'
   resultId?: string
   nextCategory: string | null
-  signedAvatarUrl: string | null
+  avatarUrl: string | null
   signedAvatarExpiration: string | null
   username: string
   googleId?: string
@@ -101,7 +101,7 @@ export function GoogleButton({
         type: 'registered',
         resultId: data.resultId ?? '',
         nextCategory: data.nextCategory as Category | null,
-        signedAvatarUrl: data.signedAvatarUrl,
+        signedAvatarUrl: data.avatarUrl,
         signedAvatarExpiration: data.signedAvatarExpiration
           ? Number(data.signedAvatarExpiration)
           : null,
@@ -114,14 +114,14 @@ export function GoogleButton({
       )
     } catch (error) {
       console.error('Authentication error:', error)
-      onAuthStart?.() // Turn off loading state if there's an error
+      onAuthStart?.()
       throw error
     }
   }
 
   const handleGoogleLogin = async () => {
     setIsLoading(true)
-    onAuthStart?.() // Start loading state
+    onAuthStart?.()
 
     try {
       await loadGoogleSignIn()
@@ -135,7 +135,7 @@ export function GoogleButton({
           } catch (error) {
             console.error('Google login error:', error)
             alert('An error occurred during Google login.')
-            onAuthStart?.() // Turn off loading state on error
+            onAuthStart?.()
           }
         },
       }) as TokenClient
@@ -144,7 +144,7 @@ export function GoogleButton({
     } catch (error) {
       console.error('Google login error:', error)
       alert('An error occurred during Google login.')
-      onAuthStart?.() // Turn off loading state on error
+      onAuthStart?.()
     } finally {
       setIsLoading(false)
     }
