@@ -54,7 +54,8 @@ model User {
   username   String?   @unique
   password   String
   emailToken String?
-  avatar     String?
+  avatarS3   String?
+  avatarUrl  String?
   moto       String?
   rank       Rank      @default(WOOD)
   createdAt  DateTime  @default(now())
