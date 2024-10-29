@@ -17,6 +17,7 @@ export default function Registration() {
   const form = useForm({
     initialValues: {
       file: null as File | null,
+      avatarUrl: null as string | null,
       username: '',
       id: id || '',
     },
@@ -26,7 +27,7 @@ export default function Registration() {
           values.username.length > 2
             ? null
             : 'Username must be at least 3 characters',
-        file: values.file === null ? 'Avatar is required' : null,
+        file: !values.file && !values.avatarUrl ? 'Avatar is required' : null,
       }
     },
   })
@@ -36,16 +37,22 @@ export default function Registration() {
 
     setIsLoading(true)
 
-    const { username, file } = form.values
-    if (!file) {
-      console.error('No file selected')
+    const { username, file, avatarUrl } = form.values
+    if (!file && !avatarUrl) {
+      console.error('No avatar selected')
       return
     }
 
     try {
       const formData = new FormData()
       formData.append('username', username)
-      formData.append('avatar', file)
+      if (file) {
+        formData.append('avatar', file)
+        formData.append('avatarType', 'uploaded')
+      } else if (avatarUrl) {
+        formData.append('avatarUrl', avatarUrl)
+        formData.append('avatarType', 'preset')
+      }
       if (id !== null) formData.append('id', String(id))
       if (googleId !== null) formData.append('googleId', String(googleId))
       const response = await fetch('/registration/google/api', {
@@ -77,14 +84,17 @@ export default function Registration() {
   }
 
   const handleAvatarSelect = (avatarUrl: string) => {
-    // Create a fetch request to get the image as a File object
-    fetch(avatarUrl)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const file = new File([blob], 'avatar.png', { type: 'image/png' })
-        form.setFieldValue('file', file)
-      })
-      .catch((error) => console.error('Error loading avatar:', error))
+    form.setValues({
+      ...form.values,
+      file: null,
+      avatarUrl,
+    })
+  }
+
+  const getAvatarSrc = () => {
+    if (form.values.file) return URL.createObjectURL(form.values.file)
+
+    return form.values.avatarUrl || null
   }
 
   return (
@@ -99,24 +109,24 @@ export default function Registration() {
         />
         <div className={classes.avatarContainer}>
           <Avatar
-            src={
-              form.getInputProps('file').value
-                ? URL.createObjectURL(form.getInputProps('file').value)
-                : null
-            }
+            src={getAvatarSrc()}
             alt="Avatar preview"
             variant="filled"
             radius="xl"
             size="xl"
             onLoad={() => {
-              if (form.getInputProps('file').value)
-                URL.revokeObjectURL(form.getInputProps('file').value)
+              if (form.values.file)
+                URL.revokeObjectURL(URL.createObjectURL(form.values.file))
             }}
           />
           <FileButton
             accept="image/png,image/jpeg"
             onChange={(file: File | null) => {
-              form.setFieldValue('file', file)
+              form.setValues({
+                ...form.values,
+                file,
+                avatarUrl: null,
+              })
             }}
           >
             {(props) => (
@@ -129,9 +139,7 @@ export default function Registration() {
         <Container fluid w="100%">
           <AvCarousel
             onSelectAvatar={handleAvatarSelect}
-            selectedAvatar={
-              form.values.file ? URL.createObjectURL(form.values.file) : null
-            }
+            selectedAvatar={form.values.avatarUrl}
           />
         </Container>
       </form>
