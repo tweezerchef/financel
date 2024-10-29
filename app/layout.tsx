@@ -12,6 +12,7 @@ import {
 import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
+import '@mantine/carousel/styles.css'
 import { DailyChallengeInitializer } from './lib/DailyChallengeInitializer'
 import { UserProvider } from './context/user/UserContext'
 import { DailyChallengeProvider } from './context/dailyChallenge/DailyChallengeContext'

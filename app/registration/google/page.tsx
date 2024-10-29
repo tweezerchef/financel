@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { FileButton, Button, TextInput, Avatar } from '@mantine/core'
+import { FileButton, Button, TextInput, Avatar, Container } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useForm } from '@mantine/form'
 import { useUserContext } from '../../context/user/UserContext'
+import { AvCarousel } from './components/avCarousel'
 import classes from '../ui/Page.module.css'
 
 export default function Registration() {
@@ -75,48 +76,66 @@ export default function Registration() {
     }
   }
 
+  const handleAvatarSelect = (avatarUrl: string) => {
+    // Create a fetch request to get the image as a File object
+    fetch(avatarUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const file = new File([blob], 'avatar.png', { type: 'image/png' })
+        form.setFieldValue('file', file)
+      })
+      .catch((error) => console.error('Error loading avatar:', error))
+  }
+
   return (
     <div className={classes.main}>
-      <div className={classes.contentContainer}>
-        <form className={classes.form}>
-          <TextInput
-            withAsterisk
-            label="Username"
-            placeholder="Username"
-            {...form.getInputProps('username')}
-            className={classes.wideInput}
+      <form className={classes.form}>
+        <TextInput
+          withAsterisk
+          label="Username"
+          placeholder="Username"
+          {...form.getInputProps('username')}
+          className={classes.wideInput}
+        />
+        <div className={classes.avatarContainer}>
+          <Avatar
+            src={
+              form.getInputProps('file').value
+                ? URL.createObjectURL(form.getInputProps('file').value)
+                : null
+            }
+            alt="Avatar preview"
+            variant="filled"
+            radius="xl"
+            size="xl"
+            onLoad={() => {
+              if (form.getInputProps('file').value)
+                URL.revokeObjectURL(form.getInputProps('file').value)
+            }}
           />
-          <div className={classes.avatarContainer}>
-            <Avatar
-              src={
-                form.getInputProps('file').value
-                  ? URL.createObjectURL(form.getInputProps('file').value)
-                  : null
-              }
-              alt="Avatar preview"
-              variant="filled"
-              radius="xl"
-              size="xl"
-              onLoad={() => {
-                if (form.getInputProps('file').value)
-                  URL.revokeObjectURL(form.getInputProps('file').value)
-              }}
-            />
-            <FileButton
-              accept="image/png,image/jpeg"
-              onChange={(file: File | null) => {
-                form.setFieldValue('file', file)
-              }}
-            >
-              {(props) => (
-                <Button {...props}>
-                  {form.values.file ? 'Choose Different File' : 'Upload avatar'}
-                </Button>
-              )}
-            </FileButton>
-          </div>
-        </form>
-      </div>
+          <FileButton
+            accept="image/png,image/jpeg"
+            onChange={(file: File | null) => {
+              form.setFieldValue('file', file)
+            }}
+          >
+            {(props) => (
+              <Button {...props}>
+                {form.values.file ? 'Choose Different File' : 'Upload avatar'}
+              </Button>
+            )}
+          </FileButton>
+        </div>
+        <Container fluid w="100%">
+          <AvCarousel
+            onSelectAvatar={handleAvatarSelect}
+            selectedAvatar={
+              form.values.file ? URL.createObjectURL(form.values.file) : null
+            }
+          />
+        </Container>
+      </form>
+
       <div className={classes.navigationButtons}>
         <Button
           onClick={handleRegister}
