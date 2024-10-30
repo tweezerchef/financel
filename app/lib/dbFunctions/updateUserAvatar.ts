@@ -4,7 +4,7 @@ export async function updateUserAvatar(userId: string, avatarUrl: string) {
   try {
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { avatar: avatarUrl },
+      data: { avatarS3: avatarUrl },
     })
     return updatedUser
   } catch (error) {

@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { FileButton, Button, TextInput, Avatar } from '@mantine/core'
+import { FileButton, Button, TextInput, Avatar, Container } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useForm } from '@mantine/form'
 import { useUserContext } from '../../context/user/UserContext'
+import { AvCarousel } from './components/avCarousel'
 import classes from '../ui/Page.module.css'
 
 export default function Registration() {
@@ -16,6 +17,7 @@ export default function Registration() {
   const form = useForm({
     initialValues: {
       file: null as File | null,
+      avatarUrl: null as string | null,
       username: '',
       id: id || '',
     },
@@ -25,7 +27,7 @@ export default function Registration() {
           values.username.length > 2
             ? null
             : 'Username must be at least 3 characters',
-        file: values.file === null ? 'Avatar is required' : null,
+        file: !values.file && !values.avatarUrl ? 'Avatar is required' : null,
       }
     },
   })
@@ -35,16 +37,22 @@ export default function Registration() {
 
     setIsLoading(true)
 
-    const { username, file } = form.values
-    if (!file) {
-      console.error('No file selected')
+    const { username, file, avatarUrl } = form.values
+    if (!file && !avatarUrl) {
+      console.error('No avatar selected')
       return
     }
 
     try {
       const formData = new FormData()
       formData.append('username', username)
-      formData.append('avatar', file)
+      if (file) {
+        formData.append('avatar', file)
+        formData.append('avatarType', 'uploaded')
+      } else if (avatarUrl) {
+        formData.append('avatarUrl', avatarUrl)
+        formData.append('avatarType', 'preset')
+      }
       if (id !== null) formData.append('id', String(id))
       if (googleId !== null) formData.append('googleId', String(googleId))
       const response = await fetch('/registration/google/api', {
@@ -58,65 +66,82 @@ export default function Registration() {
           'Registration error:',
           errorData.message || 'Registration failed'
         )
+        return
       }
 
       const data = await response.json()
       console.log('Registration successful:', data)
       if (data.signedUrl) console.log(data.signedUrl)
 
-      // Handle successful registration (e.g., redirect user)
       router.push('/')
-      // You can add additional logic here if needed
     } catch (error) {
       console.error('Registration error:', error)
-      // Handle error (e.g., show error message to user)
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleAvatarSelect = (avatarUrl: string) => {
+    form.setValues({
+      ...form.values,
+      file: null,
+      avatarUrl,
+    })
+  }
+
+  const getAvatarSrc = () => {
+    if (form.values.file) return URL.createObjectURL(form.values.file)
+
+    return form.values.avatarUrl || null
+  }
+
   return (
     <div className={classes.main}>
-      <div className={classes.contentContainer}>
-        <form className={classes.form}>
-          <TextInput
-            withAsterisk
-            label="Username"
-            placeholder="Username"
-            {...form.getInputProps('username')}
-            className={classes.wideInput}
+      <form className={classes.form}>
+        <TextInput
+          withAsterisk
+          label="Username"
+          placeholder="Username"
+          {...form.getInputProps('username')}
+          className={classes.wideInput}
+        />
+        <div className={classes.avatarContainer}>
+          <Avatar
+            src={getAvatarSrc()}
+            alt="Avatar preview"
+            variant="filled"
+            radius="xl"
+            size="xl"
+            onLoad={() => {
+              if (form.values.file)
+                URL.revokeObjectURL(URL.createObjectURL(form.values.file))
+            }}
           />
-          <div className={classes.avatarContainer}>
-            <Avatar
-              src={
-                form.getInputProps('file').value
-                  ? URL.createObjectURL(form.getInputProps('file').value)
-                  : null
-              }
-              alt="Avatar preview"
-              variant="filled"
-              radius="xl"
-              size="xl"
-              onLoad={() => {
-                if (form.getInputProps('file').value)
-                  URL.revokeObjectURL(form.getInputProps('file').value)
-              }}
-            />
-            <FileButton
-              accept="image/png,image/jpeg"
-              onChange={(file: File | null) => {
-                form.setFieldValue('file', file)
-              }}
-            >
-              {(props) => (
-                <Button {...props}>
-                  {form.values.file ? 'Choose Different File' : 'Upload avatar'}
-                </Button>
-              )}
-            </FileButton>
-          </div>
-        </form>
-      </div>
+          <FileButton
+            accept="image/png,image/jpeg"
+            onChange={(file: File | null) => {
+              form.setValues({
+                ...form.values,
+                file,
+                avatarUrl: null,
+              })
+            }}
+          >
+            {(props) => (
+              <Button {...props}>
+                {form.values.file ? 'Choose Different File' : 'Upload avatar'}
+              </Button>
+            )}
+          </FileButton>
+        </div>
+        <Container fluid w="100%">
+          <AvCarousel
+            onSelectAvatar={handleAvatarSelect}
+            selectedAvatar={form.values.avatarUrl}
+          />
+        </Container>
+      </form>
+
       <div className={classes.navigationButtons}>
         <Button
           onClick={handleRegister}

@@ -18,21 +18,22 @@ interface HeaderProps {
 export function Header({ onAuthStart, isAuthenticating }: HeaderProps) {
   return (
     <div className={classes.wrapper}>
-      <AspectRatio ratio={500 / 309}>
-        <Image
-          src="/loginHeader.webp"
-          alt="Financel"
-          fill
-          sizes="width: 500px, height: 309px"
-          quality={90}
-          priority
-        />
-      </AspectRatio>
+      <div className={classes.imageContainer}>
+        <AspectRatio ratio={500 / 309}>
+          <Image
+            src="/loginHeader.webp"
+            alt="Financel"
+            fill
+            sizes="(max-width: 600px) 90vw, 400px"
+            quality={90}
+            priority
+          />
+        </AspectRatio>
+      </div>
       <Overlay color="#000" opacity={0.65} zIndex={1} />
 
       <div className={classes.inner}>
         <Title className={classes.title}>Financle</Title>
-
         <Container>
           <Text size="md" className={classes.description}>
             Financle is where the Brothers Of Finance (gender neutral) come

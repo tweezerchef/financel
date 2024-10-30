@@ -45,7 +45,8 @@ export async function GET() {
                 user: {
                   select: {
                     username: true,
-                    avatar: true,
+                    avatarS3: true,
+                    avatarUrl: true,
                   },
                 },
                 guest: true,
@@ -79,7 +80,8 @@ export async function GET() {
                   user: {
                     select: {
                       username: true
-                      avatar: true
+                      avatarS3: true
+                      avatarUrl: true
                     }
                   }
                   guest: true
@@ -101,7 +103,8 @@ export async function GET() {
             rank: index + 1,
             score: entry.score.toNumber(),
             username: entry.result.user?.username || 'Guest',
-            avatar: entry.result.user?.avatar || null,
+            avatarS3: entry.result.user?.avatarS3 || null,
+            avatarUrl: entry.result.user?.avatarUrl || null,
             isGuest: !entry.result.user,
           }
         }
