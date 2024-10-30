@@ -7,23 +7,48 @@ import { stockArrowDecider } from './stockArrowDecider'
 import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
 
 import prisma from '../../../../lib/prisma/prisma'
-import { getLeaderboardRankings } from '../../../../lib/dbFunctions/getLeaderboardRankings'
 import { calculateDailyLeaderboard } from '../../../../lib/dbFunctions/calculateDailyLeaderboard'
 
 export async function POST(request: NextRequest) {
   try {
     const today = new Date()
-    const dateOnly = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    )
+    const dateOnly = new Date(today.setHours(0, 0, 0, 0))
+
     const { guess, resultId, guessCount } = await request.json()
 
-    if (typeof guess !== 'number') throw new Error('Guess must be a number')
-    if (!resultId) throw new Error('resultId is required')
+    if (
+      typeof guess !== 'number' ||
+      !resultId ||
+      typeof guessCount !== 'number'
+    )
+      throw new Error(
+        'Invalid input: Guess and guessCount must be numbers, and resultId is required'
+      )
 
-    const dailyChallenge = await getDailyChallenge(dateOnly)
+    const [dailyChallenge, resultUpdate] = await prisma.$transaction([
+      prisma.dailyChallenge.findUnique({
+        where: { challengeDate: dateOnly },
+        include: {
+          stockPrice: {
+            select: {
+              price: true,
+              stock: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+          date: { select: { date: true } },
+        },
+      }),
+      prisma.result.update({
+        where: { id: resultId },
+        data: { date: dateOnly },
+      }),
+    ])
+
+    if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
     const stockValue = dailyChallenge.stockPrice?.price.toNumber() ?? 0
 
@@ -32,8 +57,6 @@ export async function POST(request: NextRequest) {
     const { isCorrect } = result
     const isComplete = isCorrect || guessCount === 6
 
-    const now = new Date()
-
     const [updatedCategory, _] = await Promise.all([
       updateResultCategory(
         resultId,
@@ -41,18 +64,15 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
-        now
+        today
       ),
-      prisma.result.update({
-        where: { id: resultId },
-        data: { date: dateOnly },
-      }),
+      resultUpdate,
     ])
     let timeTaken
     let score
     let totalScore
     if (isComplete) {
-      timeTaken = await calculateTimeTaken(isComplete, updatedCategory, now)
+      timeTaken = await calculateTimeTaken(isComplete, updatedCategory, today)
       score = scoreFunction({
         correctNumber: stockValue,
         guessedNumber: guess,
@@ -96,13 +116,13 @@ export async function POST(request: NextRequest) {
           tries: guessCount,
           completed: isComplete,
           score: totalScore,
-          startTime: now,
-          endTime: now,
+          startTime: today,
+          endTime: today,
         },
         update: {
           score: totalScore,
           completed: true,
-          endTime: now,
+          endTime: today,
         },
       })
 
@@ -113,25 +133,6 @@ export async function POST(request: NextRequest) {
       })
 
       await calculateDailyLeaderboard()
-      // try {
-      //   // Add retry logic for getting leaderboard rankings
-      //   let retries = 3
-      //   let leaderboardRankings = null
-
-      //   while (retries > 0)
-      //     try {
-      //       // eslint-disable-next-line no-await-in-loop, no-promise-executor-return
-      //       // eslint-disable-next-line no-await-in-loop
-      //       leaderboardRankings = await getLeaderboardRankings(resultId)
-      //       break
-      //     } catch (error) {
-      //       retries--
-      //       if (retries === 0) throw error
-      //     }
-      // } catch (error) {
-      //   console.error('Failed to get leaderboard rankings:', error)
-      // }
-      // eslint-disable-next-line no-promise-executor-return
     }
     await prisma.categoryStatistics.upsert({
       where: { category: 'FINAL' },

@@ -88,6 +88,7 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
 
   const handleSubmit = useCallback(
     async (values: { guess: string }) => {
+      setIsAnimating(true)
       if (
         isAnimating ||
         guesses.length >= 6 ||
@@ -105,7 +106,6 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
       const unformattedGuess = values.guess // Default to 2 if decimal is undefined
 
       try {
-        setIsAnimating(true)
         const response = await fetch('/game/stock/api/guess/', {
           method: 'POST',
           headers: {

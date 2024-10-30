@@ -90,6 +90,7 @@ export function CurrencyGuess({
 
   const handleSubmit = useCallback(
     async (values: { guess: string }) => {
+      setIsAnimating(true)
       if (
         isAnimating ||
         guesses.length >= 6 ||
@@ -108,7 +109,6 @@ export function CurrencyGuess({
       const unformattedGuess = values.guess // Keep the original guess for display
 
       try {
-        setIsAnimating(true)
         const response = await fetch('/game/currency/api/guess/', {
           method: 'POST',
           headers: {
