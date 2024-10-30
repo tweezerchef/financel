@@ -66,18 +66,16 @@ export default function Registration() {
           'Registration error:',
           errorData.message || 'Registration failed'
         )
+        return
       }
 
       const data = await response.json()
       console.log('Registration successful:', data)
       if (data.signedUrl) console.log(data.signedUrl)
 
-      // Handle successful registration (e.g., redirect user)
       router.push('/')
-      // You can add additional logic here if needed
     } catch (error) {
       console.error('Registration error:', error)
-      // Handle error (e.g., show error message to user)
     } finally {
       setIsLoading(false)
     }

@@ -83,6 +83,7 @@ export default function Registration() {
     const { email, password, username, file, avatarUrl } = form.values
     if (!file && !avatarUrl) {
       console.error('No avatar selected')
+      setIsLoading(false)
       return
     }
 
@@ -105,21 +106,17 @@ export default function Registration() {
         body: formData,
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error(
-          'Registration error:',
-          errorData.message || 'Registration failed'
-        )
-      }
-
       const data = await response.json()
-      console.log('Registration successful:', data)
-      if (data.signedUrl) console.log(data.signedUrl)
 
+      if (!response.ok) throw new Error(data.message || 'Registration failed')
+
+      console.log('Registration successful:', data)
       router.push('/')
     } catch (error) {
-      console.error('Registration error:', error)
+      console.error(
+        'Registration error:',
+        error instanceof Error ? error.message : 'Unknown error'
+      )
     } finally {
       setIsLoading(false)
     }

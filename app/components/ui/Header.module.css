@@ -7,7 +7,19 @@
   margin: 0 auto;
   padding: 1rem;
   box-sizing: border-box;
-  height: 40dvh; /* Default height for taller screens */
+  height: 40dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.imageContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
 }
 
 @media (max-width: 600px) {
