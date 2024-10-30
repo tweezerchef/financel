@@ -55,8 +55,6 @@ export async function POST(request: NextRequest) {
     const resultDirection = arrowDecider(guess, rateNumber)
     const isComplete = isCorrect || guessCount === 6
 
-    const now = new Date()
-
     const [updatedCategory] = await Promise.all([
       updateResultCategory(
         resultId,
@@ -64,7 +62,7 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
-        now
+        today
       ),
       prisma.result.update({
         where: { id: resultId },
@@ -76,7 +74,7 @@ export async function POST(request: NextRequest) {
     let score
     let average
     if (isComplete) {
-      timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
+      timeTaken = calculateTimeTaken(isComplete, updatedCategory, today)
       score = scoreFunction({
         correctNumber: rateNumber,
         guessedNumber: guess,
@@ -130,27 +128,6 @@ export async function POST(request: NextRequest) {
     console.error('Error in POST request:', error)
     return handleError(error)
   }
-}
-
-async function getDailyChallenge(dateOnly: Date) {
-  const dailyChallenge = await prisma.dailyChallenge.findUnique({
-    where: { challengeDate: dateOnly },
-    include: {
-      interestRate: {
-        select: {
-          rate: true,
-          date: {
-            select: { date: true },
-          },
-        },
-      },
-      date: { select: { date: true } },
-    },
-  })
-
-  if (!dailyChallenge) throw new Error('Invalid daily challenge')
-
-  return dailyChallenge
 }
 
 async function updateResultCategory(

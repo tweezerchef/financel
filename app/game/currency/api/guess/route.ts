@@ -16,68 +16,93 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const today = new Date()
-    const dateOnly = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    )
+    const dateOnly = new Date(today.setHours(0, 0, 0, 0))
+
     const { guess, resultId, guessCount } = await request.json()
 
-    if (typeof guess !== 'number') throw new Error('Guess must be a number')
-    if (!resultId) throw new Error('resultId is required')
+    if (
+      typeof guess !== 'number' ||
+      !resultId ||
+      typeof guessCount !== 'number'
+    )
+      throw new Error(
+        'Invalid input: Guess and guessCount must be numbers, and resultId is required'
+      )
 
-    const dailyChallenge = await getDailyChallenge(dateOnly)
+    const [dailyChallenge, resultUpdate] = await prisma.$transaction([
+      prisma.dailyChallenge.findUnique({
+        where: { challengeDate: dateOnly },
+        include: {
+          currencyValue: {
+            select: {
+              value: true,
+              date: { select: { date: true } },
+            },
+          },
+          date: { select: { date: true } },
+        },
+      }),
+      prisma.result.update({
+        where: { id: resultId },
+        data: { date: dateOnly },
+      }),
+    ])
+
+    if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
     const currencyValue = dailyChallenge.currencyValue?.value.toNumber() ?? 0
-    console.log('currencyValue', currencyValue)
-
     const result = currencyArrowDecider(guess, currencyValue)
-    console.log('percentClose', result.percentClose)
     const { isCorrect } = result
     const isComplete = isCorrect || guessCount === 6
 
-    const now = new Date()
-
-    const [updatedCategory, _] = await Promise.all([
+    const [updatedCategory] = await Promise.all([
       updateResultCategory(
         resultId,
         guess,
         isCorrect,
         guessCount,
         isComplete,
-        now
+        today
       ),
-      prisma.result.update({
-        where: { id: resultId },
-        data: { date: dateOnly },
-      }),
     ])
+
     let timeTaken
     let score
+    let average
     if (isComplete) {
-      timeTaken = calculateTimeTaken(isComplete, updatedCategory, now)
+      timeTaken = calculateTimeTaken(isComplete, updatedCategory, today)
       score = scoreFunction({
         correctNumber: currencyValue,
         guessedNumber: guess,
         numGuesses: guessCount,
         timeTaken: timeTaken ?? 0,
       })
-      await prisma.resultCategory.update({
-        where: { id: updatedCategory.id },
-        data: { score, completed: true },
-      })
-      await prisma.categoryStatistics.upsert({
-        where: { category: 'CURRENCY' },
-        create: {
-          category: 'CURRENCY',
-          totalScore: score,
-          count: 1,
-        },
-        update: {
-          totalScore: { increment: score },
-          count: { increment: 1 },
-        },
-      })
+
+      const [updatedResult, stats] = await prisma.$transaction([
+        prisma.resultCategory.update({
+          where: {
+            resultId_category: {
+              resultId,
+              category: 'CURRENCY',
+            },
+          },
+          data: { score, completed: true },
+        }),
+        prisma.categoryStatistics.upsert({
+          where: { category: 'CURRENCY' },
+          create: {
+            category: 'CURRENCY',
+            totalScore: score,
+            count: 1,
+          },
+          update: {
+            totalScore: { increment: score },
+            count: { increment: 1 },
+          },
+        }),
+      ])
+
+      average = stats.totalScore.toNumber() / stats.count
     }
 
     return NextResponse.json(
@@ -91,6 +116,7 @@ export async function POST(request: NextRequest) {
         timeTaken: isComplete ? timeTaken : undefined,
         dollarValue: isCorrect || isComplete ? currencyValue : undefined,
         score: isComplete ? score : undefined,
+        average: isComplete ? average : undefined,
       },
       { status: 200 }
     )
@@ -180,8 +206,18 @@ function calculateTimeTaken(
 }
 
 function handleError(error: unknown) {
-  if (error instanceof Error)
-    return NextResponse.json({ message: error.message }, { status: 400 })
+  console.error('API Error:', error)
+
+  if (error instanceof Error) {
+    if (error.message.includes('Invalid input'))
+      return NextResponse.json({ message: error.message }, { status: 400 })
+
+    if (error.message.includes('Invalid daily challenge'))
+      return NextResponse.json(
+        { message: 'No challenge available for today' },
+        { status: 404 }
+      )
+  }
 
   return NextResponse.json(
     { message: 'An unexpected error occurred' },
