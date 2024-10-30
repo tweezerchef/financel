@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-use-before-define */
@@ -93,11 +94,36 @@ async function processLeaderboard(
     },
   })
 
-  const entries = categoryResults.map((result, index) => ({
-    leaderboardId: leaderboard.id,
-    resultId: result.id,
-    rank: index + 1,
-    score: Number(
+  // Sort results by score in descending order
+  const sortedResults = categoryResults.sort((a, b) => {
+    const scoreA = Number(
+      category === 'INTEREST_RATE'
+        ? a.interestRateScore
+        : category === 'CURRENCY'
+          ? a.currencyScore
+          : category === 'STOCK'
+            ? a.stockScore
+            : a.score
+    )
+    const scoreB = Number(
+      category === 'INTEREST_RATE'
+        ? b.interestRateScore
+        : category === 'CURRENCY'
+          ? b.currencyScore
+          : category === 'STOCK'
+            ? b.stockScore
+            : b.score
+    )
+    return scoreB - scoreA
+  })
+
+  // Assign ranks with proper tie handling
+  let currentRank = 1
+  let currentScore: number | null = null
+  let sameRankCount = 0
+
+  const entries = sortedResults.map((result, index) => {
+    const score = Number(
       category === 'INTEREST_RATE'
         ? result.interestRateScore
         : category === 'CURRENCY'
@@ -105,8 +131,22 @@ async function processLeaderboard(
           : category === 'STOCK'
             ? result.stockScore
             : result.score
-    ),
-  }))
+    )
+
+    // If this is a new score, update the rank
+    if (score !== currentScore) {
+      currentRank = index + 1 - sameRankCount
+      currentScore = score
+      sameRankCount = 0
+    } else sameRankCount++
+
+    return {
+      leaderboardId: leaderboard.id,
+      resultId: result.id,
+      rank: currentRank,
+      score,
+    }
+  })
 
   // Batch operations within the transaction
   await Promise.all([

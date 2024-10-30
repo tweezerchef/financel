@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { runDailyChallenge } from '../../lib/dbFunctions/runDailyChallenge'
+import { createDailyFakeScores } from '../../../lib/dbFunctions/createDailyFakeScores'
 
 export const dynamic = 'force-dynamic'
 
@@ -7,7 +7,7 @@ export async function GET() {
   console.log('Cron job running')
 
   try {
-    await runDailyChallenge()
+    await createDailyFakeScores()
     return NextResponse.json(
       { message: 'Cron job ran successfully' },
       { status: 200 }
