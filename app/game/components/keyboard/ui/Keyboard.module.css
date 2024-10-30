@@ -4,13 +4,16 @@
   align-items: center;
   width: 100%;
   border-radius: 10px;
-  background-color: #555050;
+  background-color: #201d1dbf;
   width: 100%;
 }
 
 .row {
   display: flex;
-  justify-content: space-between; /* Distribute keys evenly */
+  justify-content: space-evenly; /* Distribute keys evenly */
   width: 100%; /* Take the full width of the container */
-  margin-bottom: 0.2rem; /* Add some margin at the bottom for spacing */
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  padding-right: 0.9rem;
+  padding-left: 0.9rem;
 }

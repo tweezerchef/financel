@@ -1,23 +1,28 @@
 .key {
-  margin: calc(0.5dvh);
+  margin: calc(0.3dvh) 0;
   font-size: calc(1dvh + 1rem);
   text-align: center;
   width: calc(100% / 7 - (1dvh + 4px));
-  height: calc(3dvh + 1rem);
-  display: flex;
+  max-width: 75px;
+  height: calc(3dvh + 2rem);
+  display: block;
   align-items: center;
   justify-content: center;
-  border-radius: calc(0.5dvh + 2px);
+  border-color: #2a2a2a #252525 #1a1a1a #252525;
+  border-width: calc(0.3dvh) calc(0.4dvh) calc(0.6dvh) calc(0.4dvh);
+  box-shadow:
+    0 calc(0.4dvh) 0 #000,
+    0 calc(0.2dvh) 0 #1a1a1a inset,
+    0 -2px 0 #333 inset;
+  transform-style: preserve-3d;
+  transform: perspective(1000px) translateZ(0);
+  transition: all 100ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   background-color: #020202;
   color: var(--mantine-color-yellow-3);
-
   cursor: pointer;
-  transition: all 0.1s ease;
+  will-change: box-shadow, color, text-shadow;
   position: relative;
   overflow: hidden;
-  box-shadow:
-    0 2px 0 #1a1d1f,
-    0 3px 3px rgba(0, 0, 0, 0.2);
 }
 
 .keyContent {
@@ -29,18 +34,20 @@
   transition: all 0.1s ease;
 }
 
-.key:hover {
+/* .key:hover {
   background-color: #3a4145;
-}
+} */
 
 .key:active {
-  background-color: #262a2d;
-  transform: translateY(calc(0.2dvh + 1px));
+  border-width: calc(0.3dvh) calc(0.4dvh) calc(0.3dvh) calc(0.4dvh);
+  transform: perspective(1000px) translateZ(calc(-0.8dvh));
   box-shadow:
-    0 calc(0.1dvh + 0.5px) 0 #1a1d1f,
-    0 calc(0.2dvh + 1px) calc(0.2dvh + 1px) rgba(0, 0, 0, 0.2);
+    0 calc(0.1dvh) 0 #000,
+    0 calc(0.1dvh) 0 #1a1a1a inset,
+    0 -1px 0 #333 inset;
+  background-color: #1a1c1e;
 }
 
 .key:active .keyContent {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
