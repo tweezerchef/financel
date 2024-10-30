@@ -1,11 +1,11 @@
 .key {
-  margin: calc(0.3dvh) 0;
+  flex: 1;
+  max-width: calc(4dvh + 1rem);
+  aspect-ratio: 1;
   font-size: calc(1dvh + 1rem);
   text-align: center;
-  width: calc(100% / 7 - (1dvh + 4px));
-  max-width: 75px;
-  height: calc(3dvh + 2rem);
-  display: block;
+  height: auto;
+  display: flex;
   align-items: center;
   justify-content: center;
   border-color: #2a2a2a #252525 #1a1a1a #252525;
