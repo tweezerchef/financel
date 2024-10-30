@@ -92,7 +92,7 @@ export async function GET(request: Request) {
               lte: userEntry.rank + 4,
             },
           },
-          orderBy: { rank: 'asc' },
+          orderBy: { score: 'desc' },
           include: {
             result: {
               include: {
