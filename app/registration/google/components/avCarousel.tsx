@@ -38,7 +38,7 @@ export function AvCarousel({
           margin: '0 -10px',
         },
         control: {
-          '&[data-inactive]': {
+          '&[data-inactive="true"]': {
             opacity: 0,
             cursor: 'default',
           },
