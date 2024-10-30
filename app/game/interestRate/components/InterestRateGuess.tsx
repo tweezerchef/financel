@@ -85,13 +85,13 @@ export function InterestRateGuess({
 
   const handleSubmit = useCallback(
     async (values: { guess: string }) => {
+      setIsAnimating(true)
       if (isAnimating || guesses.length >= 6 || !resultId) return
 
       const formattedGuess = `${values.guess[0]}.${values.guess.slice(1)}`
       const currentGuessCount = guessCount.current
 
       try {
-        setIsAnimating(true)
         const response = await fetch('/game/interestRate/api/guess/', {
           method: 'POST',
           headers: {
