@@ -2,10 +2,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
   width: 100%;
-  padding: 0.5rem;
-  box-sizing: border-box;
-  min-height: calc(100dvh - 90px); /* Subtract header and footer height */
+  padding: 0;
+  margin: 0;
+  min-height: 0;
 }
 
 .stepper {

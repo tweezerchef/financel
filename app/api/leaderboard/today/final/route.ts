@@ -14,7 +14,8 @@ type LeaderboardWithEntries = Prisma.LeaderboardGetPayload<{
             user: {
               select: {
                 username: true
-                avatar: true
+                avatarS3: true
+                avatarUrl: true
               }
             }
             guest: true
@@ -51,7 +52,8 @@ export async function GET(request: Request) {
                 user: {
                   select: {
                     username: true,
-                    avatar: true,
+                    avatarS3: true,
+                    avatarUrl: true,
                   },
                 },
                 guest: true,
@@ -97,7 +99,8 @@ export async function GET(request: Request) {
                 user: {
                   select: {
                     username: true,
-                    avatar: true,
+                    avatarS3: true,
+                    avatarUrl: true,
                   },
                 },
                 guest: true,
@@ -113,20 +116,22 @@ export async function GET(request: Request) {
     ) => {
       return Promise.all(
         entries.map(async (entry) => {
-          let signedUrl = null
-          if (entry.result.user?.avatar) {
-            const s3Key = extractS3Key(entry.result.user.avatar)
-            const { signedUrl: url } = await getSignedAvatarUrl(s3Key)
-            signedUrl = url
-          } else
-            signedUrl =
-              'https://financle.s3.us-east-2.amazonaws.com/app/favicon.svg'
+          let avatar = null
+          if (entry.result.user?.avatarS3) {
+            const s3Key = extractS3Key(entry.result.user.avatarS3)
+            const { signedUrl } = await getSignedAvatarUrl(s3Key)
+            avatar = signedUrl
+          } else if (entry.result.user?.avatarUrl)
+            avatar = entry.result.user.avatarUrl
+          else
+            avatar =
+              'https://financle.s3.us-east-2.amazonaws.com/app/favicon.svg' // default fallback
 
           return {
             rank: entry.rank,
             score: entry.score.toNumber(),
             username: entry.result.user?.username || 'Guest',
-            avatar: signedUrl,
+            avatar,
             isGuest: !entry.result.user,
           }
         })

@@ -8,9 +8,11 @@ import {
   TextInput,
   PasswordInput,
   Avatar,
+  Container,
 } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useForm } from '@mantine/form'
+import { AvCarousel } from './google/components/avCarousel'
 import classes from './ui/Page.module.css'
 
 export default function Registration() {
@@ -24,6 +26,7 @@ export default function Registration() {
       password: '',
       confirmPassword: '',
       file: null as File | null,
+      avatarUrl: null as string | null,
       username: '',
     },
 
@@ -47,7 +50,7 @@ export default function Registration() {
             values.username.length > 2
               ? null
               : 'Username must be at least 3 characters',
-          file: values.file === null ? 'Avatar is required' : null,
+          file: !values.file && !values.avatarUrl ? 'Avatar is required' : null,
         }
 
       return {}
@@ -63,15 +66,24 @@ export default function Registration() {
 
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current))
+
+  const handleAvatarSelect = (avatarUrl: string) => {
+    form.setValues({
+      ...form.values,
+      file: null,
+      avatarUrl,
+    })
+  }
+
   const handleRegister = async () => {
     if (form.validate().hasErrors) return
 
     setIsLoading(true)
 
-    const { email, password, username, file } = form.values
-
-    if (!file) {
-      console.error('No file selected')
+    const { email, password, username, file, avatarUrl } = form.values
+    if (!file && !avatarUrl) {
+      console.error('No avatar selected')
+      setIsLoading(false)
       return
     }
 
@@ -80,34 +92,40 @@ export default function Registration() {
       formData.append('email', email)
       formData.append('password', password)
       formData.append('username', username)
-      formData.append('avatar', file)
+
+      if (file) {
+        formData.append('avatar', file)
+        formData.append('avatarType', 'uploaded')
+      } else if (avatarUrl) {
+        formData.append('avatarUrl', avatarUrl)
+        formData.append('avatarType', 'preset')
+      }
 
       const response = await fetch('registration/api', {
         method: 'POST',
         body: formData,
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error(
-          'Registration error:',
-          errorData.message || 'Registration failed'
-        )
-      }
-
       const data = await response.json()
-      console.log('Registration successful:', data)
-      if (data.signedUrl) console.log(data.signedUrl)
 
-      // Handle successful registration (e.g., redirect user)
+      if (!response.ok) throw new Error(data.message || 'Registration failed')
+
+      console.log('Registration successful:', data)
       router.push('/')
-      // You can add additional logic here if needed
     } catch (error) {
-      console.error('Registration error:', error)
-      // Handle error (e.g., show error message to user)
+      console.error(
+        'Registration error:',
+        error instanceof Error ? error.message : 'Unknown error'
+      )
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const getAvatarSrc = () => {
+    if (form.values.file) return URL.createObjectURL(form.values.file)
+
+    return form.values.avatarUrl || null
   }
 
   return (
@@ -173,24 +191,26 @@ export default function Registration() {
                 />
                 <div className={classes.avatarContainer}>
                   <Avatar
-                    src={
-                      form.getInputProps('file').value
-                        ? URL.createObjectURL(form.getInputProps('file').value)
-                        : null
-                    }
+                    src={getAvatarSrc()}
                     alt="Avatar preview"
                     variant="filled"
                     radius="xl"
                     size="xl"
                     onLoad={() => {
-                      if (form.getInputProps('file').value)
-                        URL.revokeObjectURL(form.getInputProps('file').value)
+                      if (form.values.file)
+                        URL.revokeObjectURL(
+                          URL.createObjectURL(form.values.file)
+                        )
                     }}
                   />
                   <FileButton
                     accept="image/png,image/jpeg"
                     onChange={(file: File | null) => {
-                      form.setFieldValue('file', file)
+                      form.setValues({
+                        ...form.values,
+                        file,
+                        avatarUrl: null,
+                      })
                     }}
                   >
                     {(props) => (
@@ -202,6 +222,12 @@ export default function Registration() {
                     )}
                   </FileButton>
                 </div>
+                <Container fluid w="100%">
+                  <AvCarousel
+                    onSelectAvatar={handleAvatarSelect}
+                    selectedAvatar={form.values.avatarUrl}
+                  />
+                </Container>
               </form>
             </div>
           </Stepper.Step>
