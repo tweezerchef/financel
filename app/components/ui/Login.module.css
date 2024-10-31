@@ -1,15 +1,29 @@
 .login {
   width: 100%;
   max-width: 400px;
-  margin: 0 auto;
-  padding: 1rem;
+  margin: 0;
+  padding: clamp(0.5rem, 2vw, 1rem);
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 55vh;
 }
 
 @media (max-width: 600px) {
   .login {
     max-width: 90%;
-    padding: 1rem;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .login {
+    padding: 0.5rem;
+    font-size: 14px;
+  }
+}
+
+@media (max-height: 667px) {
+  .login {
+    max-height: 60vh;
   }
 }
