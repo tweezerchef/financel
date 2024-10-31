@@ -9,9 +9,9 @@
   align-items: center;
   justify-content: center;
   border-color: #2a2a2a #252525 #1a1a1a #252525;
-  border-width: calc(0.3dvh) calc(0.4dvh) calc(0.6dvh) calc(0.4dvh);
+  border-width: calc(0.3dvh) calc(0.6dvh) calc(0.2dvh) calc(0.2dvh);
   box-shadow:
-    0 calc(0.4dvh) 0 #000,
+    0 calc(1dvh) 0 #000000aa,
     0 calc(0.2dvh) 0 #1a1a1a inset,
     0 -2px 0 #333 inset;
   transform-style: preserve-3d;
