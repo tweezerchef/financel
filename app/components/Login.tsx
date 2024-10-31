@@ -93,12 +93,12 @@ export function Login({
   }
 
   return (
-    <Paper p="md" {...props} className={classes.login}>
-      <Center mt="sm">
+    <Paper p="xs" {...props} className={classes.login}>
+      <Center mt="xs">
         <RegisterButton disabled={isAuthenticating || isLoading} />
       </Center>
 
-      <Divider label="Or continue with email" labelPosition="center" my="lg" />
+      <Divider label="Or continue with email" labelPosition="center" my="md" />
       <Center>
         <GoogleButton
           onAuthStart={onAuthStart}
@@ -107,7 +107,7 @@ export function Login({
       </Center>
 
       <form onSubmit={form.onSubmit((values) => formSubmit(values))}>
-        <Stack>
+        <Stack gap="xs">
           <TextInput
             required
             label="Email"
@@ -119,6 +119,7 @@ export function Login({
             error={form.errors.email && 'Invalid email'}
             radius="md"
             disabled={isAuthenticating || isLoading}
+            size="sm"
           />
 
           <PasswordInput
@@ -135,14 +136,16 @@ export function Login({
             }
             radius="md"
             disabled={isAuthenticating || isLoading}
+            size="sm"
           />
         </Stack>
 
-        <Center mt="xl">
+        <Center mt="md">
           <Button
             type="submit"
             radius="xl"
             disabled={isAuthenticating || isLoading}
+            size="sm"
           >
             Login
           </Button>

@@ -83,7 +83,6 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
   const fetchDailyChallenge = useCallback(async () => {
     if (isLoading) return
 
-    // Check if data already exists in context
     if (
       dailyChallengeCurrency &&
       dailyChallengeInterestRate &&
@@ -93,7 +92,11 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
 
     setIsLoading(true)
     try {
-      const response = await fetch('/game/api/dailyChallenge')
+      const today = new Date()
+      const formattedDate = today.toISOString().split('T')[0]
+      const response = await fetch(
+        `/game/api/dailyChallenge?date=${formattedDate}`
+      )
       const { data } = await response.json()
 
       const newCurrency: CurrencyType = {
