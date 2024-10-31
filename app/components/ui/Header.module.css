@@ -4,10 +4,12 @@
   position: relative;
   width: 100%;
   max-width: 400px;
-  margin: 0 auto;
+  margin: 0;
   padding: 1rem;
   box-sizing: border-box;
-  height: 40dvh;
+  height: 45vh;
+  min-height: 200px;
+  max-height: 300px;
   display: flex;
   flex-direction: column;
 }
@@ -31,7 +33,8 @@
 
 @media (max-height: 700px) {
   .wrapper {
-    height: 30dvh; /* Reduced height for shorter screens */
+    height: 40vh;
+    min-height: 180px;
   }
 }
 

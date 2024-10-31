@@ -41,6 +41,7 @@
   .mainContent {
     margin: auto 0; /* Center vertically */
     justify-content: space-between;
+    min-height: 650px;
   }
 }
 .footer {

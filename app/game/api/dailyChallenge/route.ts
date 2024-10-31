@@ -5,10 +5,21 @@ import { getChartDataForCurrency } from '../../../lib/dbFunctions/getChartDataFo
 import { getChartDataForStock } from '../../../lib/dbFunctions/getChartDataForStock'
 import { getChartDataForInterestRate } from '../../../lib/dbFunctions/getChartDataForInterestRate'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const dateParam = searchParams.get('date')
+
+    if (!dateParam)
+      return NextResponse.json(
+        { message: 'Date parameter is required' },
+        { status: 400 }
+      )
+
     const dailyChallenge = await prisma.dailyChallenge.findFirst({
-      orderBy: { challengeDate: 'desc' },
+      where: {
+        challengeDate: new Date(dateParam),
+      },
       select: {
         id: true,
         date: {

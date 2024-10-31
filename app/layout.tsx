@@ -60,8 +60,8 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.svg',
   },
-  title: 'Financel',
-  description: 'A game for the Brothers of Finance',
+  title: 'Financle',
+  description: 'A game for the Brothers and Sisters of Finance',
 }
 
 export default function RootLayout({
