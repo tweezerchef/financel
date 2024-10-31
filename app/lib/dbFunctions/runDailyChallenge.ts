@@ -5,8 +5,12 @@ export async function runDailyChallenge() {
   try {
     const result = await createDailyChallenge()
     console.log('Daily challenge creation completed.')
-    if (result) console.log('Challenge created:', result.id)
-    else console.log('No challenge was created.')
+    if (result?.length)
+      console.log(
+        'Challenges created:',
+        result.map((r) => r?.id || 'unknown')
+      )
+    else console.log('No challenges were created.')
     return result
   } catch (error) {
     console.error('Error creating daily challenge:', error)
