@@ -32,9 +32,13 @@ type ChallengeResult = Prisma.DailyChallengeGetPayload<{
   }
 }>
 
-export async function createDailyChallenge(dateOnly: Date) {
+export async function createDailyChallenge() {
   console.log('Starting createDailyChallenge function')
 
+  const today = new Date()
+  const dateOnly = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  )
   console.log(`Today's date: ${dateOnly.toISOString().split('T')[0]}`)
 
   // Get all dates that have interest rate, currency, and stock data
@@ -351,47 +355,4 @@ export async function createDailyChallenge(dateOnly: Date) {
   )
 
   return typedChallenge
-}
-
-export async function createDailyChallenges() {
-  const today = new Date()
-  const dateOnly = new Date(
-    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
-  )
-  const tomorrowDate = addDays(dateOnly, 1)
-
-  // Check for existing challenges
-  const existingChallenges = await prisma.dailyChallenge.findMany({
-    where: {
-      challengeDate: {
-        in: [dateOnly, tomorrowDate],
-      },
-    },
-  })
-
-  const results = []
-
-  // Create today's challenge if it doesn't exist
-  if (
-    !existingChallenges.find(
-      (c) => c.challengeDate.getTime() === dateOnly.getTime()
-    )
-  ) {
-    console.log('Creating challenge for today...')
-    const todayChallenge = await createDailyChallenge(dateOnly)
-    if (todayChallenge) results.push(todayChallenge)
-  } else console.log('Challenge for today already exists')
-
-  // Create tomorrow's challenge if it doesn't exist
-  if (
-    !existingChallenges.find(
-      (c) => c.challengeDate.getTime() === tomorrowDate.getTime()
-    )
-  ) {
-    console.log('Creating challenge for tomorrow...')
-    const tomorrowChallenge = await createDailyChallenge(tomorrowDate)
-    if (tomorrowChallenge) results.push(tomorrowChallenge)
-  } else console.log('Challenge for tomorrow already exists')
-
-  return results
 }

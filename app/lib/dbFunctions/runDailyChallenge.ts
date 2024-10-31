@@ -1,16 +1,12 @@
-import { createDailyChallenge } from './createDailyChallenge'
+import { createDailyChallenges } from './createDailyChallenge'
 
 export async function runDailyChallenge() {
   console.log('Starting daily challenge creation...')
   try {
-    const result = await createDailyChallenge()
+    const result = await createDailyChallenges()
     console.log('Daily challenge creation completed.')
-    if (result?.length)
-      console.log(
-        'Challenges created:',
-        result.map((r) => r?.id || 'unknown')
-      )
-    else console.log('No challenges were created.')
+    if (result) console.log('Challenge created:', result[0].id, result[1].id)
+    else console.log('No challenge was created.')
     return result
   } catch (error) {
     console.error('Error creating daily challenge:', error)
