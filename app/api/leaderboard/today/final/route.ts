@@ -38,12 +38,21 @@ export async function GET(request: Request) {
         { status: 400 }
       )
 
+    const dateObj = new Date(startOfDay)
+    if (Number.isNaN(dateObj.getTime()))
+      return NextResponse.json(
+        { error: 'Invalid date format' },
+        { status: 400 }
+      )
+
+    const startDate = dateObj.toISOString()
+
     const leaderboard = await prisma.leaderboard.findUnique({
       where: {
         type_category_startDate: {
           type: 'TODAY',
           category: 'FINAL',
-          startDate: startOfDay,
+          startDate, // Now using the ISO formatted date
         },
       },
       include: {

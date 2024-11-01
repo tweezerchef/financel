@@ -19,6 +19,12 @@ export async function POST(req: NextRequest) {
         },
       }
     )
+    const parsedDate = new Date(clientDate)
+    if (Number.isNaN(parsedDate.getTime()))
+      return NextResponse.json(
+        { message: 'Invalid date format provided' },
+        { status: 400 }
+      )
 
     const payload = await response.json()
     if (!payload?.email)
@@ -39,7 +45,7 @@ export async function POST(req: NextRequest) {
     if (user)
       await prisma.user.update({
         where: { id: user.id },
-        data: { lastLogin: new Date(clientDate) },
+        data: { lastLogin: parsedDate },
       })
 
     if (!user) {
