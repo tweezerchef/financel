@@ -9,17 +9,25 @@ import prisma from '../../../lib/prisma/prisma'
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for') || 'unknown'
-    const clientDate = await req.json()
+    const { clientDate } = await req.json()
+
+    const parsedDate = new Date(clientDate)
+    if (Number.isNaN(parsedDate.getTime()))
+      return NextResponse.json(
+        { message: 'Invalid date format provided' },
+        { status: 400 }
+      )
+
     let guest = await prisma.guest.findUnique({ where: { ip } })
     if (guest)
       guest = await prisma.guest.update({
         where: { id: guest.id },
-        data: { lastLogin: new Date(clientDate) },
+        data: { lastLogin: parsedDate },
       })
 
     if (!guest)
       guest = await prisma.guest.create({
-        data: { ip, lastLogin: new Date(clientDate) },
+        data: { ip, lastLogin: parsedDate },
       })
 
     const today = new Date()

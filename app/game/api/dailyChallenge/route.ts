@@ -9,6 +9,12 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const dateParam = searchParams.get('date')
+    const parsedDate = new Date(dateParam || '')
+    if (Number.isNaN(parsedDate.getTime()))
+      return NextResponse.json(
+        { message: 'Invalid date format provided' },
+        { status: 400 }
+      )
 
     if (!dateParam)
       return NextResponse.json(
@@ -18,7 +24,7 @@ export async function GET(request: Request) {
 
     const dailyChallenge = await prisma.dailyChallenge.findFirst({
       where: {
-        challengeDate: new Date(dateParam),
+        challengeDate: parsedDate,
       },
       select: {
         id: true,
