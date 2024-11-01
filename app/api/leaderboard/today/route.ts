@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { Prisma } from '@prisma/client'
 import prisma from '../../../lib/prisma/prisma'
 
@@ -22,20 +22,23 @@ type LeaderboardWithEntries = Prisma.LeaderboardGetPayload<{
   }
 }>
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Get today's date range
-    const today = new Date()
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0))
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999))
+    const { searchParams } = new URL(request.url)
+    const startOfDay = searchParams.get('startDate')
+    if (!startOfDay)
+      return NextResponse.json(
+        { error: 'startDate is required' },
+        { status: 400 }
+      )
 
     // Get today's leaderboard
     const leaderboard = (await prisma.leaderboard.findFirst({
       where: {
         type: 'TODAY',
         startDate: startOfDay,
-        endDate: startOfDay, // Changed this to match exact day
+        endDate: startOfDay,
       },
       include: {
         entries: {
@@ -57,9 +60,6 @@ export async function GET() {
             score: 'desc',
           },
         },
-      },
-      orderBy: {
-        lastCalculated: 'desc', // Get the most recently calculated leaderboard
       },
     })) as LeaderboardWithEntries | null
 

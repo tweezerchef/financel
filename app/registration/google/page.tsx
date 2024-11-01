@@ -55,6 +55,8 @@ export default function Registration() {
       }
       if (id !== null) formData.append('id', String(id))
       if (googleId !== null) formData.append('googleId', String(googleId))
+      const clientDate = new Date().toISOString()
+      formData.append('clientDate', clientDate)
       const response = await fetch('/registration/google/api', {
         method: 'POST',
         body: formData,

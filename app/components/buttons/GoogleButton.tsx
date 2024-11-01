@@ -86,10 +86,14 @@ export function GoogleButton({
 
   const handleAuthResponse = async (response: GoogleTokenResponse) => {
     try {
+      const clientDate = new Date().toISOString()
       const res = await fetch('/auth/api/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: response.access_token }),
+        body: JSON.stringify({
+          credential: response.access_token,
+          clientDate,
+        }),
       })
 
       if (!res.ok) throw new Error('Authentication failed')

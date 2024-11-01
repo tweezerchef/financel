@@ -30,9 +30,13 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const resultId = searchParams.get('resultId')
+    const startOfDay = searchParams.get('startDate')
 
-    const today = new Date()
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0))
+    if (!startOfDay)
+      return NextResponse.json(
+        { error: 'startDate is required' },
+        { status: 400 }
+      )
 
     const leaderboard = await prisma.leaderboard.findUnique({
       where: {
