@@ -1,11 +1,4 @@
-import {
-  Title,
-  Text,
-  Container,
-  Overlay,
-  Center,
-  AspectRatio,
-} from '@mantine/core'
+import { Title, Text, Container, Center, AspectRatio } from '@mantine/core'
 import Image from 'next/image'
 import { GuestButton } from './buttons/GuestButton'
 import classes from './ui/Header.module.css'
@@ -23,14 +16,15 @@ export function Header({ onAuthStart, isAuthenticating }: HeaderProps) {
           <Image
             src="/loginHeader.webp"
             alt="Financel"
-            fill
+            width={500}
+            height={309}
             sizes="(max-width: 600px) 90vw, 400px"
-            quality={90}
+            quality={60}
             priority
           />
         </AspectRatio>
       </div>
-      <Overlay color="#000" opacity={0.65} zIndex={1} />
+      {/* <Overlay color="#000" opacity={0.65} zIndex={1} /> */}
 
       <div className={classes.inner}>
         <Title className={classes.title}>Financle</Title>
