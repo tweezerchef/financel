@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import bcrypt from 'bcrypt'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
-import { getSignedAvatarUrl } from '../../../lib/aws/getSignedAvatarUrl'
-import { updateUserAvatar } from '../../../lib/dbFunctions/updateUserAvatar'
 
 import prisma from '../../../lib/prisma/prisma'
 
@@ -15,6 +13,7 @@ export async function POST(request: Request) {
     const id = formData.get('id') as string
     const avatarType = formData.get('avatarType') as string
     const googleId = formData.get('googleId') as string
+    const clientDate = formData.get('clientDate') as string
     const s3Client = new S3Client({
       region: process.env.SERVER_AWS_REGION,
       credentials: {
@@ -30,6 +29,7 @@ export async function POST(request: Request) {
       data: {
         password: hashedPassword,
         username,
+        lastLogin: new Date(clientDate),
       },
     })
     const userId = newUser.id

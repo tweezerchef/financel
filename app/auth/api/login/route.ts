@@ -9,7 +9,7 @@ import { extractS3Key } from '../../../lib/aws/extractS3Key'
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json()
+    const { email, password, clientDate } = await req.json()
     const user = await prisma.user.findUnique({
       where: { email },
       select: {
@@ -25,7 +25,10 @@ export async function POST(req: NextRequest) {
         { message: 'Invalid email or password.' },
         { status: 400 }
       )
-
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date(clientDate) },
+    })
     const { id, avatarS3, avatarUrl, username } = user
     let signedUrl = null
     let signedUrlExpiration = null
@@ -37,9 +40,12 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await prisma.result.upsert({
-      where: { userId_date: { userId: user.id, date: new Date() } },
+      where: { userId_date: { userId: user.id, date: new Date(clientDate) } },
       update: {},
-      create: { userId: user.id, date: new Date() },
+      create: {
+        userId: user.id,
+        date: new Date(clientDate),
+      },
       include: {
         categories: {
           orderBy: {

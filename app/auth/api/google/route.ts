@@ -10,7 +10,7 @@ function extractS3Key(url: string): string {
 }
 export async function POST(req: NextRequest) {
   try {
-    const { credential } = await req.json()
+    const { credential, clientDate } = await req.json()
     const response = await fetch(
       'https://www.googleapis.com/oauth2/v3/userinfo',
       {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     if (user)
       await prisma.user.update({
         where: { id: user.id },
-        data: { lastLogin: new Date() },
+        data: { lastLogin: new Date(clientDate) },
       })
 
     if (!user) {
