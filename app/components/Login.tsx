@@ -41,7 +41,6 @@ export function Login({
   const form = useForm({
     initialValues: {
       email: '',
-      username: '',
       password: '',
       terms: true,
     },
@@ -58,11 +57,12 @@ export function Login({
     setIsLoading(true)
     onAuthStart()
     const { email, password } = values
+    const clientDate = new Date().toISOString()
     try {
       const response = await fetch('auth/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, clientDate }),
         credentials: 'include',
       })
       const data = await response.json()

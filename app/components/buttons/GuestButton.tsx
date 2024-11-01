@@ -18,18 +18,18 @@ export const GuestButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
+  const clientDate = new Date().toISOString()
 
   const handleGuestLogin = async () => {
     setIsLoading(true)
     try {
-      console.log('Attempting guest login')
       const response = await fetch('/auth/api/guest', {
         method: 'POST',
+        body: JSON.stringify({ clientDate }),
       })
       const data = await response.json()
-      console.log('Guest login response:', data)
+
       if (response.ok) {
-        console.log('Guest login successful, setting user data')
         setUser({
           id: data.id,
           type: 'guest',
@@ -39,7 +39,6 @@ export const GuestButton = ({
           signedAvatarExpiration: null,
           username: null,
         })
-        console.log('Redirecting to game page')
         router.push(`/game`)
       } else {
         console.error('Guest login failed:', data.message)

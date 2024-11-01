@@ -25,9 +25,11 @@ export async function fetchLeaderboard(
 ): Promise<LeaderboardData> {
   const categoryPath = category.toLowerCase()
   // Add resultId to URL if it exists
+  const today = new Date()
+  const startOfDay = new Date(today.setHours(0, 0, 0, 0))
   const url = resultId
-    ? `/api/leaderboard/today/${categoryPath}?resultId=${resultId}`
-    : `/api/leaderboard/today/${categoryPath}`
+    ? `/api/leaderboard/today/${categoryPath}?resultId=${resultId}&startDate=${startOfDay}`
+    : `/api/leaderboard/today/${categoryPath}?startDate=${startOfDay}`
   const response = await fetch(url)
   if (!response.ok) {
     if (response.status === 404)

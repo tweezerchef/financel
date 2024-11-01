@@ -104,6 +104,8 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
       const postGuess = formattedGuess(paddedGuess, decimal ?? 2)
 
       const unformattedGuess = values.guess // Default to 2 if decimal is undefined
+      const today = new Date()
+      const dateOnly = new Date(today.setHours(0, 0, 0, 0))
 
       try {
         const response = await fetch('/game/stock/api/guess/', {
@@ -116,6 +118,8 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
             guessCount: guessCount.current,
             resultId,
             decimal,
+            dateOnly,
+            today,
           }),
         })
         guessCount.current += 1

@@ -15,10 +15,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const today = new Date()
-    const dateOnly = new Date(today.setHours(0, 0, 0, 0))
-
-    const { guess, resultId, guessCount } = await request.json()
+    const { guess, resultId, guessCount, dateOnly, today } =
+      await request.json()
     if (
       typeof guess !== 'number' ||
       !resultId ||

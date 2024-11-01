@@ -9,12 +9,17 @@ import prisma from '../../../lib/prisma/prisma'
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for') || 'unknown'
-
+    const clientDate = await req.json()
     let guest = await prisma.guest.findUnique({ where: { ip } })
+    if (guest)
+      guest = await prisma.guest.update({
+        where: { id: guest.id },
+        data: { lastLogin: new Date(clientDate) },
+      })
 
     if (!guest)
       guest = await prisma.guest.create({
-        data: { ip },
+        data: { ip, lastLogin: new Date(clientDate) },
       })
 
     const today = new Date()
@@ -27,7 +32,10 @@ export async function POST(req: NextRequest) {
     const result = await prisma.result.upsert({
       where: { guestId_date: { guestId: guest.id, date: dateOnly } },
       update: {},
-      create: { guestId: guest.id, date: dateOnly },
+      create: {
+        guestId: guest.id,
+        date: dateOnly,
+      },
       include: {
         categories: {
           orderBy: {
