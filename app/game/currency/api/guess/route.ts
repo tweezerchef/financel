@@ -15,10 +15,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const today = new Date()
-    const dateOnly = new Date(today.setHours(0, 0, 0, 0))
-
-    const { guess, resultId, guessCount } = await request.json()
+    const { guess, resultId, guessCount, dateOnly, today } =
+      await request.json()
 
     if (
       typeof guess !== 'number' ||
@@ -124,35 +122,6 @@ export async function POST(request: NextRequest) {
     console.error('Error in POST request:', error)
     return handleError(error)
   }
-}
-
-async function getDailyChallenge(dateOnly: Date) {
-  const dailyChallenge = await prisma.dailyChallenge.findUnique({
-    where: { challengeDate: dateOnly },
-    include: {
-      interestRate: {
-        select: {
-          rate: true,
-          date: {
-            select: { date: true },
-          },
-        },
-      },
-      currencyValue: {
-        select: {
-          value: true,
-          date: {
-            select: { date: true },
-          },
-        },
-      },
-      date: { select: { date: true } },
-    },
-  })
-
-  if (!dailyChallenge) throw new Error('Invalid daily challenge')
-
-  return dailyChallenge
 }
 
 async function updateResultCategory(

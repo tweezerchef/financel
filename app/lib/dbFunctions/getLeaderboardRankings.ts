@@ -1,7 +1,6 @@
 import prisma from '../prisma/prisma'
 
-export async function getLeaderboardRankings(resultId: string) {
-  const today = new Date()
+export async function getLeaderboardRankings(resultId: string, today: Date) {
   const startOfDay = new Date(
     Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
   )
