@@ -17,6 +17,10 @@ export async function POST(request: NextRequest) {
   try {
     const { guess, resultId, guessCount, dateOnly, today } =
       await request.json()
+    const nowDate = new Date(today)
+
+    if (Number.isNaN(nowDate.getTime()))
+      throw new Error('Invalid date format for today parameter')
 
     if (
       typeof guess !== 'number' ||
@@ -60,7 +64,7 @@ export async function POST(request: NextRequest) {
         isCorrect,
         guessCount,
         isComplete,
-        today
+        nowDate
       ),
     ])
 
@@ -68,7 +72,7 @@ export async function POST(request: NextRequest) {
     let score
     let average
     if (isComplete) {
-      timeTaken = calculateTimeTaken(isComplete, updatedCategory, today)
+      timeTaken = calculateTimeTaken(isComplete, updatedCategory, nowDate)
       score = scoreFunction({
         correctNumber: currencyValue,
         guessedNumber: guess,

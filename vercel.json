@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/fakeUserScore",
-      "schedule": "3 5 * * *"
+      "schedule": "10 5 * * *"
     }
   ]
 }

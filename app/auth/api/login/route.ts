@@ -10,6 +10,15 @@ import { extractS3Key } from '../../../lib/aws/extractS3Key'
 export async function POST(req: NextRequest) {
   try {
     const { email, password, clientDate } = await req.json()
+
+    // Add date validation
+    const parsedDate = new Date(clientDate)
+    if (Number.isNaN(parsedDate.getTime()))
+      return NextResponse.json(
+        { message: 'Invalid date format provided' },
+        { status: 400 }
+      )
+
     const user = await prisma.user.findUnique({
       where: { email },
       select: {
@@ -27,7 +36,7 @@ export async function POST(req: NextRequest) {
       )
     await prisma.user.update({
       where: { id: user.id },
-      data: { lastLogin: new Date(clientDate) },
+      data: { lastLogin: parsedDate },
     })
     const { id, avatarS3, avatarUrl, username } = user
     let signedUrl = null
