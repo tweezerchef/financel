@@ -1,8 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import { NextRequest, NextResponse } from 'next/server'
-// import jwt from 'jsonwebtoken'
-// import { serialize } from 'cookie'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { cookies } from 'next/headers'
 import prisma from '../../../lib/prisma/prisma'
 
@@ -54,10 +52,10 @@ export async function POST(req: NextRequest) {
     })
 
     // Generate a new session ID
-    const sessionId = uuidv4()
+    const sessionId = uuid()
 
     // Generate a refresh token
-    const refreshToken = uuidv4()
+    const refreshToken = uuid()
 
     // Create the session
     await prisma.session.create({
