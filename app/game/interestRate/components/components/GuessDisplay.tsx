@@ -2,7 +2,7 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-nested-ternary */
 import React, { FC, useState, useEffect, useCallback } from 'react'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { Group, Box } from '@mantine/core'
 import { SingleDisplay } from '../../../components/display/SingleDisplay'
 import classes from '../../../ui/GuessDisplay.module.css'
@@ -54,7 +54,7 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
         if (currentIndex < resultArray.length) {
           setDisplayedResults((prev) => [
             ...prev,
-            { id: uuidv4(), value: resultArray[currentIndex] },
+            { id: uuid(), value: resultArray[currentIndex] },
           ])
           currentIndex++
         } else clearInterval(intervalID)
@@ -98,7 +98,7 @@ export const GuessDisplay: FC<GuessDisplayProps> = ({
           .fill(null)
           .map((_, index) => (
             <SingleDisplay
-              key={uuidv4()}
+              key={uuid()}
               value=""
               isSpinning={
                 staggeredSpinning[index + 3 + displayedResults.length]

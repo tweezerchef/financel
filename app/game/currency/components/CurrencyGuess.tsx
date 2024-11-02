@@ -7,7 +7,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useForm } from '@mantine/form'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { formattedGuess } from '../../lib/formattedGuess'
 import { useUserContext } from '../../../context/user/UserContext'
 import { useDailyChallengeContext } from '../../../context/dailyChallenge/DailyChallengeContext'
@@ -130,7 +130,7 @@ export function CurrencyGuess({
         const result = await response.json()
 
         const newGuess: Guess = {
-          id: uuidv4(),
+          id: uuid(),
           guess: unformattedGuess,
           result: null,
           isSpinning: true,
