@@ -107,8 +107,12 @@ export function CurrencyGuess({
       const postGuess = formattedGuess(paddedGuess, decimal)
 
       const unformattedGuess = values.guess // Keep the original guess for display
-      const today = new Date()
-      const dateOnly = new Date(today.setHours(0, 0, 0, 0))
+      const now = new Date()
+      const dateOnly = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      )
 
       try {
         const response = await fetch('/game/currency/api/guess/', {
@@ -122,8 +126,8 @@ export function CurrencyGuess({
             resultId,
             decimal,
             range,
-            today,
-            dateOnly,
+            dateOnly: dateOnly.toISOString(),
+            today: now.getTime(),
           }),
         })
         guessCount.current += 1

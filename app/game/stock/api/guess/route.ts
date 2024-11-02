@@ -2,10 +2,10 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
-import { ResultCategory } from '@prisma/client'
+import { updateResultCategory } from '../../../../lib/dbFunctions/updateResultCategory'
+import { calculateTimeTaken } from '../../../../lib/dbFunctions/calculateTimeTaken'
 import { stockArrowDecider } from './stockArrowDecider'
 import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
-
 import prisma from '../../../../lib/prisma/prisma'
 import { calculateDailyLeaderboard } from '../../../../lib/dbFunctions/calculateDailyLeaderboard'
 
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   try {
     const { guess, resultId, guessCount, dateOnly, today } =
       await request.json()
-    const nowDate = new Date(today)
+    const nowDate = new Date(Number(today))
 
     if (Number.isNaN(nowDate.getTime()))
       throw new Error('Invalid date format for today parameter')
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         'Invalid input: Guess and guessCount must be numbers, and resultId is required'
       )
 
-    const [dailyChallenge, resultUpdate] = await prisma.$transaction([
+    const [dailyChallenge] = await prisma.$transaction([
       prisma.dailyChallenge.findUnique({
         where: { challengeDate: dateOnly },
         include: {
@@ -35,9 +35,7 @@ export async function POST(request: NextRequest) {
             select: {
               price: true,
               stock: {
-                select: {
-                  name: true,
-                },
+                select: { name: true },
               },
             },
           },
@@ -53,50 +51,84 @@ export async function POST(request: NextRequest) {
     if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
     const stockValue = dailyChallenge.stockPrice?.price.toNumber() ?? 0
-
+    const isCorrect = guess === stockValue
     const result = stockArrowDecider(guess, stockValue)
-
-    const { isCorrect } = result
     const isComplete = isCorrect || guessCount === 6
 
-    const [updatedCategory, _] = await Promise.all([
-      updateResultCategory(
-        resultId,
-        guess,
-        isCorrect,
-        guessCount,
-        isComplete,
-        nowDate
-      ),
-      resultUpdate,
+    const [updatedCategory] = await Promise.all([
+      prisma.resultCategory.upsert({
+        where: {
+          resultId_category: {
+            resultId,
+            category: 'STOCK',
+          },
+        },
+        create: {
+          resultId,
+          category: 'STOCK',
+          guess,
+          correct: isCorrect,
+          tries: guessCount,
+          completed: isComplete,
+          startTime: nowDate,
+          endTime: isComplete ? nowDate : undefined,
+        },
+        update: {
+          guess,
+          correct: isCorrect,
+          tries: guessCount,
+          completed: isComplete,
+          endTime: isComplete ? nowDate : undefined,
+        },
+      }),
+      prisma.result.update({
+        where: { id: resultId },
+        data: { date: dateOnly },
+      }),
     ])
+
     let timeTaken
     let score
     let totalScore
+    let average
     if (isComplete) {
-      timeTaken = await calculateTimeTaken(isComplete, updatedCategory, nowDate)
+      timeTaken = calculateTimeTaken(isComplete, updatedCategory, nowDate)
       score = scoreFunction({
         correctNumber: stockValue,
         guessedNumber: guess,
         numGuesses: guessCount,
         timeTaken: timeTaken ?? 0,
       })
-      await prisma.resultCategory.update({
-        where: { id: updatedCategory.id },
-        data: { score, completed: true },
-      })
-      await prisma.categoryStatistics.upsert({
-        where: { category: 'STOCK' },
-        create: {
-          category: 'STOCK',
-          totalScore: score,
-          count: 1,
-        },
-        update: {
-          totalScore: { increment: score },
-          count: { increment: 1 },
-        },
-      })
+
+      const [updatedResult, stats] = await prisma.$transaction([
+        prisma.resultCategory.update({
+          where: {
+            resultId_category: {
+              resultId,
+              category: 'STOCK',
+            },
+          },
+          data: {
+            score,
+            completed: true,
+            endTime: nowDate,
+          },
+        }),
+        prisma.categoryStatistics.upsert({
+          where: { category: 'STOCK' },
+          create: {
+            category: 'STOCK',
+            totalScore: score,
+            count: 1,
+          },
+          update: {
+            totalScore: { increment: score },
+            count: { increment: 1 },
+          },
+        }),
+      ])
+      average = stats.totalScore.toNumber() / stats.count
+      // Calculate total score from all categories
       const relatedCategories = await prisma.resultCategory.findMany({
         where: { resultId },
         select: { score: true },
@@ -107,47 +139,38 @@ export async function POST(request: NextRequest) {
         0
       )
 
-      // Create FINAL category entry
+      // Update or create FINAL category
       await prisma.resultCategory.upsert({
-        where: { resultId_category: { resultId, category: 'FINAL' } },
+        where: {
+          resultId_category: {
+            resultId,
+            category: 'FINAL',
+          },
+        },
         create: {
           resultId,
           category: 'FINAL',
           guess: 0,
           correct: isCorrect,
           tries: guessCount,
-          completed: isComplete,
+          completed: true,
           score: totalScore,
-          startTime: today,
-          endTime: today,
+          startTime: nowDate,
+          endTime: nowDate,
         },
         update: {
           score: totalScore,
           completed: true,
-          endTime: today,
+          endTime: nowDate,
         },
       })
 
-      // Update the score in the Result table
+      // Update final score in Result table
       await prisma.result.update({
         where: { id: resultId },
         data: { score: totalScore },
       })
-
-      await calculateDailyLeaderboard()
     }
-    await prisma.categoryStatistics.upsert({
-      where: { category: 'FINAL' },
-      create: {
-        category: 'FINAL',
-        totalScore: totalScore ?? 0,
-        count: 1,
-      },
-      update: {
-        totalScore: { increment: totalScore ?? 0 },
-        count: { increment: 1 },
-      },
-    })
 
     return NextResponse.json(
       {
@@ -160,7 +183,7 @@ export async function POST(request: NextRequest) {
         timeTaken: isComplete ? timeTaken : undefined,
         stockValue: isCorrect || isComplete ? stockValue : undefined,
         score: isComplete ? score : undefined,
-        totalScore: isComplete ? totalScore : undefined,
+        average: isComplete ? average : undefined,
       },
       { status: 200 }
     )
@@ -168,54 +191,6 @@ export async function POST(request: NextRequest) {
     console.error('Error in POST request:', error)
     return handleError(error)
   }
-}
-
-async function updateResultCategory(
-  resultId: string,
-  guess: number,
-  isCorrect: boolean,
-  guessCount: number,
-  isComplete: boolean,
-  now: Date
-) {
-  return prisma.resultCategory.upsert({
-    where: { resultId_category: { resultId, category: 'STOCK' } },
-    create: {
-      resultId,
-      category: 'STOCK',
-      guess,
-      correct: isCorrect,
-      tries: guessCount,
-      completed: isComplete,
-      endTime: isComplete ? now : undefined,
-      startTime: now,
-    },
-    update: {
-      guess,
-      correct: isCorrect,
-      tries: guessCount,
-      completed: isComplete,
-      endTime: isComplete ? now : undefined,
-    },
-  })
-}
-
-async function calculateTimeTaken(
-  isComplete: boolean,
-  category: ResultCategory,
-  now: Date
-) {
-  if (isComplete && category.startTime) {
-    const timeTaken = Math.round(
-      (now.getTime() - category.startTime.getTime()) / 1000
-    )
-    await prisma.resultCategory.update({
-      where: { id: category.id },
-      data: { timeTaken },
-    })
-    return timeTaken
-  }
-  return undefined
 }
 
 function handleError(error: unknown) {
