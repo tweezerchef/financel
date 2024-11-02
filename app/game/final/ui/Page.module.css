@@ -1,42 +1,27 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 80dvh;
+  height: calc(100dvh - 120px);
   width: 100%;
   overflow: hidden;
+  background-color: #000;
+  color: #fff;
+  box-sizing: border-box;
 }
 
 .scoreChartWrapper {
   flex: 0 0 auto; /* Don't grow or shrink, use auto height */
-  padding: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .leaderboardWrapper {
+  width: 100%;
   flex: 1; /* Take remaining space */
   overflow-y: auto; /* Enable scrolling */
   padding: 0 1rem;
-}
-
-.content {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* Prevent overflow */
-}
-
-.scoreChart {
-  position: relative;
-  max-width: 90%;
-  width: 400px;
-  margin: 0 auto;
+  box-sizing: border-box;
   background-color: #ffffff;
-}
-
-.leaderBoard {
-  position: relative;
-  max-width: 90%;
-  width: 400px;
-  margin: 0 auto;
-  background-color: #ffffff;
+  color: #000;
 }

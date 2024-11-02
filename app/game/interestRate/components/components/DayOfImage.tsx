@@ -9,7 +9,8 @@ export function DayOfImage() {
         alt="Interest Rate"
         quality={70}
         width={250}
-        height={166.5}
+        height={250}
+        style={{ width: 'auto', height: 'auto' }}
         priority
       />
     </div>

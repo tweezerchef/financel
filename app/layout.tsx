@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-duplicate-props */
 
 import type { Metadata } from 'next'
-import localFont from 'next/font/local'
+import LocalFont from 'next/font/local'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import {
   Center,
@@ -42,7 +42,7 @@ const yellow: MantineColorsTuple = [
   '#ada300',
 ]
 
-const tickerFont = localFont({
+const tickerFont = LocalFont({
   src: './SUBWT___.ttf',
   display: 'swap',
 })

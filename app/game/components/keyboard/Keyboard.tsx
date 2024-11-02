@@ -1,6 +1,6 @@
 'use client'
 
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { UseFormReturnType } from '@mantine/form'
 import classes from './ui/Keyboard.module.css'
 import { Key } from './Key'
@@ -38,7 +38,7 @@ export const Keyboard: React.FC<KeyboardProps> = ({
   return (
     <div className={classes.keyboard}>
       {keys.map((row) => (
-        <div key={uuidv4()} className={classes.row}>
+        <div key={uuid()} className={classes.row}>
           {row.map((key) => (
             <Key
               key={key}

@@ -8,7 +8,7 @@ import {
   Dispatch,
   SetStateAction,
 } from 'react'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
@@ -110,7 +110,7 @@ export function InterestRateGuess({
         const result = await response.json()
 
         const newGuess: Guess = {
-          id: uuidv4(),
+          id: uuid(),
           guess: formattedGuess,
           result: null,
           isSpinning: true,

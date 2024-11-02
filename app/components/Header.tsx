@@ -21,6 +21,7 @@ export function Header({ onAuthStart, isAuthenticating }: HeaderProps) {
             sizes="(max-width: 600px) 90vw, 400px"
             quality={60}
             priority
+            style={{ width: '100%', height: 'auto' }}
           />
         </AspectRatio>
       </div>
