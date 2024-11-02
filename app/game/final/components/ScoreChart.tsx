@@ -194,7 +194,7 @@ export function ScoreChart() {
 
   return (
     <>
-      <div style={{ width: '100%', height: '200px' }}>
+      <div style={{ width: '100%', height: '180px' }}>
         <Bar ref={chartRef} data={chartData} options={options} />
       </div>
       <div>
