@@ -90,8 +90,16 @@ export function InterestRateGuess({
 
       const formattedGuess = `${values.guess[0]}.${values.guess.slice(1)}`
       const currentGuessCount = guessCount.current
-      const today = new Date()
-      const dateOnly = new Date(today.setHours(0, 0, 0, 0))
+
+      // Get precise current time
+      const now = new Date()
+      // Get start of day for dateOnly
+      const dateOnly = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      )
+
       try {
         const response = await fetch('/game/interestRate/api/guess/', {
           method: 'POST',
@@ -102,8 +110,8 @@ export function InterestRateGuess({
             guess: parseFloat(formattedGuess),
             guessCount: currentGuessCount,
             resultId,
-            dateOnly,
-            today,
+            dateOnly: dateOnly.toISOString(),
+            today: now.getTime(),
           }),
         })
         guessCount.current += 1

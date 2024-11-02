@@ -2,7 +2,8 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
-import { ResultCategory } from '@prisma/client'
+import { updateResultCategory } from '../../../../lib/dbFunctions/updateResultCategory'
+import { calculateTimeTaken } from '../../../../lib/dbFunctions/calculateTimeTaken'
 import { arrowDecider } from './arrowDecider'
 import { scoreFunction } from '../../../../lib/dbFunctions/scoreFunction'
 
@@ -17,7 +18,10 @@ export async function POST(request: NextRequest) {
   try {
     const { guess, resultId, guessCount, dateOnly, today } =
       await request.json()
-    const nowDate = new Date(today)
+
+    // Convert milliseconds timestamp back to Date object
+    const nowDate = new Date(Number(today))
+    console.log('nowDate', nowDate, 'today', today, 'dateOnly', dateOnly)
 
     if (Number.isNaN(nowDate.getTime()))
       throw new Error('Invalid date format for today parameter')
@@ -31,7 +35,7 @@ export async function POST(request: NextRequest) {
         'Invalid input: Guess and guessCount must be numbers, and resultId is required'
       )
 
-    const [dailyChallenge, result] = await prisma.$transaction([
+    const [dailyChallenge] = await prisma.$transaction([
       prisma.dailyChallenge.findUnique({
         where: { challengeDate: dateOnly },
         include: {
@@ -85,7 +89,7 @@ export async function POST(request: NextRequest) {
         timeTaken: timeTaken ?? 0,
       })
 
-      const [updatedResult, stats] = await prisma.$transaction([
+      const [, stats] = await prisma.$transaction([
         prisma.resultCategory.update({
           where: {
             resultId_category: {
@@ -131,61 +135,6 @@ export async function POST(request: NextRequest) {
     console.error('Error in POST request:', error)
     return handleError(error)
   }
-}
-
-async function updateResultCategory(
-  resultId: string,
-  guess: number,
-  isCorrect: boolean,
-  guessCount: number,
-  isComplete: boolean,
-  now: Date
-) {
-  return prisma.resultCategory.upsert({
-    where: {
-      resultId_category: {
-        resultId,
-        category: 'INTEREST_RATE',
-      },
-    },
-    create: {
-      resultId,
-      category: 'INTEREST_RATE',
-      guess,
-      correct: isCorrect,
-      tries: guessCount,
-      completed: isComplete,
-      endTime: isComplete ? now : undefined,
-      startTime: now,
-    },
-    update: {
-      guess,
-      correct: isCorrect,
-      tries: guessCount,
-      completed: isComplete,
-      endTime: isComplete ? now : undefined,
-    },
-  })
-}
-
-function calculateTimeTaken(
-  isComplete: boolean,
-  category: ResultCategory,
-  now: Date
-) {
-  if (isComplete && category.startTime) {
-    const timeTaken = Math.round(
-      (now.getTime() - category.startTime.getTime()) / 1000
-    )
-    prisma.resultCategory
-      .update({
-        where: { id: category.id },
-        data: { timeTaken },
-      })
-      .catch(console.error) // Fire and forget
-    return timeTaken
-  }
-  return undefined
 }
 
 function handleError(error: unknown) {
