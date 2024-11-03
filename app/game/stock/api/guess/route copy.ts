@@ -26,28 +26,26 @@ export async function POST(request: NextRequest) {
         'Invalid input: Guess and guessCount must be numbers, and resultId is required'
       )
 
-    const [dailyChallenge] = await prisma.$transaction([
-      prisma.dailyChallenge.findUnique({
-        where: { challengeDate: dateOnly },
-        include: {
-          stockPrice: {
-            select: {
-              price: true,
-              stock: {
-                select: { name: true },
-              },
+    const dailyChallenge = await prisma.dailyChallenge.findUnique({
+      where: { challengeDate: dateOnly },
+      include: {
+        stockPrice: {
+          select: {
+            price: true,
+            stock: {
+              select: { name: true },
             },
           },
-          date: { select: { date: true } },
         },
-      }),
-    ])
+        date: { select: { date: true } },
+      },
+    })
 
     if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
     const stockValue = dailyChallenge.stockPrice?.price.toNumber() ?? 0
-    const isCorrect = guess === stockValue
     const result = stockArrowDecider(guess, stockValue)
+    const { isCorrect } = result
     const isComplete = isCorrect || guessCount === 6
 
     const [updatedCategory] = await Promise.all([
@@ -90,8 +88,7 @@ export async function POST(request: NextRequest) {
         numGuesses: guessCount,
         timeTaken: timeTaken ?? 0,
       })
-
-      const [updatedResult, stats] = await prisma.$transaction([
+      const [, stats] = await prisma.$transaction([
         prisma.resultCategory.update({
           where: {
             resultId_category: {
@@ -118,8 +115,9 @@ export async function POST(request: NextRequest) {
           },
         }),
       ])
+
       average = stats.totalScore.toNumber() / stats.count
-      // Calculate total score from all categories
+
       const relatedCategories = await prisma.resultCategory.findMany({
         where: { resultId },
         select: { score: true },
@@ -130,10 +128,7 @@ export async function POST(request: NextRequest) {
         0
       )
 
-      // Convert timestamp to Date object
-      const nowDateObj = new Date(Number(today))
-
-      // Second transaction: Update BOTH the FINAL category AND the result table
+      // Create FINAL category entry
       await prisma.resultCategory.upsert({
         where: { resultId_category: { resultId, category: 'FINAL' } },
         create: {
@@ -144,19 +139,22 @@ export async function POST(request: NextRequest) {
           tries: guessCount,
           completed: isComplete,
           score: totalScore,
-          startTime: nowDateObj,
-          endTime: nowDateObj,
+          startTime: today,
+          endTime: today,
         },
         update: {
           score: totalScore,
           completed: true,
-          endTime: nowDateObj,
+          endTime: today,
         },
       })
+
+      // Update the score in the Result table
       await prisma.result.update({
         where: { id: resultId },
         data: { score: totalScore },
       })
+
       await calculateDailyLeaderboard()
     }
     await prisma.categoryStatistics.upsert({
@@ -183,7 +181,7 @@ export async function POST(request: NextRequest) {
         timeTaken: isComplete ? timeTaken : undefined,
         stockValue: isCorrect || isComplete ? stockValue : undefined,
         score: isComplete ? score : undefined,
-        average: isComplete ? average : undefined,
+        totalScore: isComplete ? totalScore : undefined,
       },
       { status: 200 }
     )

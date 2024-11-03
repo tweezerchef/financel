@@ -11,7 +11,7 @@ import {
   useEffect,
 } from 'react'
 
-type Category = 'INTEREST_RATE' | 'CURRENCY' | 'STOCK' | 'Final'
+type Category = 'INTEREST_RATE' | 'CURRENCY' | 'STOCK' | 'FINAL'
 
 interface ScoreContextType {
   interestScore: number
@@ -57,7 +57,7 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
       case 'STOCK':
         setAverageStock(amount)
         break
-      case 'Final':
+      case 'FINAL':
         setAverageFinal(amount)
         break
       default:
@@ -75,7 +75,7 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
       case 'STOCK':
         setStockScore(amount)
         break
-      case 'Final':
+      case 'FINAL':
         setFinalScore(amount)
         break
       default:
@@ -89,7 +89,6 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
       })
       if (scoreResponse.ok) {
         const scoreData = await scoreResponse.json()
-        // Update this part to correctly set individual category scores
         if (Array.isArray(scoreData.categoryScores))
           scoreData.categoryScores.forEach(
             (cat: { category: string; score: number }) => {
@@ -103,16 +102,16 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
                 case 'STOCK':
                   setStockScore(cat.score)
                   break
+                case 'FINAL':
+                  setFinalScore(cat.score)
+                  break
                 default:
                   console.warn(`Unknown category: ${cat.category}`)
               }
             }
           )
-
-        setFinalScore(scoreData.finalScore || 0)
       }
 
-      // New code to fetch and update averages
       const averageResponse = await fetch('/auth/api/verify/average', {
         credentials: 'include',
       })
@@ -126,7 +125,7 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
           )
 
         if (averageData.finalAverage !== undefined)
-          updateAverage('Final', averageData.finalAverage)
+          updateAverage('FINAL', averageData.finalAverage)
       }
     } catch (error) {
       console.error('Failed to refresh score and averages:', error)
