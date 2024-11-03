@@ -32,24 +32,18 @@ export async function POST(request: NextRequest) {
         'Invalid input: Guess and guessCount must be numbers, and resultId is required'
       )
 
-    const [dailyChallenge] = await prisma.$transaction([
-      prisma.dailyChallenge.findUnique({
-        where: { challengeDate: dateOnly },
-        include: {
-          currencyValue: {
-            select: {
-              value: true,
-              date: { select: { date: true } },
-            },
+    const dailyChallenge = await prisma.dailyChallenge.findUnique({
+      where: { challengeDate: dateOnly },
+      include: {
+        currencyValue: {
+          select: {
+            value: true,
+            date: { select: { date: true } },
           },
-          date: { select: { date: true } },
         },
-      }),
-      prisma.result.update({
-        where: { id: resultId },
-        data: { date: dateOnly },
-      }),
-    ])
+        date: { select: { date: true } },
+      },
+    })
 
     if (!dailyChallenge) throw new Error('Invalid daily challenge')
 
@@ -84,10 +78,6 @@ export async function POST(request: NextRequest) {
           endTime: isComplete ? nowDate : undefined,
         },
       }),
-      prisma.result.update({
-        where: { id: resultId },
-        data: { date: dateOnly },
-      }),
     ])
 
     let timeTaken
@@ -102,7 +92,7 @@ export async function POST(request: NextRequest) {
         timeTaken: timeTaken ?? 0,
       })
 
-      const [updatedResult, stats] = await prisma.$transaction([
+      const [, stats] = await prisma.$transaction([
         prisma.resultCategory.update({
           where: {
             resultId_category: {
