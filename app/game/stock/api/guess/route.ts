@@ -139,37 +139,40 @@ export async function POST(request: NextRequest) {
         0
       )
 
-      // Update or create FINAL category
-      await prisma.resultCategory.upsert({
-        where: {
-          resultId_category: {
+      // Second transaction: Update BOTH the FINAL category AND the result table
+      await prisma.$transaction([
+        prisma.resultCategory.upsert({
+          where: {
+            resultId_category: {
+              resultId,
+              category: 'FINAL',
+            },
+          },
+          create: {
             resultId,
             category: 'FINAL',
+            guess: 0,
+            correct: isCorrect,
+            tries: guessCount,
+            completed: true,
+            score: totalScore,
+            startTime: nowDate,
+            endTime: nowDate,
           },
-        },
-        create: {
-          resultId,
-          category: 'FINAL',
-          guess: 0,
-          correct: isCorrect,
-          tries: guessCount,
-          completed: true,
-          score: totalScore,
-          startTime: nowDate,
-          endTime: nowDate,
-        },
-        update: {
-          score: totalScore,
-          completed: true,
-          endTime: nowDate,
-        },
-      })
-
-      // Update final score in Result table
-      await prisma.result.update({
-        where: { id: resultId },
-        data: { score: totalScore },
-      })
+          update: {
+            score: totalScore,
+            completed: true,
+            endTime: nowDate,
+          },
+        }),
+        prisma.result.update({
+          where: { id: resultId },
+          data: {
+            stockScore: score,
+            score: totalScore,
+          },
+        }),
+      ])
     }
 
     return NextResponse.json(
