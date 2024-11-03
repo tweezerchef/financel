@@ -48,10 +48,6 @@ export async function POST(request: NextRequest) {
           date: { select: { date: true } },
         },
       }),
-      prisma.result.update({
-        where: { id: resultId },
-        data: { date: dateOnly },
-      }),
     ])
 
     if (!dailyChallenge) throw new Error('Invalid daily challenge')
@@ -71,10 +67,6 @@ export async function POST(request: NextRequest) {
         isComplete,
         nowDate
       ),
-      prisma.result.update({
-        where: { id: resultId },
-        data: { date: dateOnly },
-      }),
     ])
 
     let timeTaken
