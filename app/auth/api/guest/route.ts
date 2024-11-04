@@ -7,9 +7,9 @@ import prisma from '../../../lib/prisma/prisma'
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for') || 'unknown'
-    const { clientDate } = await req.json()
+    const { dateOnly } = await req.json()
 
-    const parsedDate = new Date(clientDate)
+    const parsedDate = new Date(dateOnly)
     if (Number.isNaN(parsedDate.getTime()))
       return NextResponse.json(
         { message: 'Invalid date format provided' },
@@ -27,20 +27,12 @@ export async function POST(req: NextRequest) {
       guest = await prisma.guest.create({
         data: { ip, lastLogin: parsedDate },
       })
-
-    const today = new Date()
-    const dateOnly = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    )
-
     const result = await prisma.result.upsert({
-      where: { guestId_date: { guestId: guest.id, date: dateOnly } },
+      where: { guestId_date: { guestId: guest.id, date: parsedDate } },
       update: {},
       create: {
         guestId: guest.id,
-        date: dateOnly,
+        date: parsedDate,
       },
       include: {
         categories: {

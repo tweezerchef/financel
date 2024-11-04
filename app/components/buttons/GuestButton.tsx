@@ -18,14 +18,16 @@ export const GuestButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { setUser } = useUserContext()
-  const clientDate = new Date().toISOString()
+  const now = new Date()
+  // Get start of day for dateOnly
+  const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
   const handleGuestLogin = async () => {
     setIsLoading(true)
     try {
       const response = await fetch('/auth/api/guest', {
         method: 'POST',
-        body: JSON.stringify({ clientDate }),
+        body: JSON.stringify({ dateOnly: dateOnly.toISOString() }),
       })
       const data = await response.json()
 

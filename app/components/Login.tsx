@@ -57,12 +57,18 @@ export function Login({
     setIsLoading(true)
     onAuthStart()
     const { email, password } = values
-    const clientDate = new Date().toISOString()
+    const now = new Date()
+    // Get start of day for dateOnly
+    const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     try {
       const response = await fetch('auth/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, clientDate }),
+        body: JSON.stringify({
+          email,
+          password,
+          dateOnly: dateOnly.toISOString(),
+        }),
         credentials: 'include',
       })
       const data = await response.json()
