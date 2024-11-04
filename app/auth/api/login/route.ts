@@ -9,10 +9,10 @@ import { extractS3Key } from '../../../lib/aws/extractS3Key'
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, clientDate } = await req.json()
+    const { email, password, dateOnly } = await req.json()
 
     // Add date validation
-    const parsedDate = new Date(clientDate)
+    const parsedDate = new Date(dateOnly)
     if (Number.isNaN(parsedDate.getTime()))
       return NextResponse.json(
         { message: 'Invalid date format provided' },
@@ -49,11 +49,11 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await prisma.result.upsert({
-      where: { userId_date: { userId: user.id, date: new Date(clientDate) } },
+      where: { userId_date: { userId: user.id, date: parsedDate } },
       update: {},
       create: {
         userId: user.id,
-        date: new Date(clientDate),
+        date: parsedDate,
       },
       include: {
         categories: {
