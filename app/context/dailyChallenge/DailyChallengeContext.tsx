@@ -92,10 +92,15 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
 
     setIsLoading(true)
     try {
-      const today = new Date()
-      const formattedDate = today.toISOString().split('T')[0]
+      const now = new Date()
+      // Get start of day for dateOnly
+      const dateOnly = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      )
       const response = await fetch(
-        `/game/api/dailyChallenge?date=${formattedDate}`
+        `/context/dailyChallenge/api?date=${dateOnly.toISOString()}`
       )
       const { data } = await response.json()
 
@@ -138,6 +143,19 @@ export const DailyChallengeProvider: React.FC<ChallengeProviderProps> = ({
     dailyChallengeCurrency,
     dailyChallengeInterestRate,
     dailyChallengeStock,
+  ])
+  useEffect(() => {
+    if (
+      !dailyChallengeCurrency ||
+      !dailyChallengeInterestRate ||
+      !dailyChallengeStock
+    )
+      fetchDailyChallenge()
+  }, [
+    dailyChallengeCurrency,
+    dailyChallengeInterestRate,
+    dailyChallengeStock,
+    fetchDailyChallenge,
   ])
 
   const value = useMemo(
