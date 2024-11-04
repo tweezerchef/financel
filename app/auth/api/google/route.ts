@@ -10,7 +10,15 @@ function extractS3Key(url: string): string {
 }
 export async function POST(req: NextRequest) {
   try {
-    const { credential, clientDate } = await req.json()
+    const { credential, dateOnly } = await req.json()
+    const parsedDate = new Date(dateOnly)
+
+    if (Number.isNaN(parsedDate.getTime()))
+      return NextResponse.json(
+        { message: 'Invalid date format provided' },
+        { status: 400 }
+      )
+
     const response = await fetch(
       'https://www.googleapis.com/oauth2/v3/userinfo',
       {
@@ -19,12 +27,6 @@ export async function POST(req: NextRequest) {
         },
       }
     )
-    const parsedDate = new Date(clientDate)
-    if (Number.isNaN(parsedDate.getTime()))
-      return NextResponse.json(
-        { message: 'Invalid date format provided' },
-        { status: 400 }
-      )
 
     const payload = await response.json()
     if (!payload?.email)
@@ -77,9 +79,9 @@ export async function POST(req: NextRequest) {
       finalAvatarUrl = avatarUrl
 
     const result = await prisma.result.upsert({
-      where: { userId_date: { userId: user.id, date: new Date() } },
+      where: { userId_date: { userId: user.id, date: parsedDate } },
       update: {},
-      create: { userId: user.id, date: new Date() },
+      create: { userId: user.id, date: parsedDate },
       include: {
         categories: {
           orderBy: {
