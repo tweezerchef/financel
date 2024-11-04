@@ -10,19 +10,19 @@ interface DayOfInfoProps {
 const getDuration = (rateType: string) => {
   switch (rateType) {
     case 'T_30':
-      return 'Thirty Year Treasury Bond'
+      return '30-Year Treasury'
     case 'T_20':
-      return 'Twenty Year Treasury Bond'
+      return '20-Year Treasury'
     case 'T_10':
-      return 'Ten Year Treasury Bond'
+      return '10-Year Treasury'
     case 'T_5':
-      return 'Five Year Treasury Bond'
+      return '5-Year Treasury'
     case 'T_1':
-      return 'One Year Treasury Bond'
+      return '1-Year Treasury'
     case 'T_OVERNIGHT':
-      return 'Overnight'
+      return 'Overnight Rate'
     default:
-      return 'Unknown Duration'
+      return 'Unknown Rate'
   }
 }
 
@@ -39,8 +39,10 @@ export function DayOfInfo({ date, category }: DayOfInfoProps) {
     <Container className={classes.container}>
       <Paper className={classes.paper}>
         <div className={classes.textContainer}>
-          <Text className={classes.date}>{finalDate}</Text>
-          <Text className={classes.bondType}>{duration}</Text>
+          <Text className={classes.date}>On {finalDate}</Text>
+          <Text className={classes.bondType}>
+            The rate on the {duration} was
+          </Text>
         </div>
       </Paper>
     </Container>

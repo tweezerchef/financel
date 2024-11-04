@@ -12,12 +12,10 @@
 }
 @media (max-width: 375px) {
   .flipBox {
-    width: 2vw;
-    height: 3dvh;
-    min-width: 1.75rem;
-    min-height: 2rem;
-    max-width: 5rem;
-    max-height: 6rem;
+    height: 4dvh;
+    min-height: 2.2rem;
+    max-width: 3.5rem;
+    max-height: 4rem;
   }
 }
 
