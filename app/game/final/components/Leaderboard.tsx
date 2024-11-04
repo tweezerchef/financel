@@ -8,7 +8,7 @@ export function LeaderBoard() {
   const { data } = useLeaderboard()
 
   const toprows = data?.topEntries.map((player) => (
-    <Table.Tr key={player.rank}>
+    <Table.Tr key={player.username}>
       <Table.Td>
         <Group gap="sm">
           <Text fz="sm" fw={500}>
@@ -27,7 +27,7 @@ export function LeaderBoard() {
   ))
 
   const surroundingrows = data?.surroundingEntries.map((player) => (
-    <Table.Tr key={player.rank}>
+    <Table.Tr key={player.username}>
       <Table.Td>
         <Group gap="sm">
           <Text fz="sm" fw={500}>
