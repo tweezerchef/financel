@@ -86,13 +86,19 @@ export function GoogleButton({
 
   const handleAuthResponse = async (response: GoogleTokenResponse) => {
     try {
-      const clientDate = new Date().toISOString()
+      const now = new Date()
+      // Get start of day for dateOnly
+      const dateOnly = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      )
       const res = await fetch('/auth/api/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           credential: response.access_token,
-          clientDate,
+          dateOnly: dateOnly.toISOString(),
         }),
       })
 

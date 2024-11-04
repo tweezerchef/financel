@@ -10,11 +10,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const dateParam = searchParams.get('date')
     const parsedDate = new Date(dateParam || '')
-    if (Number.isNaN(parsedDate.getTime()))
-      return NextResponse.json(
-        { message: 'Invalid date format provided' },
-        { status: 400 }
-      )
+    // if (Number.isNaN(parsedDate.getTime()))
+    //   return NextResponse.json(
+    //     { message: 'Invalid date format provided' },
+    //     { status: 400 }
+    //   )
 
     if (!dateParam)
       return NextResponse.json(
