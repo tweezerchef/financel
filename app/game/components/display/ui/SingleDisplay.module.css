@@ -1,18 +1,24 @@
 .flipBox {
   background-color: transparent;
-  width: 4dvh;
-  height: 6dvh;
-  min-width: 1rem;
-  min-height: 1.5rem;
-  max-width: 5rem;
-  max-height: 6rem;
+  width: 9.7dvw;
+  height: 7dvh;
+  min-width: 1.7rem;
+  min-height: 3rem;
+  max-width: 3.5rem;
+  max-height: 5rem;
   perspective: 1000px;
-  box-shadow:
-    0 6px 12px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
-    0 -2px 4px rgba(255, 255, 255, 0.1) inset;
   border-radius: 4px;
   transform: perspective(1000px) rotateX(5deg);
+}
+@media (max-width: 375px) {
+  .flipBox {
+    width: 2vw;
+    height: 3dvh;
+    min-width: 1.75rem;
+    min-height: 2rem;
+    max-width: 5rem;
+    max-height: 6rem;
+  }
 }
 
 .flipBoxInner {
@@ -38,14 +44,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: clamp(1.5rem, 5vmin, 3.5rem);
+  font-size: clamp(2rem, 7.5vmin, 4.5rem);
   font-weight: bold;
   border-radius: 4px;
   overflow: hidden;
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.2) inset,
-    0 -1px 2px rgba(255, 255, 255, 0.1) inset;
-  background: linear-gradient(to bottom, #1a1a1a, #000000);
+    0 6px 12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 -2px 4px rgba(255, 255, 255, 0.1) inset;
+  background: #1a1a1a;
   text-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
 }
 
@@ -80,38 +87,21 @@
 
 .topHalfVisible,
 .bottomHalfVisible {
-  background-clip: text;
-  -webkit-background-clip: text;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: var(--mantine-color-yellow-3);
 }
 
 .topHalfVisible {
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(
-    to bottom,
-    var(--mantine-color-yellow-3) 0%,
-    var(--mantine-color-yellow-3) 50%,
-    transparent 50%,
-    transparent 100%
-  );
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
 }
 
 .bottomHalfVisible {
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    transparent 50%,
-    var(--mantine-color-yellow-3) 50%,
-    var(--mantine-color-yellow-3) 100%
-  );
-}
-
-.flipBoxFront .topHalfVisible,
-.flipBoxFront .bottomHalfVisible,
-.flipBoxBack .topHalfVisible,
-.flipBoxBack .bottomHalfVisible {
-  color: var(--mantine-color-yellow-3);
+  clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
 }
 
 .closeArrow {
@@ -154,12 +144,4 @@
     var(--mantine-color-red-6) 0%,
     var(--mantine-color-yellow-3) 100%
   );
-}
-
-/* Updated media queries */
-@media (max-width: 375px) {
-  .flipBox {
-    width: 2vw;
-    height: 3dvh;
-  }
 }
