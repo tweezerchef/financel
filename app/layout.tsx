@@ -3,6 +3,7 @@
 import type { Metadata } from 'next'
 import LocalFont from 'next/font/local'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Analytics } from '@vercel/analytics/react'
 import {
   Center,
   MantineProvider,
@@ -13,6 +14,7 @@ import './ui/global.css'
 import '@mantine/core/styles.css'
 import classes from './ui/Layout.module.css'
 import '@mantine/carousel/styles.css'
+
 import { DailyChallengeInitializer } from './lib/DailyChallengeInitializer'
 import { UserProvider } from './context/user/UserContext'
 import { DailyChallengeProvider } from './context/dailyChallenge/DailyChallengeContext'
@@ -87,6 +89,7 @@ export default function RootLayout({
           </MantineProvider>
         </main>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   )
