@@ -3,4 +3,5 @@
   width: auto;
   height: auto;
   aspect-ratio: 3/2;
+  overflow: visible;
 }

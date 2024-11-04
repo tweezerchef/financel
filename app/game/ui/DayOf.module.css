@@ -31,9 +31,18 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #000;
-  height: 46px;
+  background-color: transparent;
+  height: 52px;
   overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.legendVisible {
+  opacity: 1;
+  visibility: visible;
+  background-color: #000;
 }
 
 .legendContent {
@@ -50,6 +59,7 @@
   color: #fffb00;
   font-family: tickerFont;
   white-space: nowrap;
+  font-size: clamp(0.85rem, 3.2vw, 1.1rem);
 }
 
 .animate {
@@ -68,43 +78,40 @@
 
 @media (max-width: 500px) {
   .legend {
-    font-size: 16px;
-    padding: 3px 0;
     height: 40px;
+    font-size: 15px;
+    padding: 3px 0;
   }
   .slideWrapper {
     bottom: 40px;
   }
-  .legendContent span {
-    margin: 2px 0;
-  }
 }
 @media (max-width: 450px) {
   .legend {
+    height: 36px;
     font-size: 14px;
-    height: 38px;
   }
   .slideWrapper {
-    bottom: 38px;
+    bottom: 36px;
   }
 }
 
 @media (max-width: 389px) {
-  .slideWrapper {
-    bottom: 35px;
-  }
   .legend {
-    height: 35px;
+    height: 34px;
     font-size: 13px;
+  }
+  .slideWrapper {
+    bottom: 34px;
   }
 }
 
 @media (max-width: 375px) {
-  .slideWrapper {
-    bottom: 27px;
-  }
   .legend {
-    height: 27px;
+    height: 30px;
     font-size: 12px;
+  }
+  .slideWrapper {
+    bottom: 30px;
   }
 }

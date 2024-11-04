@@ -9,11 +9,22 @@
 }
 
 .dayOf {
-  height: 23%; /* Use percentage instead of vh */
-  height: 150px; /* Ensure a minimum height */
+  height: 130px; /* Reduced from 150px */
   width: 100%;
   overflow: hidden;
   position: relative;
+}
+
+@media (max-width: 500px) {
+  .dayOf {
+    height: 110px;
+  }
+}
+
+@media (max-width: 375px) {
+  .dayOf {
+    height: 100px;
+  }
 }
 
 .guess {

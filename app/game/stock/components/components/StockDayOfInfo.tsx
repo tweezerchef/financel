@@ -7,8 +7,31 @@ interface StockDayOfInfoProps {
   date: string
   stockName: string
 }
+const getStockName = (stockName: string) => {
+  switch (stockName) {
+    case 'AAPL':
+      return 'Apple'
+    case 'NKE':
+      return 'Nike'
+    case 'NEE':
+      return 'NextEra Energy'
+    case 'XOM':
+      return 'Exxon Mobil'
+    case 'MSFT':
+      return 'Microsoft'
+    case 'WMT':
+      return 'Walmart'
+    case 'GE':
+      return 'General Electric'
+    case 'DIS':
+      return 'Disney'
+    default:
+      return stockName
+  }
+}
 
 export function StockDayOfInfo({ date, stockName }: StockDayOfInfoProps) {
+  const formattedStockName = getStockName(stockName)
   const formattedDate = formatDateForChart(date)
   const [month, dayWithComma, year] = formattedDate.split(' ')
   const day = parseInt(dayWithComma, 10)
@@ -19,8 +42,10 @@ export function StockDayOfInfo({ date, stockName }: StockDayOfInfoProps) {
     <Container className={classes.container}>
       <Paper className={classes.paper}>
         <div className={classes.textContainer}>
-          <Text className={classes.date}>{finalDate}</Text>
-          <Text className={classes.bondType}>{stockName}</Text>
+          <Text className={classes.date}>On {finalDate}</Text>
+          <Text className={classes.bondType}>
+            {formattedStockName} was trading at
+          </Text>
         </div>
       </Paper>
     </Container>

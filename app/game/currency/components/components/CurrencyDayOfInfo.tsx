@@ -19,8 +19,10 @@ export function CurrencyDayOfInfo({ date, currency }: CurrencyDayOfInfoProps) {
     <Container className={classes.container}>
       <Paper className={classes.paper}>
         <div className={classes.textContainer}>
-          <Text className={classes.date}>{finalDate}</Text>
-          <Text className={classes.bondType}>{currency}</Text>
+          <Text className={classes.date}>On {finalDate}</Text>
+          <Text className={classes.bondType}>
+            The USD/{currency} exchange rate
+          </Text>
         </div>
       </Paper>
     </Container>
