@@ -98,7 +98,10 @@ export function InterestRateDayOf({
           )}
         </Transition>
       </div>
-      <div className={classes.legend} ref={legendRef}>
+      <div
+        className={`${classes.legend} ${dayOfSlide === 'day' ? classes.legendVisible : ''}`}
+        ref={legendRef}
+      >
         <div
           className={`${classes.legendContent} ${isAnimating ? classes.animate : ''}`}
         >
