@@ -5,9 +5,8 @@ import { Prisma } from '@prisma/client'
 import prisma from '../prisma/prisma'
 import { calculateDailyLeaderboard } from './calculateDailyLeaderboard'
 
-async function createDailyFakeScores() {
+export async function createDailyFakeScores() {
   try {
-    // Get only seeded users
     const seedUsers = await prisma.user.findMany({
       where: {
         emailToken: 'SEED_USER',
@@ -15,51 +14,80 @@ async function createDailyFakeScores() {
       },
       select: { id: true },
     })
+    console.log(`Found ${seedUsers.length} seed users`)
 
+    // Set up today and tomorrow dates
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    // Create results for each seeded user
-    for (const user of seedUsers) {
-      // Generate scores first
-      const interestRate = faker.number.int({ min: 800, max: 1500 })
-      const currency = faker.number.int({ min: 800, max: 1500 })
-      const stock = faker.number.int({ min: 800, max: 1500 })
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
 
-      // Create or update result for today
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const result = await prisma.result.upsert({
+    const daysToProcess = [today, tomorrow]
+    let scoresCreated = false
+
+    for (const date of daysToProcess) {
+      const existingScores = await prisma.result.findMany({
         where: {
-          userId_date: {
-            userId: user.id,
-            date: today,
+          date,
+          user: {
+            emailToken: 'SEED_USER',
           },
         },
-        create: {
-          userId: user.id,
-          date: today,
-          interestRateScore: new Prisma.Decimal(interestRate),
-          currencyScore: new Prisma.Decimal(currency),
-          stockScore: new Prisma.Decimal(stock),
-          score: new Prisma.Decimal(interestRate + currency + stock),
-        },
-        update: {}, // If result exists, do nothing
       })
 
-      console.log(`Created fake scores for seeded user ${user.id}`)
+      if (existingScores.length !== seedUsers.length)
+        for (const user of seedUsers) {
+          const existingUserScore = await prisma.result.findUnique({
+            where: {
+              userId_date: {
+                userId: user.id,
+                date,
+              },
+            },
+          })
+
+          if (!existingUserScore) {
+            const interestRate = faker.number.int({ min: 800, max: 1500 })
+            const currency = faker.number.int({ min: 800, max: 1500 })
+            const stock = faker.number.int({ min: 800, max: 1500 })
+
+            await prisma.result.create({
+              data: {
+                userId: user.id,
+                date,
+                interestRateScore: new Prisma.Decimal(interestRate),
+                currencyScore: new Prisma.Decimal(currency),
+                stockScore: new Prisma.Decimal(stock),
+                score: new Prisma.Decimal(interestRate + currency + stock),
+              },
+            })
+
+            console.log(
+              `Created fake scores for user ${user.id} on ${date.toISOString().split('T')[0]}`
+            )
+            scoresCreated = true
+          } else
+            console.log(
+              `Score already exists for user ${user.id} on ${date.toISOString().split('T')[0]}, skipping...`
+            )
+        }
+      else
+        console.log(
+          `Scores already exist for ${date.toISOString().split('T')[0]}, skipping...`
+        )
     }
 
-    // Add this line to update the leaderboard after creating fake scores
-    await calculateDailyLeaderboard()
+    // Only calculate leaderboards if new scores were created
+    if (scoresCreated) {
+      await calculateDailyLeaderboard()
+      console.log('Leaderboards updated for both days')
+    }
 
     console.log('Daily fake scores created successfully')
   } catch (error) {
     console.error('Error creating daily fake scores:', error)
     throw error
-  } finally {
-    await prisma.$disconnect()
   }
 }
 createDailyFakeScores()
-
-export { createDailyFakeScores }
