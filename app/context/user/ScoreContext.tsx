@@ -8,7 +8,6 @@ import {
   ReactNode,
   useCallback,
   FC,
-  useEffect,
 } from 'react'
 
 type Category = 'INTEREST_RATE' | 'CURRENCY' | 'STOCK' | 'FINAL'
@@ -23,6 +22,7 @@ interface ScoreContextType {
   averageStock: number
   averageFinal: number
   updateScore: (category: Category, amount: number) => void
+  refreshScore: (resultId: string) => Promise<void>
 }
 interface ScoreProviderProps {
   children: ReactNode
@@ -82,67 +82,66 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
         throw new Error(`Unknown category: ${category}`)
     }
   }, [])
-  const refreshScore = useCallback(async () => {
-    try {
-      const scoreResponse = await fetch('/auth/api/verify/score', {
-        credentials: 'include',
-      })
-      if (scoreResponse.ok) {
-        const scoreData = await scoreResponse.json()
-        if (Array.isArray(scoreData.categoryScores))
-          scoreData.categoryScores.forEach(
-            (cat: { category: string; score: number }) => {
-              switch (cat.category) {
-                case 'INTEREST_RATE':
-                  setInterestScore(cat.score)
-                  break
-                case 'CURRENCY':
-                  setCurrencyScore(cat.score)
-                  break
-                case 'STOCK':
-                  setStockScore(cat.score)
-                  break
-                case 'FINAL':
-                  setFinalScore(cat.score)
-                  break
-                default:
-                  console.warn(`Unknown category: ${cat.category}`)
+  const refreshScore = useCallback(
+    async (resultId: string) => {
+      console.log('refreshing score', resultId)
+      try {
+        const scoreResponse = await fetch(
+          `/context/user/api/userScore?resultId=${resultId}`,
+          {
+            credentials: 'include',
+          }
+        )
+        if (scoreResponse.ok) {
+          const scoreData = await scoreResponse.json()
+          if (Array.isArray(scoreData.categoryScores))
+            scoreData.categoryScores.forEach(
+              (cat: { category: string; score: number }) => {
+                switch (cat.category) {
+                  case 'INTEREST_RATE':
+                    setInterestScore(cat.score)
+                    break
+                  case 'CURRENCY':
+                    setCurrencyScore(cat.score)
+                    break
+                  case 'STOCK':
+                    setStockScore(cat.score)
+                    break
+                  case 'FINAL':
+                    setFinalScore(cat.score)
+                    break
+                  default:
+                    console.warn(`Unknown category: ${cat.category}`)
+                }
               }
-            }
-          )
+            )
+        }
+
+        const averageResponse = await fetch('/context/user/api/average', {
+          credentials: 'include',
+        })
+        if (averageResponse.ok) {
+          const averageData = await averageResponse.json()
+          if (Array.isArray(averageData.categoryAverages))
+            averageData.categoryAverages.forEach(
+              (cat: { category: string; average: number }) => {
+                updateAverage(cat.category as Category, cat.average)
+              }
+            )
+
+          if (averageData.finalAverage !== undefined)
+            updateAverage('FINAL', averageData.finalAverage)
+        }
+      } catch (error) {
+        console.error('Failed to refresh score and averages:', error)
       }
+    },
+    [updateAverage]
+  )
 
-      const averageResponse = await fetch('/auth/api/verify/average', {
-        credentials: 'include',
-      })
-      if (averageResponse.ok) {
-        const averageData = await averageResponse.json()
-        if (Array.isArray(averageData.categoryAverages))
-          averageData.categoryAverages.forEach(
-            (cat: { category: string; average: number }) => {
-              updateAverage(cat.category as Category, cat.average)
-            }
-          )
-
-        if (averageData.finalAverage !== undefined)
-          updateAverage('FINAL', averageData.finalAverage)
-      }
-    } catch (error) {
-      console.error('Failed to refresh score and averages:', error)
-    }
-  }, [updateAverage])
-
-  useEffect(() => {
-    if (
-      interestScore === 0 &&
-      currencyScore === 0 &&
-      stockScore === 0 &&
-      finalScore === 0
-    ) {
-      console.log('refreshing score')
-      refreshScore()
-    }
-  }, [refreshScore, interestScore, currencyScore, stockScore, finalScore])
+  // useEffect(() => {
+  //   refreshScore()
+  // }, [refreshScore])
 
   const scoreValues = useMemo(
     () => ({

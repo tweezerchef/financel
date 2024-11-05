@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
@@ -8,6 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     const cookieStore = await cookies()
     const sessionId = cookieStore.get('sessionId')?.value
+    const resultId = req.nextUrl.searchParams.get('resultId')
 
     if (!sessionId)
       return NextResponse.json(
@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
     const latestResult = await prisma.result.findFirst({
       where: {
         [userType === 'registered' ? 'userId' : 'guestId']: userData.id,
+        ...(resultId ? { id: resultId } : {}),
       },
       select: {
         id: true,
