@@ -9,6 +9,8 @@ import {
   Title,
   Tooltip,
   Legend,
+  ScriptableContext,
+  LegendItem,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
 import { useScoreContext } from '../../../context/user/ScoreContext'
@@ -45,8 +47,17 @@ export function ScoreChart() {
       {
         label: 'Your Score',
         data: [interestScore, currencyScore, stockScore, finalScore],
-        backgroundColor: 'rgba(255, 99, 132)',
-        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor(context: ScriptableContext<'bar'>) {
+          const { chart } = context
+          const { ctx, chartArea } = chart
+          if (!chartArea) return
+
+          const gradient = ctx.createLinearGradient(0, 0, 0, chartArea.bottom)
+          gradient.addColorStop(0, 'rgba(255, 0, 0, 0.8)') // Red at top
+          gradient.addColorStop(1, 'rgba(255, 255, 0, 0.8)') // Yellow at bottom
+          return gradient
+        },
+        borderColor: 'rgba(255, 0, 0, 0.8)',
         borderWidth: 1,
       },
       {
@@ -66,7 +77,32 @@ export function ScoreChart() {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: true,
+    aspectRatio: 1.5,
+    plugins: {
+      legend: {
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          generateLabels: (chart: ChartJS) => {
+            const defaultLabels =
+              Legend.defaults?.labels?.generateLabels?.(chart) ?? []
+            return defaultLabels.map((label: LegendItem) => {
+              if (label.text === 'Your Score')
+                return {
+                  ...label,
+                  fillStyle: 'rgba(255, 0, 0, 0.8)',
+                  strokeStyle: 'rgba(255, 0, 0, 0.8)',
+                  backgroundImage:
+                    'linear-gradient(to bottom, rgba(255, 0, 0, 0.8), rgba(255, 255, 0, 0.8))',
+                }
+
+              return label
+            })
+          },
+        },
+      },
+    },
     scales: {
       x: {
         title: {
@@ -198,22 +234,14 @@ export function ScoreChart() {
   // }, [])
 
   return (
-    <>
-      <div style={{ width: '100%', height: '180px' }}>
-        <Bar ref={chartRef} data={chartData} options={options} />
-      </div>
-      {/* <div>
-        <Button onClick={copyChartToClipboard}>Copy Chart to Clipboard</Button>
-        {downloadUrl ? (
-          <a href={downloadUrl} download="score-chart.png">
-            <Button>Download Chart</Button>
-          </a>
-        ) : (
-          <Button onClick={prepareChartForDownload}>
-            Prepare Chart for Download
-          </Button>
-        )}
-      </div> */}
-    </>
+    <div
+      style={{
+        width: '80%', // Reduced from 100%
+        maxWidth: '600px', // Reduced from 800px
+        margin: '0 auto',
+      }}
+    >
+      <Bar ref={chartRef} data={chartData} options={options} />
+    </div>
   )
 }
