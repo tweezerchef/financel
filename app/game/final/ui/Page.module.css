@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 120px);
+  height: calc(100dvh - 111px);
   width: 100%;
   overflow: hidden;
   background-color: #000;

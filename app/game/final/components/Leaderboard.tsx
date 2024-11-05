@@ -1,6 +1,7 @@
 'use client'
 
 import { Avatar, Table, Group, Text, Stack } from '@mantine/core'
+import { v4 as uuidv4 } from 'uuid'
 import { useLeaderboard } from '../lib/useLeaderBoard'
 import classes from './ui/LeaderBoard.module.css'
 
@@ -8,7 +9,7 @@ export function LeaderBoard() {
   const { data } = useLeaderboard()
 
   const toprows = data?.topEntries.map((player) => (
-    <Table.Tr key={player.username}>
+    <Table.Tr key={uuidv4()}>
       <Table.Td>
         <Group gap="sm">
           <Text fz="sm" fw={500}>
@@ -27,7 +28,7 @@ export function LeaderBoard() {
   ))
 
   const surroundingrows = data?.surroundingEntries.map((player) => (
-    <Table.Tr key={player.username}>
+    <Table.Tr key={uuidv4()}>
       <Table.Td>
         <Group gap="sm">
           <Text fz="sm" fw={500}>
