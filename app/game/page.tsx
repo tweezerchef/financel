@@ -23,7 +23,7 @@ export default function Game() {
       try {
         const response = await fetch('/auth/api/verify', {
           method: 'GET',
-          credentials: 'include', // This ensures cookies are sent with the ∂request
+          credentials: 'include',
         })
 
         if (!response.ok) throw new Error('Invalid session')
