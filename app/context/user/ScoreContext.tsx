@@ -84,7 +84,6 @@ export const ScoreProvider: FC<ScoreProviderProps> = ({ children }) => {
   }, [])
   const refreshScore = useCallback(
     async (resultId: string) => {
-      console.log('refreshing score', resultId)
       try {
         const scoreResponse = await fetch(
           `/context/user/api/userScore?resultId=${resultId}`,
