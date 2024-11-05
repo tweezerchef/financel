@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 'use client'
@@ -126,7 +125,7 @@ export function NextModal({
         : type === 'Stock Price'
           ? 'final'
           : ''
-  console.log('finalGuess', finalGuess)
+
   const renderChart = () => {
     if (!chartData) return null
 

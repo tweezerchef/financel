@@ -53,7 +53,7 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
   const [formattedChallengeDate, setFormattedChallengeDate] =
     useState<string>('')
   const { user } = useUserContext()
-  const { updateScore } = useScoreContext()
+  const { refreshScore } = useScoreContext()
   const { resultId } = user ?? {}
   const { chartData, decimal } = dailyChallengeStock ?? {}
 
@@ -175,8 +175,7 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
           (guessCount.current === 7 && !isAnimating)
         ) {
           setFinalGuess(postGuess)
-          updateScore('STOCK', score)
-          updateScore('FINAL', totalScore)
+          refreshScore(resultId)
           setTimeout(() => {
             setModalProps({
               opened: true,
@@ -204,7 +203,7 @@ export function StockGuess({ setAmountAway, setGuessCount }: StockGuessProps) {
       form,
       setAmountAway,
       setGuessCount,
-      updateScore,
+      refreshScore,
       chartData,
       handlers,
     ]

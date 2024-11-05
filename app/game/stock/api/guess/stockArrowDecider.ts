@@ -73,9 +73,6 @@ export function stockArrowDecider(
   guess: number,
   actual: number
 ): ArrowDeciderReturn {
-  console.log('guess', guess)
-  console.log('actual', actual)
-
   const significantDigits = actual < 1 ? 2 : 3
 
   // Always consider only the first three digits
@@ -83,7 +80,6 @@ export function stockArrowDecider(
     actual,
     significantDigits
   )
-  console.log('truncatedActual', truncatedActual)
 
   if (guess === truncatedActual)
     return {
