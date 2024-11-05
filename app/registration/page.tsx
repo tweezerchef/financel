@@ -110,7 +110,6 @@ export default function Registration() {
 
       if (!response.ok) throw new Error(data.message || 'Registration failed')
 
-      console.log('Registration successful:', data)
       router.push('/')
     } catch (error) {
       console.error(
