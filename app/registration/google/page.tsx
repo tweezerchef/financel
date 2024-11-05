@@ -71,10 +71,6 @@ export default function Registration() {
         return
       }
 
-      const data = await response.json()
-      console.log('Registration successful:', data)
-      if (data.signedUrl) console.log(data.signedUrl)
-
       router.push('/')
     } catch (error) {
       console.error('Registration error:', error)

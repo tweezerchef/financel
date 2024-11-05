@@ -74,9 +74,6 @@ export function currencyArrowDecider(
   guess: number,
   actual: number
 ): ArrowDeciderReturn {
-  console.log('guess', guess)
-  console.log('actual', actual)
-
   // Decide significant digits based on whether the number is less than 1
   const significantDigits = actual < 1 ? 2 : 3
 
@@ -85,7 +82,6 @@ export function currencyArrowDecider(
     actual,
     significantDigits
   )
-  console.log('truncatedActual', truncatedActual)
 
   if (guess === truncatedActual)
     return {

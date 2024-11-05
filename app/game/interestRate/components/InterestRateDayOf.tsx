@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
@@ -33,7 +31,6 @@ export function InterestRateDayOf({
   const { dailyChallengeInterestRate } = useDailyChallengeContext()
   const { date, category } = dailyChallengeInterestRate || {}
   const legendRef = useRef<HTMLDivElement>(null)
-  console.log('date', date, 'category', category)
 
   useEffect(() => {
     if (dayOfSlide === 'image') {

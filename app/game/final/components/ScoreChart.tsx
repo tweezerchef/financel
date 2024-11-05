@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,8 +11,8 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
-import { Button } from '@mantine/core'
 import { useScoreContext } from '../../../context/user/ScoreContext'
+import { useUserContext } from '../../../context/user/UserContext'
 // import classes from './ui/ScoreChart.module.css'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
@@ -28,10 +28,15 @@ export function ScoreChart() {
     averageCurrency,
     averageStock,
     averageFinal,
+    refreshScore,
   } = useScoreContext()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [copyStatus, setCopyStatus] = useState<string>('')
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const { user } = useUserContext()
+  const resultId = user?.resultId
+  if (!stockScore || !currencyScore || !interestScore || !finalScore)
+    refreshScore(resultId || '')
+
+  // const [copyStatus, setCopyStatus] = useState<string>('')
+  // const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   // const [tweetUrl, setTweetUrl] = useState<string>('')
 
   const chartData = {
@@ -81,61 +86,61 @@ export function ScoreChart() {
     },
   }
 
-  const copyChartToClipboard = async () => {
-    if (chartRef.current)
-      try {
-        const chartImage = chartRef.current.toBase64Image()
+  // const copyChartToClipboard = async () => {
+  //   if (chartRef.current)
+  //     try {
+  //       const chartImage = chartRef.current.toBase64Image()
 
-        // Check if the device supports the Clipboard API
-        if (navigator.clipboard && navigator.clipboard.write) {
-          const blob = await fetch(chartImage).then((res) => res.blob())
-          await navigator.clipboard.write([
-            new ClipboardItem({
-              [blob.type]: blob,
-            }),
-          ])
-        } else {
-          // Fallback for devices that don't support Clipboard API
-          const tempImg = document.createElement('img')
-          tempImg.src = chartImage
-          tempImg.style.position = 'fixed'
-          tempImg.style.left = '-9999px'
-          document.body.appendChild(tempImg)
+  //       // Check if the device supports the Clipboard API
+  //       if (navigator.clipboard && navigator.clipboard.write) {
+  //         const blob = await fetch(chartImage).then((res) => res.blob())
+  //         await navigator.clipboard.write([
+  //           new ClipboardItem({
+  //             [blob.type]: blob,
+  //           }),
+  //         ])
+  //       } else {
+  //         // Fallback for devices that don't support Clipboard API
+  //         const tempImg = document.createElement('img')
+  //         tempImg.src = chartImage
+  //         tempImg.style.position = 'fixed'
+  //         tempImg.style.left = '-9999px'
+  //         document.body.appendChild(tempImg)
 
-          const range = document.createRange()
-          range.selectNode(tempImg)
-          window.getSelection()?.removeAllRanges()
-          window.getSelection()?.addRange(range)
+  //         const range = document.createRange()
+  //         range.selectNode(tempImg)
+  //         window.getSelection()?.removeAllRanges()
+  //         window.getSelection()?.addRange(range)
 
-          try {
-            const successful = document.execCommand('copy')
-            if (!successful) throw new Error('Copy command failed')
-          } finally {
-            window.getSelection()?.removeAllRanges()
-            document.body.removeChild(tempImg)
-          }
-        }
+  //         try {
+  //           const successful = document.execCommand('copy')
+  //           if (!successful) throw new Error('Copy command failed')
+  //         } finally {
+  //           window.getSelection()?.removeAllRanges()
+  //           document.body.removeChild(tempImg)
+  //         }
+  //       }
 
-        setCopyStatus('Chart copied to clipboard!')
-        setTimeout(() => setCopyStatus(''), 3000) // Clear status after 3 seconds
-      } catch (err) {
-        console.error('Failed to copy chart:', err)
-        setCopyStatus('Failed to copy chart. Please try again.')
-      }
-  }
+  //       setCopyStatus('Chart copied to clipboard!')
+  //       setTimeout(() => setCopyStatus(''), 3000) // Clear status after 3 seconds
+  //     } catch (err) {
+  //       console.error('Failed to copy chart:', err)
+  //       setCopyStatus('Failed to copy chart. Please try again.')
+  //     }
+  // }
 
-  const prepareChartForDownload = () => {
-    if (chartRef.current)
-      try {
-        const chartImage = chartRef.current.toBase64Image()
-        setDownloadUrl(chartImage)
-        setCopyStatus('Chart ready for download!')
-        setTimeout(() => setCopyStatus(''), 3000)
-      } catch (err) {
-        console.error('Failed to prepare chart for download:', err)
-        setCopyStatus('Failed to prepare chart. Please try again.')
-      }
-  }
+  // const prepareChartForDownload = () => {
+  //   if (chartRef.current)
+  //     try {
+  //       const chartImage = chartRef.current.toBase64Image()
+  //       setDownloadUrl(chartImage)
+  //       setCopyStatus('Chart ready for download!')
+  //       setTimeout(() => setCopyStatus(''), 3000)
+  //     } catch (err) {
+  //       console.error('Failed to prepare chart for download:', err)
+  //       setCopyStatus('Failed to prepare chart. Please try again.')
+  //     }
+  // }
 
   // const prepareChartForTweet = async () => {
   //   if (chartRef.current)
@@ -197,7 +202,7 @@ export function ScoreChart() {
       <div style={{ width: '100%', height: '180px' }}>
         <Bar ref={chartRef} data={chartData} options={options} />
       </div>
-      <div>
+      {/* <div>
         <Button onClick={copyChartToClipboard}>Copy Chart to Clipboard</Button>
         {downloadUrl ? (
           <a href={downloadUrl} download="score-chart.png">
@@ -208,7 +213,7 @@ export function ScoreChart() {
             Prepare Chart for Download
           </Button>
         )}
-      </div>
+      </div> */}
     </>
   )
 }

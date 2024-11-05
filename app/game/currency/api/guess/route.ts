@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
@@ -103,7 +102,6 @@ export async function POST(request: NextRequest) {
           data: {
             score,
             completed: true,
-            endTime: nowDate,
           },
         }),
         prisma.categoryStatistics.upsert({

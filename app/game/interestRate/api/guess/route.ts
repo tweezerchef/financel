@@ -1,6 +1,5 @@
-/* eslint-disable no-plusplus */
 /* eslint-disable no-use-before-define */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { updateResultCategory } from '../../../../lib/dbFunctions/updateResultCategory'
 import { calculateTimeTaken } from '../../../../lib/dbFunctions/calculateTimeTaken'
@@ -21,7 +20,6 @@ export async function POST(request: NextRequest) {
 
     // Convert milliseconds timestamp back to Date object
     const nowDate = new Date(Number(today))
-    console.log('nowDate', nowDate, 'today', today, 'dateOnly', dateOnly)
 
     if (Number.isNaN(nowDate.getTime()))
       throw new Error('Invalid date format for today parameter')
