@@ -11,17 +11,22 @@ export function LeaderBoard() {
   const toprows = data?.topEntries.map((player) => (
     <Table.Tr key={uuidv4()}>
       <Table.Td>
-        <Group gap="sm">
-          <Text fz="sm" fw={500}>
+        <Group
+          gap="sm"
+          justify="flex-start"
+          wrap="nowrap"
+          style={{ maxWidth: '300px', margin: '0 auto' }}
+        >
+          <Text fz="sm" fw={500} style={{ width: '30px' }}>
             {player.rank}.
           </Text>
-          <Text fz="sm">{player.score}</Text>
-          <Avatar size={40} src={player.avatar} radius={40} />
-          <div>
-            <Text fz="sm" fw={500}>
-              {player.username}
-            </Text>
-          </div>
+          <Text fz="sm" style={{ width: '60px' }}>
+            {player.score}
+          </Text>
+          <Avatar size={32} src={player.avatar} radius={32} />
+          <Text fz="sm" fw={500} style={{ flex: 1 }}>
+            {player.username}
+          </Text>
         </Group>
       </Table.Td>
     </Table.Tr>
@@ -30,17 +35,22 @@ export function LeaderBoard() {
   const surroundingrows = data?.surroundingEntries.map((player) => (
     <Table.Tr key={uuidv4()}>
       <Table.Td>
-        <Group gap="sm">
-          <Text fz="sm" fw={500}>
+        <Group
+          gap="sm"
+          justify="flex-start"
+          wrap="nowrap"
+          style={{ maxWidth: '300px', margin: '0 auto' }}
+        >
+          <Text fz="sm" fw={500} style={{ width: '30px' }}>
             {player.rank}.
           </Text>
-          <Text fz="sm">{player.score}</Text>
-          <Avatar size={40} src={player.avatar} radius={40} />
-          <div>
-            <Text fz="sm" fw={500}>
-              {player.username}
-            </Text>
-          </div>
+          <Text fz="sm" style={{ width: '60px' }}>
+            {player.score}
+          </Text>
+          <Avatar size={32} src={player.avatar} radius={32} />
+          <Text fz="sm" fw={500} style={{ flex: 1 }}>
+            {player.username}
+          </Text>
         </Group>
       </Table.Td>
     </Table.Tr>
@@ -48,14 +58,14 @@ export function LeaderBoard() {
 
   return (
     <Stack className={classes.stack}>
-      <Text fz="md" fw={500} align="center">
-        Leaderboard
+      <Text fz="xl" fw={500} align="center" className={classes.topSectionTitle}>
+        Today&apos;s Leaderboard
       </Text>
       <div className={classes.tableWrapper}>
         <Table verticalSpacing="xs" className={classes.table}>
           <Table.Tbody>{toprows}</Table.Tbody>
         </Table>
-        <Text fz="sm" fw={500} align="center">
+        <Text fz="xl" fw={500} align="center" className={classes.sectionTitle}>
           Surrounding Players
         </Text>
         <Table verticalSpacing="xs" className={classes.table}>
