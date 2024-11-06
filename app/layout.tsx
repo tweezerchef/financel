@@ -1,8 +1,6 @@
-/* eslint-disable react/jsx-no-duplicate-props */
-
 import type { Metadata } from 'next'
 import LocalFont from 'next/font/local'
-import { SpeedInsights } from '@vercel/speed-insights/next'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Analytics } from '@vercel/analytics/react'
 import {
   Center,
@@ -47,6 +45,16 @@ const yellow: MantineColorsTuple = [
 const tickerFont = LocalFont({
   src: './SUBWT___.ttf',
   display: 'swap',
+  variable: '--font-ticker',
+  preload: true,
+  fallback: ['monospace'],
+})
+const wsjBoldInitial = LocalFont({
+  src: './WSBI___.ttf',
+  display: 'swap',
+  variable: '--font-wsj',
+  preload: true,
+  fallback: ['serif'],
 })
 
 const theme = createTheme({
@@ -72,7 +80,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${classes.html} ${tickerFont.className}`}>
+    <html
+      lang="en"
+      className={`${classes.html} ${tickerFont.variable} ${wsjBoldInitial.variable}`}
+    >
       <head />
       <body className={classes.body}>
         <main>
