@@ -1,17 +1,44 @@
 .stack {
   width: 100%;
   flex: 1;
-  display: flex; /* Behaves as a flex container */
+  display: flex;
   flex-direction: column;
-  min-height: 0; /* Important for nested flex containers */
-  overflow: hidden; /* Prevent overflow */
+  min-height: 0;
+  overflow: hidden;
+  background-color: #1a1b1e;
 }
 
 .tableWrapper {
   flex: 1;
-  overflow-y: auto; /* Enable internal scrolling */
+  overflow-y: auto;
 }
 
 .table {
   width: 100%;
+  color: #c1c2c5;
+}
+
+.table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.table tr:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  transition: background-color 0.2s ease;
+}
+
+.table tr {
+  border-bottom: 1px solid var(--mantine-color-yellow-3);
+}
+
+.topSectionTitle {
+  margin: 8px 0 0px 0;
+  font-family: var(--font-wsj);
+  color: var(--mantine-color-yellow-3);
+}
+
+.sectionTitle {
+  margin: 16px 0;
+  font-family: var(--font-wsj);
+  color: var(--mantine-color-yellow-3);
 }

@@ -91,10 +91,8 @@ export function ScoreChart() {
               if (label.text === 'Your Score')
                 return {
                   ...label,
-                  fillStyle: 'rgba(255, 0, 0, 0.8)',
-                  strokeStyle: 'rgba(255, 0, 0, 0.8)',
-                  backgroundImage:
-                    'linear-gradient(to bottom, rgba(255, 0, 0, 0.8), rgba(255, 255, 0, 0.8))',
+                  fillStyle: 'rgba(255, 128, 0, 0.8)',
+                  strokeStyle: 'rgba(255, 128, 0, 0.8)',
                 }
 
               return label

@@ -10,7 +10,7 @@
 }
 
 .scoreChartWrapper {
-  flex: 0 0 auto; /* Don't grow or shrink, use auto height */
+  flex: 0 0 auto;
   padding: 0.5rem;
   width: 100%;
   box-sizing: border-box;
@@ -18,10 +18,10 @@
 
 .leaderboardWrapper {
   width: 100%;
-  flex: 1; /* Take remaining space */
-  overflow-y: auto; /* Enable scrolling */
+  flex: 1;
+  overflow-y: auto;
   padding: 0 1rem;
   box-sizing: border-box;
-  background-color: #ffffff;
-  color: #000;
+  background-color: #1a1b1e;
+  color: #c1c2c5;
 }
