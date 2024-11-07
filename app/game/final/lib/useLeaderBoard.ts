@@ -30,6 +30,7 @@ export async function fetchLeaderboard(
   const url = resultId
     ? `/api/leaderboard/today/${categoryPath}?resultId=${resultId}&startDate=${startOfDay}`
     : `/api/leaderboard/today/${categoryPath}?startDate=${startOfDay}`
+
   const response = await fetch(url)
   if (!response.ok) {
     if (response.status === 404)
@@ -47,7 +48,6 @@ export async function fetchLeaderboard(
   return data
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function useLeaderboard(category: LeaderboardCategory = 'FINAL') {
   const [data, setData] = useState<LeaderboardData | null>(null)
   const [error, setError] = useState<Error | null>(null)
