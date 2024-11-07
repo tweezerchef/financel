@@ -42,3 +42,9 @@
   font-family: var(--font-wsj);
   color: var(--mantine-color-yellow-3);
 }
+
+.currentPlayer {
+  background-color: rgba(255, 255, 0, 0.1); /* subtle yellow background */
+  border-left: 3px solid gold; /* gold accent */
+  font-weight: bold;
+}
