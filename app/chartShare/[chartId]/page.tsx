@@ -1,22 +1,29 @@
 import { Metadata } from 'next'
 import Image from 'next/image'
 
-interface PageProps {
-  params: {
-    chartId: string
-  }
+type ParamsType = { chartId: string }
+
+interface ChartPageProps {
+  params: Promise<ParamsType>
+}
+
+interface ChartMetadataProps {
+  params: Promise<ParamsType>
 }
 
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
-  const { chartId } = params
+}: ChartMetadataProps): Promise<Metadata> {
+  const { chartId } = await params
 
   const chartImageUrl = `https://${process.env.NEXT_PUBLIC_SERVER_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_SERVER_AWS_REGION}.amazonaws.com/chart/${chartId}`
 
   try {
     const headResponse = await fetch(chartImageUrl, { method: 'HEAD' })
-    if (!headResponse.ok) return {}
+    if (!headResponse.ok) {
+      console.error('Image not found:', chartImageUrl)
+      return {}
+    }
   } catch (error) {
     console.error('Error checking image:', error)
     return {}
@@ -49,8 +56,8 @@ export async function generateMetadata({
   }
 }
 
-export default async function ChartPage({ params }: PageProps) {
-  const { chartId } = params
+export default async function ChartPage({ params }: ChartPageProps) {
+  const { chartId } = await params
 
   const chartImageUrl = `https://${process.env.NEXT_PUBLIC_SERVER_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_SERVER_AWS_REGION}.amazonaws.com/chart/${chartId}`
 
