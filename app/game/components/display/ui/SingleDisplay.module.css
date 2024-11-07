@@ -4,8 +4,8 @@
   height: 7dvh;
   min-width: 1.7rem;
   min-height: 3rem;
-  max-width: 3.5rem;
-  max-height: 5rem;
+  max-width: 3rem;
+  max-height: 4rem;
   perspective: 1000px;
   border-radius: 4px;
   transform: perspective(1000px) rotateX(5deg);
@@ -16,6 +16,16 @@
     min-height: 2.2rem;
     max-width: 3.5rem;
     max-height: 4rem;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .flipBox {
+    width: 2.8rem;
+    height: 3.2rem;
+    min-width: 2.8rem;
+    min-height: 3.2rem;
+    max-width: 2.8rem;
+    max-height: 3.2rem;
   }
 }
 

@@ -32,15 +32,31 @@
 
 @media (max-width: 375px) {
   .date {
-    font-size: clamp(0.85rem, 2vw, 1.1rem); /* Smaller text for small screens */
+    font-size: clamp(0.85rem, 2vw, 1.1rem);
   }
 
   .bondType {
-    font-size: clamp(0.7rem, 1.8vw, 1rem); /* Smaller text for small screens */
+    font-size: clamp(0.7rem, 1.8vw, 1rem);
   }
 
   .paper {
-    margin-top: -0.9rem; /* Adjust spacing for smaller text */
+    margin-top: -0.9rem;
   }
 }
+
+/* Add desktop specific sizes */
+@media (min-width: 768px) {
+  .date {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+  }
+
+  .bondType {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+  }
+
+  .paper {
+    margin-top: -0.4rem;
+  }
+}
+
 /* Add styles for input area and keyboard */

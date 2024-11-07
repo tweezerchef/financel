@@ -102,7 +102,7 @@ export function LeaderBoard() {
           <Table.Tbody>{toprows}</Table.Tbody>
         </Table>
         <Text fz="xl" fw={500} align="center" className={classes.sectionTitle}>
-          Surrounding Players
+          Your Position
         </Text>
         <Table verticalSpacing="xs" className={classes.table}>
           <Table.Tbody>{surroundingrows}</Table.Tbody>

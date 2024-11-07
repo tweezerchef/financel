@@ -1,11 +1,17 @@
 .container {
   min-height: 100dvh;
   width: 100vw;
-  max-width: 900px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   padding: 0;
   margin: 0;
+}
+
+@media only screen and (min-width: 768px) {
+  .container {
+    min-height: 800px;
+  }
 }
 
 @media screen and (min-width: 600px) {
@@ -41,7 +47,7 @@
   .mainContent {
     margin: auto 0; /* Center vertically */
     justify-content: space-between;
-    min-height: 650px;
+    min-height: 700px;
   }
 }
 .footer {
