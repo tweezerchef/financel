@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,18 +9,18 @@ import {
   Title,
   Tooltip,
   Legend,
-  ScriptableContext,
-  LegendItem,
+  ChartOptions,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
 import { useScoreContext } from '../../../context/user/ScoreContext'
 import { useUserContext } from '../../../context/user/UserContext'
-// import classes from './ui/ScoreChart.module.css'
+import classes from './ui/ScoreChart.module.css'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export function ScoreChart() {
-  const chartRef = useRef<ChartJS<'bar', number[], string>>(null)
+  const chartRef = useRef<ChartJS<'bar'>>(null)
+  const [sharing, setSharing] = useState(false)
   const {
     interestScore,
     currencyScore,
@@ -34,12 +34,9 @@ export function ScoreChart() {
   } = useScoreContext()
   const { user } = useUserContext()
   const resultId = user?.resultId
+
   if (!stockScore || !currencyScore || !interestScore || !finalScore)
     refreshScore(resultId || '')
-
-  // const [copyStatus, setCopyStatus] = useState<string>('')
-  // const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
-  // const [tweetUrl, setTweetUrl] = useState<string>('')
 
   const chartData = {
     labels: ['Interest', 'Currency', 'Stock', 'Final'],
@@ -47,17 +44,8 @@ export function ScoreChart() {
       {
         label: 'Your Score',
         data: [interestScore, currencyScore, stockScore, finalScore],
-        backgroundColor(context: ScriptableContext<'bar'>) {
-          const { chart } = context
-          const { ctx, chartArea } = chart
-          if (!chartArea) return
-
-          const gradient = ctx.createLinearGradient(0, 0, 0, chartArea.bottom)
-          gradient.addColorStop(0, 'rgba(255, 0, 0, 0.8)') // Red at top
-          gradient.addColorStop(1, 'rgba(255, 255, 0, 0.8)') // Yellow at bottom
-          return gradient
-        },
-        borderColor: 'rgba(255, 0, 0, 0.8)',
+        backgroundColor: 'rgba(255, 99, 132, 0.8)',
+        borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
       },
       {
@@ -68,37 +56,20 @@ export function ScoreChart() {
           averageStock,
           averageFinal,
         ],
-        backgroundColor: 'rgba(54, 162, 235)',
+        backgroundColor: 'rgba(54, 162, 235, 0.8)',
         borderColor: 'rgb(54, 162, 235)',
         borderWidth: 1,
       },
     ],
   }
 
-  const options = {
+  const options: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: true,
     aspectRatio: 1.5,
     plugins: {
       legend: {
-        labels: {
-          usePointStyle: true,
-          pointStyle: 'circle',
-          generateLabels: (chart: ChartJS) => {
-            const defaultLabels =
-              Legend.defaults?.labels?.generateLabels?.(chart) ?? []
-            return defaultLabels.map((label: LegendItem) => {
-              if (label.text === 'Your Score')
-                return {
-                  ...label,
-                  fillStyle: 'rgba(255, 128, 0, 0.8)',
-                  strokeStyle: 'rgba(255, 128, 0, 0.8)',
-                }
-
-              return label
-            })
-          },
-        },
+        position: 'top',
       },
     },
     scales: {
@@ -120,126 +91,77 @@ export function ScoreChart() {
     },
   }
 
-  // const copyChartToClipboard = async () => {
-  //   if (chartRef.current)
-  //     try {
-  //       const chartImage = chartRef.current.toBase64Image()
+  const handleShareToTwitter = async () => {
+    if (chartRef.current)
+      try {
+        setSharing(true)
+        const chartCanvas = chartRef.current.canvas
+        if (!chartCanvas) {
+          alert('Chart is not available for sharing.')
+          return
+        }
 
-  //       // Check if the device supports the Clipboard API
-  //       if (navigator.clipboard && navigator.clipboard.write) {
-  //         const blob = await fetch(chartImage).then((res) => res.blob())
-  //         await navigator.clipboard.write([
-  //           new ClipboardItem({
-  //             [blob.type]: blob,
-  //           }),
-  //         ])
-  //       } else {
-  //         // Fallback for devices that don't support Clipboard API
-  //         const tempImg = document.createElement('img')
-  //         tempImg.src = chartImage
-  //         tempImg.style.position = 'fixed'
-  //         tempImg.style.left = '-9999px'
-  //         document.body.appendChild(tempImg)
+        // Convert canvas to Blob
+        chartCanvas.toBlob(async (blob) => {
+          if (!blob) {
+            alert('Failed to generate chart image.')
+            return
+          }
 
-  //         const range = document.createRange()
-  //         range.selectNode(tempImg)
-  //         window.getSelection()?.removeAllRanges()
-  //         window.getSelection()?.addRange(range)
+          // Create FormData and append the blob
+          const formData = new FormData()
+          formData.append('chart', blob, 'chart.png')
 
-  //         try {
-  //           const successful = document.execCommand('copy')
-  //           if (!successful) throw new Error('Copy command failed')
-  //         } finally {
-  //           window.getSelection()?.removeAllRanges()
-  //           document.body.removeChild(tempImg)
-  //         }
-  //       }
+          // Upload the image to the server
+          const uploadResponse = await fetch('/api/uploadChart', {
+            method: 'POST',
+            body: formData,
+          })
 
-  //       setCopyStatus('Chart copied to clipboard!')
-  //       setTimeout(() => setCopyStatus(''), 3000) // Clear status after 3 seconds
-  //     } catch (err) {
-  //       console.error('Failed to copy chart:', err)
-  //       setCopyStatus('Failed to copy chart. Please try again.')
-  //     }
-  // }
+          if (!uploadResponse.ok) throw new Error('Chart upload failed')
 
-  // const prepareChartForDownload = () => {
-  //   if (chartRef.current)
-  //     try {
-  //       const chartImage = chartRef.current.toBase64Image()
-  //       setDownloadUrl(chartImage)
-  //       setCopyStatus('Chart ready for download!')
-  //       setTimeout(() => setCopyStatus(''), 3000)
-  //     } catch (err) {
-  //       console.error('Failed to prepare chart for download:', err)
-  //       setCopyStatus('Failed to prepare chart. Please try again.')
-  //     }
-  // }
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { imageUrl, chartId } = await uploadResponse.json()
 
-  // const prepareChartForTweet = async () => {
-  //   if (chartRef.current)
-  //     try {
-  //       const chartImage = chartRef.current.toBase64Image()
+          if (!chartId) throw new Error('chartId is undefined in the response')
 
-  //       // Convert base64 to blob
-  //       const response = await fetch(chartImage)
-  //       const blob = await response.blob()
+          // Construct the URL to the chart page
+          const chartPageUrl = `${window.location.origin}/chartShare/${chartId}`
 
-  //       // Create form data
-  //       const formData = new FormData()
-  //       formData.append('chart', blob, 'chart.png')
+          // Construct the Twitter share URL
+          const tweetText = 'Check out my Financle score chart!'
+          const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+            chartPageUrl
+          )}&text=${encodeURIComponent(tweetText)}`
 
-  //       // Send to your server
-  //       const uploadResponse = await fetch('/api/uploadChart', {
-  //         method: 'POST',
-  //         body: formData,
-  //       })
-
-  //       if (!uploadResponse.ok) throw new Error('Chart upload failed')
-
-  //       const { imageUrl } = await uploadResponse.json()
-
-  //       // Extract the chart ID from the imageUrl
-  //       const chartId = imageUrl.split('/').pop()
-
-  //       const tweetText = encodeURIComponent(
-  //         'Check out my Financle score chart!'
-  //       )
-
-  //       // Use the correct production URL for Twitter sharing
-  //       const twitterShareDomain = 'https://financle.vercel.app'
-  //       const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(`${twitterShareDomain}/chart/${chartId}`)}`
-
-  //       setTweetUrl(tweetUrl)
-  //       setCopyStatus('Chart ready for tweeting!')
-  //       setTimeout(() => setCopyStatus(''), 3000)
-  //     } catch (err) {
-  //       console.error('Failed to prepare chart for tweet:', err)
-  //       setCopyStatus('Failed to prepare chart for tweet. Please try again.')
-  //     }
-  // }
-
-  // useEffect(() => {
-  //   // Load Twitter widgets.js
-  //   const script = document.createElement('script')
-  //   script.src = 'https://platform.twitter.com/widgets.js'
-  //   script.async = true
-  //   document.body.appendChild(script)
-
-  //   return () => {
-  //     document.body.removeChild(script)
-  //   }
-  // }, [])
+          // Open the Twitter sharing dialog in a new window
+          window.open(twitterShareUrl, '_blank')
+        }, 'image/png')
+      } catch (err) {
+        console.error('Failed to share chart:', err)
+        alert('Failed to share chart. Please try again.')
+      } finally {
+        setSharing(false)
+      }
+    else alert('Chart is not available for sharing.')
+  }
 
   return (
     <div
       style={{
-        width: '80%', // Reduced from 100%
-        maxWidth: '600px', // Reduced from 800px
+        width: '80%',
+        maxWidth: '600px',
         margin: '0 auto',
       }}
     >
       <Bar ref={chartRef} data={chartData} options={options} />
+      <button
+        onClick={handleShareToTwitter}
+        disabled={sharing}
+        className={classes.shareButton}
+      >
+        {sharing ? 'Preparing...' : 'Share to X'}
+      </button>
     </div>
   )
 }
