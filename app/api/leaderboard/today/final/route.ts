@@ -86,6 +86,7 @@ export async function GET(request: Request) {
     // Get user's surrounding entries if resultId is provided
     let surroundingEntries: LeaderboardWithEntries['entries'] = []
     if (resultId) {
+      console.log('Searching for user entry with resultId:', resultId)
       const userEntry = await prisma.leaderboardEntry.findUnique({
         where: {
           leaderboardId_resultId: {
@@ -96,7 +97,10 @@ export async function GET(request: Request) {
         select: { rank: true },
       })
 
-      if (userEntry)
+      console.log('Found user entry:', userEntry)
+
+      if (userEntry) {
+        console.log('Fetching surrounding entries for rank:', userEntry.rank)
         surroundingEntries = await prisma.leaderboardEntry.findMany({
           where: {
             leaderboardId: leaderboard.id,
@@ -121,11 +125,14 @@ export async function GET(request: Request) {
             },
           },
         })
+        console.log('Found surrounding entries:', surroundingEntries.length)
+      }
     }
 
     // Process entries to add signed URLs
     const processEntries = async (
-      entries: LeaderboardWithEntries['entries']
+      entries: LeaderboardWithEntries['entries'],
+      currentResultId?: string
     ) => {
       return Promise.all(
         entries.map(async (entry) => {
@@ -146,13 +153,20 @@ export async function GET(request: Request) {
             username: entry.result.user?.username || 'Guest',
             avatar,
             isGuest: !entry.result.user,
+            isCurrentPlayer: entry.resultId === currentResultId,
           }
         })
       )
     }
 
-    const topEntries = await processEntries(leaderboard.entries)
-    const userSurroundingEntries = await processEntries(surroundingEntries)
+    const topEntries = await processEntries(
+      leaderboard.entries,
+      resultId || undefined
+    )
+    const userSurroundingEntries = await processEntries(
+      surroundingEntries,
+      resultId || undefined
+    )
 
     const response = {
       totalParticipants: leaderboard.totalParticipants,
