@@ -18,7 +18,7 @@ import classes from './ui/Login.module.css'
 import { useUserContext } from '../context/user/UserContext'
 import { GoogleButton } from './buttons/GoogleButton'
 
-interface LoginProps extends PaperProps {
+export interface LoginProps extends PaperProps {
   onAuthStart: () => void
   isAuthenticating?: boolean
 }

@@ -1,31 +1,18 @@
 // page.tsx
 
-'use client'
-
-import { useState } from 'react'
+// Remove 'use client' - make this a Server Component
+import { Suspense } from 'react'
 import { Header } from './components/Header'
-import { Login } from './components/Login'
-import { LoadingOverlay } from './components/LoadingOverlay'
+import { LoginWrapper } from './components/LoginWrapper'
 import classes from './ui/Page.module.css'
 
 export default function Home() {
-  const [isAuthenticating, setIsAuthenticating] = useState(false)
-
-  const handleAuthStart = () => {
-    setIsAuthenticating((prev) => !prev)
-  }
-
   return (
     <main className={classes.main}>
-      <Header
-        onAuthStart={handleAuthStart}
-        isAuthenticating={isAuthenticating}
-      />
-      <Login
-        onAuthStart={handleAuthStart}
-        isAuthenticating={isAuthenticating}
-      />
-      {isAuthenticating && <LoadingOverlay />}
+      <Header />
+      <Suspense fallback={<div>Loading...</div>}>
+        <LoginWrapper />
+      </Suspense>
     </main>
   )
 }
