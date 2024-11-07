@@ -10,3 +10,10 @@
   overflow: hidden;
   /* Add padding to prevent content from touching edges */
 }
+
+@media only screen and (min-width: 768px) {
+  .main {
+    justify-content: start;
+    min-height: 800px;
+  }
+}
