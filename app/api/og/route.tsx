@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og'
-import Image from 'next/image'
 
 export const runtime = 'edge'
 
@@ -25,12 +24,15 @@ export async function GET() {
             gap: '2rem',
           }}
         >
-          {/* Add your logo if you have one */}
-          <Image
+          {/* Replace Next.js Image with a regular img element */}
+          <img
             src="https://financle.app/favicon.svg"
             alt="Financle Logo"
             width="120"
             height="120"
+            style={{
+              objectFit: 'contain',
+            }}
           />
           <h1
             style={{
