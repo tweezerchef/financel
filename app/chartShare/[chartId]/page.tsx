@@ -1,19 +1,19 @@
 import { Metadata } from 'next'
 import Image from 'next/image'
 
-interface ChartPageProps {
-  params: { chartId: string }
+interface PageProps {
+  params: {
+    chartId: string
+  }
 }
 
 export async function generateMetadata({
   params,
-}: ChartPageProps): Promise<Metadata> {
-  const { chartId } = await params
+}: PageProps): Promise<Metadata> {
+  const { chartId } = params
 
-  // Build the image URL
   const chartImageUrl = `https://${process.env.NEXT_PUBLIC_SERVER_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_SERVER_AWS_REGION}.amazonaws.com/chart/${chartId}`
 
-  // Check if the image exists (Optional)
   try {
     const headResponse = await fetch(chartImageUrl, { method: 'HEAD' })
     if (!headResponse.ok) return {}
@@ -49,8 +49,8 @@ export async function generateMetadata({
   }
 }
 
-export default async function ChartPage({ params }: ChartPageProps) {
-  const { chartId } = await params
+export default async function ChartPage({ params }: PageProps) {
+  const { chartId } = params
 
   const chartImageUrl = `https://${process.env.NEXT_PUBLIC_SERVER_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_SERVER_AWS_REGION}.amazonaws.com/chart/${chartId}`
 
