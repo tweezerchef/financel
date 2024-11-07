@@ -33,6 +33,47 @@ export const metadata: Metadata = {
   },
   title: 'Financle',
   description: 'A game for the Brothers and Sisters of Finance',
+  metadataBase: new URL('https://financle.app'),
+  openGraph: {
+    title: 'Financle',
+    description: 'A game for the Brothers and Sisters of Finance',
+    type: 'website',
+    locale: 'en_US',
+    images: [
+      {
+        url: '/api/og',
+        width: 1200,
+        height: 630,
+        alt: 'Financle - Finance Game',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Financle',
+    description: 'A game for the Brothers and Sisters of Finance',
+    images: ['/api/og'],
+  },
+  keywords: [
+    'finance game',
+    'financial puzzle',
+    'stock market game',
+    'trading game',
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
 }
 
 export default function RootLayout({
