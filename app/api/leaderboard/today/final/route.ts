@@ -131,7 +131,8 @@ export async function GET(request: Request) {
 
     // Process entries to add signed URLs
     const processEntries = async (
-      entries: LeaderboardWithEntries['entries']
+      entries: LeaderboardWithEntries['entries'],
+      currentResultId?: string
     ) => {
       return Promise.all(
         entries.map(async (entry) => {
@@ -152,13 +153,20 @@ export async function GET(request: Request) {
             username: entry.result.user?.username || 'Guest',
             avatar,
             isGuest: !entry.result.user,
+            isCurrentPlayer: entry.resultId === currentResultId,
           }
         })
       )
     }
 
-    const topEntries = await processEntries(leaderboard.entries)
-    const userSurroundingEntries = await processEntries(surroundingEntries)
+    const topEntries = await processEntries(
+      leaderboard.entries,
+      resultId || undefined
+    )
+    const userSurroundingEntries = await processEntries(
+      surroundingEntries,
+      resultId || undefined
+    )
 
     const response = {
       totalParticipants: leaderboard.totalParticipants,
