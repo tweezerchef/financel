@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
     const imageUrl = `https://${process.env.SERVER_AWS_S3_BUCKET_NAME}.s3.${process.env.SERVER_AWS_REGION}.amazonaws.com/${key}`
 
-    return NextResponse.json({ imageUrl })
+    return NextResponse.json({ imageUrl, chartId: fileName })
   } catch (error) {
     console.error('Error uploading file:', error)
     return NextResponse.json({ error: 'Error uploading file' }, { status: 500 })
