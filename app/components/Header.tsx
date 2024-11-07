@@ -1,14 +1,9 @@
 import { Title, Text, Container, Center, AspectRatio } from '@mantine/core'
 import Image from 'next/image'
-import { GuestButton } from './buttons/GuestButton'
+import { GuestButtonWrapper } from './GuestButtonWrapper'
 import classes from './ui/Header.module.css'
 
-interface HeaderProps {
-  onAuthStart: () => void
-  isAuthenticating?: boolean
-}
-
-export function Header({ onAuthStart, isAuthenticating }: HeaderProps) {
+export function Header() {
   return (
     <div className={classes.wrapper}>
       <div className={classes.imageContainer}>
@@ -19,13 +14,22 @@ export function Header({ onAuthStart, isAuthenticating }: HeaderProps) {
             width={500}
             height={309}
             sizes="(max-width: 600px) 90vw, 400px"
-            quality={60}
+            quality={50}
             priority
-            style={{ width: '100%', height: 'auto' }}
+            loading="eager"
+            placeholder="blur"
+            blurDataURL="data:image/webp;base64,BASE64_BLUR_HERE"
+            style={{
+              width: '100%',
+              height: 'auto',
+              contentVisibility: 'auto',
+              display: 'block',
+              objectFit: 'cover',
+              backgroundColor: '#f0f0f0',
+            }}
           />
         </AspectRatio>
       </div>
-      {/* <Overlay color="#000" opacity={0.65} zIndex={1} /> */}
 
       <div className={classes.inner}>
         <Title className={classes.title}>Financle</Title>
@@ -36,12 +40,7 @@ export function Header({ onAuthStart, isAuthenticating }: HeaderProps) {
           </Text>
         </Container>
         <Center>
-          <div>
-            <GuestButton
-              onAuthStart={onAuthStart}
-              isAuthenticating={isAuthenticating}
-            />
-          </div>
+          <GuestButtonWrapper />
         </Center>
       </div>
     </div>
