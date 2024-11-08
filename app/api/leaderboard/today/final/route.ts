@@ -86,21 +86,14 @@ export async function GET(request: Request) {
     // Get user's surrounding entries if resultId is provided
     let surroundingEntries: LeaderboardWithEntries['entries'] = []
     if (resultId) {
-      console.log('Searching for user entry with resultId:', resultId)
-      const userEntry = await prisma.leaderboardEntry.findUnique({
+      const userEntry = await prisma.leaderboardEntry.findFirst({
         where: {
-          leaderboardId_resultId: {
-            leaderboardId: leaderboard.id,
-            resultId,
-          },
+          resultId,
         },
         select: { rank: true },
       })
 
-      console.log('Found user entry:', userEntry)
-
-      if (userEntry) {
-        console.log('Fetching surrounding entries for rank:', userEntry.rank)
+      if (userEntry)
         surroundingEntries = await prisma.leaderboardEntry.findMany({
           where: {
             leaderboardId: leaderboard.id,
@@ -125,8 +118,6 @@ export async function GET(request: Request) {
             },
           },
         })
-        console.log('Found surrounding entries:', surroundingEntries.length)
-      }
     }
 
     // Process entries to add signed URLs

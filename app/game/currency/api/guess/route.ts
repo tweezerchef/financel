@@ -119,6 +119,10 @@ export async function POST(request: NextRequest) {
       ])
 
       average = stats.totalScore.toNumber() / stats.count
+      await prisma.result.update({
+        where: { id: resultId },
+        data: { currencyScore: score },
+      })
     }
 
     return NextResponse.json(
