@@ -25,6 +25,26 @@ const getStockName = (stockName: string) => {
       return 'General Electric'
     case 'DIS':
       return 'Disney'
+    case 'T':
+      return 'AT&T'
+    case 'ATT':
+      return 'AT&T'
+    case 'MRK':
+      return 'Merck'
+    case 'HD':
+      return 'Home Depot'
+    case 'BA':
+      return 'Boeing'
+    case 'PG':
+      return 'Procter & Gamble'
+    case 'JNJ':
+      return 'Johnson & Johnson'
+    case 'MCD':
+      return 'McDonalds'
+    case 'KO':
+      return 'Coca-Cola'
+    case 'INTC':
+      return 'Intel'
     default:
       return stockName
   }
