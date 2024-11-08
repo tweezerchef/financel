@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import {
-  Stepper,
   FileButton,
   Button,
   TextInput,
   PasswordInput,
   Avatar,
   Container,
+  Text,
 } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useForm } from '@mantine/form'
@@ -17,7 +17,7 @@ import classes from './ui/Page.module.css'
 
 export default function Registration() {
   const router = useRouter()
-  const [active, setActive] = useState(0)
+  const [active, setActive] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const form = useForm({
     initialValues: {
@@ -129,110 +129,95 @@ export default function Registration() {
 
   return (
     <div className={classes.main}>
-      <div>
-        <Stepper
-          active={active}
-          size="xs"
-          onStepClick={setActive}
-          styles={{
-            separator: {
-              width: '0px',
-              margin: '0',
-              padding: '0',
-              justifySelf: 'flex-start',
-            },
-          }}
-        >
-          <Stepper.Step label="Account">
-            <div className={classes.contentContainer}>
-              <form className={classes.form}>
-                <TextInput
-                  withAsterisk
-                  label="Email"
-                  placeholder="your@email.com"
-                  {...form.getInputProps('email')}
-                  className={classes.wideInput}
-                />
-                <TextInput
-                  withAsterisk
-                  label="Confirm Email"
-                  placeholder="your@email.com"
-                  {...form.getInputProps('confirmEmail')}
-                  className={classes.wideInput}
-                />
-                <PasswordInput
-                  withAsterisk
-                  label="Password"
-                  placeholder="Password"
-                  {...form.getInputProps('password')}
-                  className={classes.wideInput}
-                />
-                <PasswordInput
-                  withAsterisk
-                  label="Confirm Password"
-                  placeholder="Password"
-                  {...form.getInputProps('confirmPassword')}
-                  className={classes.wideInput}
-                />
-              </form>
+      {active === 0 ? (
+        <div className={classes.contentContainer}>
+          <form className={classes.form}>
+            <TextInput
+              withAsterisk
+              label="Email"
+              placeholder="your@email.com"
+              {...form.getInputProps('email')}
+              className={classes.wideInput}
+            />
+            <TextInput
+              withAsterisk
+              label="Confirm Email"
+              placeholder="your@email.com"
+              {...form.getInputProps('confirmEmail')}
+              className={classes.wideInput}
+            />
+            <PasswordInput
+              withAsterisk
+              label="Password"
+              placeholder="Password"
+              {...form.getInputProps('password')}
+              className={classes.wideInput}
+            />
+            <PasswordInput
+              withAsterisk
+              label="Confirm Password"
+              placeholder="Password"
+              {...form.getInputProps('confirmPassword')}
+              className={classes.wideInput}
+            />
+          </form>
+        </div>
+      ) : (
+        <>
+          <Text size="md" ta="center" fw={500}>
+            We encourage users to use their Twitter avatar and username.
+          </Text>
+          <form className={classes.form}>
+            <TextInput
+              withAsterisk
+              label="Username"
+              placeholder="Username"
+              {...form.getInputProps('username')}
+              className={classes.wideInput}
+            />
+            <Text size="md" mb="xl" ta="center" fw={500} c="dimmed">
+              Select an avatar from the carousel or upload your own
+            </Text>
+            <div className={classes.avatarContainer}>
+              <Avatar
+                src={getAvatarSrc()}
+                alt="Avatar preview"
+                variant="filled"
+                radius="xl"
+                size="xl"
+                onLoad={() => {
+                  if (form.values.file)
+                    URL.revokeObjectURL(URL.createObjectURL(form.values.file))
+                }}
+              />
+              <FileButton
+                accept="image/png,image/jpeg"
+                onChange={(file: File | null) => {
+                  form.setValues({
+                    ...form.values,
+                    file,
+                    avatarUrl: null,
+                  })
+                }}
+              >
+                {(props) => (
+                  <Button {...props}>
+                    {form.values.file
+                      ? 'Choose Different File'
+                      : 'Upload avatar'}
+                  </Button>
+                )}
+              </FileButton>
             </div>
-          </Stepper.Step>
-
-          <Stepper.Step label="Avatar">
-            <div className={classes.contentContainer}>
-              <form className={classes.form}>
-                <TextInput
-                  withAsterisk
-                  label="Username"
-                  placeholder="Username"
-                  {...form.getInputProps('username')}
-                  className={classes.wideInput}
-                />
-                <div className={classes.avatarContainer}>
-                  <Avatar
-                    src={getAvatarSrc()}
-                    alt="Avatar preview"
-                    variant="filled"
-                    radius="xl"
-                    size="xl"
-                    onLoad={() => {
-                      if (form.values.file)
-                        URL.revokeObjectURL(
-                          URL.createObjectURL(form.values.file)
-                        )
-                    }}
-                  />
-                  <FileButton
-                    accept="image/png,image/jpeg"
-                    onChange={(file: File | null) => {
-                      form.setValues({
-                        ...form.values,
-                        file,
-                        avatarUrl: null,
-                      })
-                    }}
-                  >
-                    {(props) => (
-                      <Button {...props}>
-                        {form.values.file
-                          ? 'Choose Different File'
-                          : 'Upload avatar'}
-                      </Button>
-                    )}
-                  </FileButton>
-                </div>
-                <Container fluid w="100%">
-                  <AvCarousel
-                    onSelectAvatar={handleAvatarSelect}
-                    selectedAvatar={form.values.avatarUrl}
-                  />
-                </Container>
-              </form>
-            </div>
-          </Stepper.Step>
-        </Stepper>
-      </div>
-
+            <Container fluid w="100%">
+              <AvCarousel
+                onSelectAvatar={handleAvatarSelect}
+                selectedAvatar={form.values.avatarUrl}
+              />
+            </Container>
+          </form>
+        </>
+      )}
       <div className={classes.navigationButtons}>
         {active !== 0 && (
           <Button variant="filled" size="md" radius="xl" onClick={prevStep}>

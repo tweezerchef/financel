@@ -15,11 +15,14 @@
   width: 100%;
   overflow: hidden; /* Ensure no overflow */
 }
-
+.shareButton {
+  flex-shrink: 0;
+  color: black !important;
+  fill: black;
+  font-weight: 500;
+}
 .buttonContainer {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  padding-top: 0.5rem;
-  flex-shrink: 0; /* Prevent buttons from shrinking */
 }

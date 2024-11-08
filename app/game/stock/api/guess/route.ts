@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
       })
       await prisma.result.update({
         where: { id: resultId },
-        data: { score: totalScore, stockScore: score },
+        data: { score: totalScore },
       })
       await calculateDailyLeaderboard()
     }

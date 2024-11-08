@@ -10,8 +10,11 @@ import {
   Tooltip,
   Legend,
   ChartOptions,
+  ScriptableContext,
+  LegendItem,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
+import { Button, Center } from '@mantine/core'
 import { useScoreContext } from '../../../context/user/ScoreContext'
 import { useUserContext } from '../../../context/user/UserContext'
 import classes from './ui/ScoreChart.module.css'
@@ -44,8 +47,16 @@ export function ScoreChart() {
       {
         label: 'Your Score',
         data: [interestScore, currencyScore, stockScore, finalScore],
-        backgroundColor: 'rgba(255, 99, 132, 0.8)',
-        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor(context: ScriptableContext<'bar'>) {
+          const { chart } = context
+          const { ctx, chartArea } = chart
+          if (!chartArea) return
+          const gradient = ctx.createLinearGradient(0, 0, 0, chartArea.bottom)
+          gradient.addColorStop(0, 'rgba(255, 0, 0, 0.8)') // Red at top
+          gradient.addColorStop(1, 'rgba(255, 255, 0, 0.8)') // Yellow at bottom
+          return gradient
+        },
+        borderColor: 'rgba(255, 0, 0, 0.8)',
         borderWidth: 1,
       },
       {
@@ -69,6 +80,23 @@ export function ScoreChart() {
     aspectRatio: 1.5,
     plugins: {
       legend: {
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          generateLabels: (chart: ChartJS) => {
+            const defaultLabels =
+              Legend.defaults?.labels?.generateLabels?.(chart) ?? []
+            return defaultLabels.map((label: LegendItem) => {
+              if (label.text === 'Your Score')
+                return {
+                  ...label,
+                  fillStyle: 'rgba(255, 128, 0, 0.8)',
+                  strokeStyle: 'rgba(255, 128, 0, 0.8)',
+                }
+              return label
+            })
+          },
+        },
         position: 'top',
       },
     },
@@ -153,13 +181,17 @@ export function ScoreChart() {
       }}
     >
       <Bar ref={chartRef} data={chartData} options={options} />
-      <button
-        onClick={handleShareToTwitter}
-        disabled={sharing}
-        className={classes.shareButton}
-      >
-        {sharing ? 'Preparing...' : 'Share to X'}
-      </button>
+      <Center>
+        <Button
+          size="compact-xs"
+          onClick={handleShareToTwitter}
+          disabled={sharing}
+          className={classes.shareButton}
+          color="yellow"
+        >
+          {sharing ? 'Preparing...' : 'Share to X'}
+        </Button>
+      </Center>
     </div>
   )
 }
