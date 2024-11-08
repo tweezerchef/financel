@@ -1,6 +1,6 @@
-import { Title, Text, Container, Center, AspectRatio } from '@mantine/core'
+import { Title, Text, Container, AspectRatio } from '@mantine/core'
 import Image from 'next/image'
-import { GuestButtonWrapper } from './GuestButtonWrapper'
+// import { GuestButtonWrapper } from './GuestButtonWrapper'
 import classes from './ui/Header.module.css'
 
 export function Header() {
@@ -39,9 +39,9 @@ export function Header() {
             to prove their worth.
           </Text>
         </Container>
-        <Center>
+        {/* <Center>
           <GuestButtonWrapper />
-        </Center>
+        </Center> */}
       </div>
     </div>
   )
