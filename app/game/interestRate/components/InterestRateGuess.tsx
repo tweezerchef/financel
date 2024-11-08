@@ -55,6 +55,7 @@ export function InterestRateGuess({
   const [opened, handlers] = useDisclosure(false)
   const guessCount = useRef(1)
   const { user } = useUserContext()
+  const userId = user?.id
   const { updateScore } = useScoreContext()
   const { dailyChallengeInterestRate } = useDailyChallengeContext()
   const { chartData } = dailyChallengeInterestRate || {}
@@ -112,6 +113,7 @@ export function InterestRateGuess({
             resultId,
             dateOnly: dateOnly.toISOString(),
             today: now.getTime(),
+            userId,
           }),
         })
         guessCount.current += 1
@@ -185,6 +187,7 @@ export function InterestRateGuess({
       isAnimating,
       guesses.length,
       resultId,
+      userId,
       form,
       setAmountAway,
       setGuessCount,
