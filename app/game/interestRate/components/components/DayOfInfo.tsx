@@ -29,7 +29,6 @@ const getDuration = (rateType: string) => {
 export function DayOfInfo({ date, category }: DayOfInfoProps) {
   const duration = getDuration(category)
   const formattedDate = formatDateForChart(date)
-  console.log('formattedDate', formattedDate)
   const [month, dayWithComma, year] = formattedDate.split(' ')
   const day = parseInt(dayWithComma, 10)
   const dayWithSuffix = addOrdinalSuffix(day)
