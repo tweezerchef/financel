@@ -130,12 +130,10 @@ export function ScoreChart() {
 
           // Construct the Twitter share URL
           const tweetText = 'Check out my Financle score chart!'
-          const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-            chartPageUrl
-          )}&text=${encodeURIComponent(tweetText)}`
+          const twitterShareUrl = `https://x.com/intent/tweet?url=${encodeURIComponent(chartPageUrl)}&text=${encodeURIComponent(tweetText)}`
 
-          // Open the Twitter sharing dialog in a new window
-          window.open(twitterShareUrl, '_blank')
+          // Redirect to the Twitter share URL
+          window.location.href = twitterShareUrl
         }, 'image/png')
       } catch (err) {
         console.error('Failed to share chart:', err)
