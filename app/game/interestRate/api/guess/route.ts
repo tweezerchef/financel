@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
           },
           data: { score, completed: true },
         }),
+
         prisma.categoryStatistics.upsert({
           where: { category: 'INTEREST_RATE' },
           create: {
@@ -104,6 +105,10 @@ export async function POST(request: NextRequest) {
       ])
 
       average = stats.totalScore.toNumber() / stats.count
+      await prisma.result.update({
+        where: { id: resultId },
+        data: { interestRateScore: score },
+      })
     }
 
     return NextResponse.json(

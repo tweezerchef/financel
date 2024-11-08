@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server'
@@ -155,7 +154,7 @@ export async function POST(request: NextRequest) {
       })
       await prisma.result.update({
         where: { id: resultId },
-        data: { score: totalScore },
+        data: { score: totalScore, stockScore: score },
       })
       await calculateDailyLeaderboard()
     }
