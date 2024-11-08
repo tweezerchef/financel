@@ -15,7 +15,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { guess, resultId, guessCount, dateOnly, today } =
+    const { guess, resultId, guessCount, dateOnly, today, userId } =
       await request.json()
 
     // Convert milliseconds timestamp back to Date object
@@ -108,6 +108,10 @@ export async function POST(request: NextRequest) {
       await prisma.result.update({
         where: { id: resultId },
         data: { interestRateScore: score },
+      })
+      await prisma.user.update({
+        where: { id: userId },
+        data: { lastLogin: nowDate },
       })
     }
 

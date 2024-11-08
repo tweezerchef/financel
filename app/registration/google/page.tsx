@@ -1,7 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { FileButton, Button, TextInput, Avatar, Container } from '@mantine/core'
+import {
+  FileButton,
+  Button,
+  TextInput,
+  Avatar,
+  Container,
+  Text,
+} from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useForm } from '@mantine/form'
 import { useUserContext } from '../../context/user/UserContext'
@@ -95,6 +102,9 @@ export default function Registration() {
 
   return (
     <div className={classes.main}>
+      <Text size="md" ta="center" fw={500}>
+        We encourage users to use their Twitter avatar and username.
+      </Text>
       <form className={classes.form}>
         <TextInput
           withAsterisk
@@ -103,6 +113,9 @@ export default function Registration() {
           {...form.getInputProps('username')}
           className={classes.wideInput}
         />
+        <Text size="md" ta="center" fw={500}>
+          Select an avatar from the carousel or upload your own
+        </Text>
         <div className={classes.avatarContainer}>
           <Avatar
             src={getAvatarSrc()}
