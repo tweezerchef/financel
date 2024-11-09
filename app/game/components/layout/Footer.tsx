@@ -10,9 +10,9 @@ import classes from './ui/Footer.module.css'
 
 const links = [
   { link: '#', label: 'Contact' },
-  { link: '#', label: 'Privacy' },
+  { link: '/game/privacyPolicy', label: 'Privacy' },
   { link: '#', label: 'Blog' },
-  { link: '#', label: 'Careers' },
+  { link: '/game/security', label: 'Security' },
 ]
 
 interface FooterProps {
@@ -25,7 +25,9 @@ export function Footer({ className = '' }: FooterProps) {
       c="dimmed"
       key={link.label}
       href={link.link}
-      onClick={(event: MouseEvent<HTMLAnchorElement>) => event.preventDefault()}
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+        if (link.link === '#') event.preventDefault()
+      }}
       size="xs"
     >
       {link.label}
