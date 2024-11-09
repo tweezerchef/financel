@@ -8,6 +8,17 @@
   max-height: 55vh;
 }
 
+@media (min-width: 768px) {
+  .login {
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    margin-top: 1rem;
+    max-height: calc(100% - 200px); /* Adjust based on header height */
+  }
+}
+
 @media (max-width: 600px) {
   .login {
     max-width: 90%;

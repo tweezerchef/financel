@@ -23,7 +23,21 @@
   height: 100%;
   width: 100%;
 }
+@media (min-width: 768px) {
+  .wrapper {
+    max-width: 600px;
+    height: 40vh;
+    min-height: 250px;
+    max-height: 300px;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+  }
 
+  .imageContainer {
+    border-radius: 8px;
+  }
+}
 @media (max-width: 600px) {
   .wrapper {
     max-width: 90%;
