@@ -11,6 +11,11 @@ Allow: /api/og
 Disallow: /admin/
 Disallow: /private/
 
+# Allow Twitter Bot
+User-agent: Twitterbot
+Allow: /
+Allow: /api/og
+
 # Prevent media crawling bots from hammering your server
 User-agent: Googlebot-Image
 Crawl-delay: 2
