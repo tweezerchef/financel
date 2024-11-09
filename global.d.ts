@@ -22,3 +22,17 @@ type ArrowDeciderReturn = {
   direction: Direction
   amount: ResponseNumbers
 }
+// global.d.ts
+interface Window {
+  google?: {
+    accounts: {
+      oauth2: {
+        initTokenClient: (config: {
+          client_id: string
+          scope: string
+          callback: (response: GoogleTokenResponse) => void
+        }) => TokenClient
+      }
+    }
+  }
+}

@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-
 'use client'
 
 import {
@@ -22,6 +20,7 @@ interface UserData {
   resultId: string
   nextCategory: Category | null
   username: string | null
+  avatarUrl: string | null
   signedAvatarUrl: string | null
   signedAvatarExpiration: number | null
 }

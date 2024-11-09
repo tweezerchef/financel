@@ -13,7 +13,7 @@ export async function GET() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '4rem',
+          padding: '0',
         }}
       >
         <div
@@ -22,33 +22,51 @@ export async function GET() {
             flexDirection: 'column',
             alignItems: 'center',
             gap: '2rem',
+            marginTop: '-175px',
           }}
         >
-          {/* Replace Next.js Image with a regular img element */}
-          <img
-            src="https://financle.app/favicon.svg"
-            alt="Financle Logo"
-            width="120"
-            height="120"
+          <div
             style={{
-              objectFit: 'contain',
-            }}
-          />
-          <h1
-            style={{
-              fontSize: '6rem',
-              color: '#ffffff',
-              lineHeight: 1.2,
-              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+              gap: '0rem',
+              position: 'relative',
+              left: '75px',
             }}
           >
-            Financle
-          </h1>
+            <h1
+              style={{
+                fontSize: '8rem',
+                color: 'transparent',
+                lineHeight: 0.9,
+                margin: 0,
+                marginBottom: '-22px',
+                background: 'linear-gradient(90deg, #fff564 0%, #ffeb00 100%)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+              }}
+            >
+              Financle
+            </h1>
+            <img
+              src="https://financle.app/favicon.svg"
+              alt="Financle Logo"
+              width="450"
+              height="450"
+              style={{
+                objectFit: 'contain',
+                display: 'block',
+                marginBottom: '-150px',
+              }}
+            />
+          </div>
           <p
             style={{
               fontSize: '2.5rem',
               color: '#888888',
-              textAlign: 'center',
+              margin: 0,
+              padding: 0,
             }}
           >
             A game for the Brothers and Sisters of Finance
