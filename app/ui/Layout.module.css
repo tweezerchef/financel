@@ -35,8 +35,13 @@
 @media only screen and (min-width: 768px) {
   .body {
     min-height: 800px;
+    padding: 40px; /* Increased padding on desktop */
   }
   .rootContainer {
     min-height: 800px;
+    padding: clamp(0px, 2vw, 20px);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Add subtle shadow on desktop */
+    border-radius: clamp(0px, 1vw, 12px); /* Rounded corners on desktop */
+    background-color: white; /* Container background */
   }
 }
