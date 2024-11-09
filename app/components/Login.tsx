@@ -82,6 +82,7 @@ export function Login({
           signedAvatarUrl: data.signedAvatarUrl,
           signedAvatarExpiration: data.signedAvatarExpiration,
           username: data.username,
+          avatarUrl: data.avatarUrl,
         })
         router.push('/game')
       } else {

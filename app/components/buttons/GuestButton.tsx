@@ -40,6 +40,7 @@ export const GuestButton = ({
           signedAvatarUrl: null,
           signedAvatarExpiration: null,
           username: null,
+          avatarUrl: null,
         })
         router.push(`/game`)
       } else {
