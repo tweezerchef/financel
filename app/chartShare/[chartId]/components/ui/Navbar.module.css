@@ -1,0 +1,75 @@
+.navbarContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  color: #ffffff;
+  position: relative;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.titleContainer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.title {
+  background: linear-gradient(90deg, #fff564 0%, #ffeb00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  background-clip: text;
+}
+
+.navContent {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+}
+
+.menuHidden {
+  display: none;
+}
+
+.menuVisible {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 0;
+  position: absolute;
+  max-width: 30vw;
+  top: 60px;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+.control {
+  display: block;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  border-radius: var(--mantine-radius-md);
+  font-weight: 500;
+  color: white;
+  width: 100%;
+}
+
+.control:hover {
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-6)
+  );
+}
