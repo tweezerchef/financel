@@ -8,6 +8,7 @@
   box-sizing: border-box;
   padding: 0 0.25rem;
   overflow: hidden;
+
   /* Add padding to prevent content from touching edges */
 }
 
@@ -15,5 +16,7 @@
   .main {
     justify-content: start;
     min-height: 800px;
+    padding: clamp(0.25rem, 2vw, 1.5rem); /* More responsive padding */
+    gap: clamp(1rem, 3vh, 2rem); /* Add spacing between children */
   }
 }
