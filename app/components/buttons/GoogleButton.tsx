@@ -115,6 +115,7 @@ export function GoogleButton({
         signedAvatarExpiration: data.signedAvatarExpiration
           ? Number(data.signedAvatarExpiration)
           : null,
+        avatarUrl: data.avatarUrl,
         username: data.username,
         ...(data.googleId && { googleId: data.googleId }),
       })

@@ -9,7 +9,7 @@ import classes from './ui/Navbar.module.css'
 export function Navbar() {
   const [opened, { toggle }] = useDisclosure()
   const { user } = useUserContext()
-  const avatarUrl = user?.signedAvatarUrl
+  const avatarUrl = user?.signedAvatarUrl || user?.avatarUrl
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault() // Prevent default action for space key

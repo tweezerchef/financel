@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     images: [
       {
-        url: '/api/og',
+        url: 'https://financle.app/api/og',
         width: 1200,
         height: 630,
         alt: 'Financle - Finance Game',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Financle',
     description: 'A game for the Brothers and Sisters of Finance',
-    images: ['/api/og'],
+    images: ['https://financle.app/api/og'],
   },
   keywords: [
     'finance game',
