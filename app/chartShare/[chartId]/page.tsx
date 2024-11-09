@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Image from 'next/image'
+import classes from './ui/Page.module.css'
 
 type ParamsType = { chartId: string }
 
@@ -62,24 +63,27 @@ export default async function ChartPage({ params }: ChartPageProps) {
   const chartImageUrl = `https://${process.env.NEXT_PUBLIC_SERVER_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_SERVER_AWS_REGION}.amazonaws.com/chart/${chartId}`
 
   return (
-    <div style={{ textAlign: 'center', padding: '2rem' }}>
-      <h1>My Score Chart</h1>
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: '800px',
-          margin: '0 auto',
-        }}
-      >
-        <Image
-          src={chartImageUrl}
-          alt="Score Chart"
-          width={800}
-          height={600}
-          style={{ width: '100%', height: 'auto' }}
-          priority
-        />
+    <div className={classes.container}>
+      <div className={classes.scoreChartWrapper}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <h1>My Score Chart</h1>
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '600px',
+              margin: '0 auto',
+            }}
+          >
+            <Image
+              src={chartImageUrl}
+              alt="Score Chart"
+              width={800}
+              height={600}
+              style={{ width: '100%', height: 'auto', aspectRatio: '1.5' }}
+              priority
+            />
+          </div>
+        </div>
       </div>
     </div>
   )
