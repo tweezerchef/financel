@@ -1,17 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useUserContext } from '../context/user/UserContext'
-
-const AuthenticatedGame = dynamic(
-  () =>
-    import('./components/AuthenticatedGame').then(
-      (mod) => mod.AuthenticatedGame
-    ),
-  { ssr: false }
-)
 
 export default function Game() {
   const router = useRouter()
@@ -19,8 +10,9 @@ export default function Game() {
   const { user, refreshUserData } = useUserContext()
 
   useEffect(() => {
-    const validateSession = async () => {
+    const validateAndRoute = async () => {
       try {
+        // Validate session
         const response = await fetch('/auth/api/verify', {
           method: 'GET',
           credentials: 'include',
@@ -29,6 +21,17 @@ export default function Game() {
         if (!response.ok) throw new Error('Invalid session')
 
         if (!user) await refreshUserData()
+
+        // Handle routing based on nextCategory
+        const path = user?.nextCategory
+          ? ({
+              INTEREST_RATE: '/game/interestRate',
+              CURRENCY: '/game/currency',
+              STOCK: '/game/stock',
+            }[user.nextCategory] ?? '/game/final')
+          : '/game/final'
+
+        router.push(path)
       } catch (error) {
         console.error('Error validating session:', error)
         router.push('/')
@@ -37,12 +40,10 @@ export default function Game() {
       }
     }
 
-    validateSession()
+    validateAndRoute()
   }, [user, refreshUserData, router])
 
   if (isLoading) return <div>Loading...</div>
 
-  if (!user) return null
-
-  return <AuthenticatedGame />
+  return null
 }
