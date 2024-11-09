@@ -37,11 +37,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Financle',
     description: 'A game for the Brothers and Sisters of Finance',
+    url: 'https://financle.app',
     type: 'website',
     locale: 'en_US',
     images: [
       {
-        url: 'https://financle.app/api/og',
+        url: 'https://financle.app/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Financle - Finance Game',
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Financle',
     description: 'A game for the Brothers and Sisters of Finance',
-    images: ['https://financle.app/api/og'],
+    images: ['https://financle.app/og-image.png'],
   },
   keywords: [
     'finance game',
@@ -70,6 +71,10 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+    nocache: false,
+    'max-image-preview': 'large',
+    'max-snippet': -1,
+    'max-video-preview': -1,
   },
   verification: {
     google: 'your-google-verification-code',
