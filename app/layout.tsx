@@ -38,6 +38,7 @@ export const metadata: Metadata = {
     title: 'Financle',
     description: 'A game for the Brothers and Sisters of Finance',
     url: 'https://financle.app',
+    siteName: 'Financle',
     type: 'website',
     locale: 'en_US',
     images: [
