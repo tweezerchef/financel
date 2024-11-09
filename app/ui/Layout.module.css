@@ -8,7 +8,7 @@
 
 .body {
   background-color: #f0f4f8;
-  color: #333333;
+  color: #000000;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -24,19 +24,25 @@
 .rootContainer {
   padding: 0;
   width: 100%;
-  height: auto;
+
   min-height: 100dvh; /* Use the full viewport height */
   min-width: min(200px, 100%); /* Allows narrower screens */
   max-width: 800px; /* Maximum width for the content */
-  max-height: 800px;
+  max-height: 900px;
   margin: 0 auto; /* Centers the container */
 }
 
 @media only screen and (min-width: 768px) {
   .body {
-    min-height: 800px;
+    padding: clamp(16px, 4vh, 40px);
+    background-color: #ffffff;
   }
   .rootContainer {
-    min-height: 800px;
+    min-height: 600px; /* Reduced from 90vh to give more breathing room */
+    max-height: 1000px; /* Added max-height constraint */
+    padding: clamp(2px, 1vw, 10px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    border-radius: clamp(0px, 1vw, 12px);
+    background-color: rgba(188, 189, 193, 0.528);
   }
 }

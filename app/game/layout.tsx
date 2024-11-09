@@ -1,6 +1,6 @@
 import { Container } from '@mantine/core'
 import { Footer } from './components/layout/Footer'
-import classes from './ui/Layout.module.css'
+import classes from './ui/GameLayout.module.css'
 import { Navbar } from './components/layout/Navbar'
 import { ScoreProvider } from '../context/user/ScoreContext'
 
