@@ -7,7 +7,7 @@ import path from 'path'
 import prisma from '../../../../lib/prisma/prisma'
 
 export async function importInterestRates() {
-  const csvFilePath = path.resolve(process.cwd(), 'public/InterestRates.csv')
+  const csvFilePath = path.resolve(process.cwd(), './interestRate.csv')
   const csvData = fs.readFileSync(csvFilePath, 'utf8')
 
   const parser = parse(csvData, {
@@ -23,8 +23,15 @@ export async function importInterestRates() {
     // Convert 2-digit year to 4-digit year and ensure UTC
     const fullYear =
       parseInt(year, 10) + (parseInt(year, 10) < 50 ? 2000 : 1900)
-    const date = new Date(
+    const tempDate = new Date(
       Date.UTC(fullYear, parseInt(month, 10) - 1, parseInt(day, 10))
+    )
+    const date = new Date(
+      Date.UTC(
+        tempDate.getUTCFullYear(),
+        tempDate.getUTCMonth(),
+        tempDate.getUTCDate()
+      )
     )
 
     if (Number.isNaN(date.getTime())) {
@@ -92,3 +99,5 @@ export async function importInterestRates() {
     message: `Import completed successfully. Imported ${importedCount} dates.`,
   }
 }
+
+importInterestRates()

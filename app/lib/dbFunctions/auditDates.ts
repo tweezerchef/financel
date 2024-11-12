@@ -7,7 +7,7 @@ export async function auditPostY2KDates() {
   const datesWithAllData = await prisma.dates.findMany({
     where: {
       AND: [
-        { date: { gte: new Date('1990-01-01') } },
+        { date: { gte: new Date('2000-01-01') } },
         { interestRates: { some: {} } },
         { currencies: { some: {} } },
         { stockPrices: { some: {} } },
@@ -42,7 +42,7 @@ export async function auditPostY2KDates() {
   // Also get some statistics about dates with partial data
   const partialDataAudit = await prisma.dates.findMany({
     where: {
-      date: { gte: new Date('1990-01-01') },
+      date: { gte: new Date('2000-01-01') },
     },
     select: {
       date: true,
