@@ -6,6 +6,10 @@ enum IRCategory {
   T_10 = 'T_10',
   T_5 = 'T_5',
   T_1 = 'T_1',
+  T_1M = 'T_1M',
+  T_3M = 'T_3M',
+  T_4M = 'T_4M',
+  T_6M = 'T_6M',
   T_OVERNIGHT = 'T_OVERNIGHT',
 }
 

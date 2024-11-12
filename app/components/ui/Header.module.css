@@ -3,15 +3,12 @@
 .wrapper {
   position: relative;
   width: 100%;
-  max-width: 400px;
   margin: 0;
   padding: 1rem;
   box-sizing: border-box;
-  height: 45vh;
-  min-height: 200px;
-  max-height: 300px;
   display: flex;
   flex-direction: column;
+  background-color: #000000;
 }
 
 .imageContainer {
@@ -23,110 +20,61 @@
   height: 100%;
   width: 100%;
 }
-@media (min-width: 768px) {
-  .wrapper {
-    max-width: 600px;
-    height: 40vh;
-    min-height: 250px;
-    max-height: 300px;
-    padding: 1.5rem;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .imageContainer {
-    border-radius: 8px;
-  }
-}
-@media (max-width: 600px) {
-  .wrapper {
-    max-width: 90%;
-    padding: 1rem;
-  }
-}
-
-@media (max-height: 700px) {
-  .wrapper {
-    height: 40vh;
-    min-height: 180px;
-  }
-}
 
 .inner {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+
   height: 100%;
+  padding-top: -1rem;
 }
 
 .title {
   font-weight: 800;
-  font-size: rem(40px);
+  font-size: clamp(3.5rem, 10vw, 7rem);
   letter-spacing: rem(-1px);
-  padding-left: var(--mantine-spacing-md);
-  padding-right: var(--mantine-spacing-md);
-  color: var(--mantine-color-white);
-  margin-bottom: var(--mantine-spacing-xs);
+
+  background: linear-gradient(90deg, #fff564 0%, #ffeb00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-align: center;
   font-family:
     Greycliff CF,
     var(--mantine-font-family);
-
-  @media (max-width: --mantine-breakpoint-xs) {
-    font-size: rem(28px);
-    text-align: center;
-  }
-}
-
-.highlight {
-  color: var(--mantine-color-primary-4);
 }
 
 .description {
-  color: var(--mantine-color-gray-0);
+  color: #ffffff;
   text-align: center;
-
-  @media (max-width: --mantine-breakpoint-xs) {
-    font-size: var(--mantine-font-size-lg);
-    text-align: center;
-  }
+  font-size: clamp(1rem, 7vw, 2.5rem);
+  line-height: 1.3;
+  font-weight: 600;
 }
 
-.controls {
-  margin-top: calc(var(--mantine-spacing-xl) * 1.5);
-  display: flex;
-  justify-content: center;
-  padding-left: var(--mantine-spacing-md);
-  padding-right: var(--mantine-spacing-md);
-
-  @media (max-width: --mantine-breakpoint-xs) {
-    flex-direction: column;
-  }
-}
-
-.control {
-  height: rem(35px);
-  font-size: var(--mantine-font-size-md);
-
-  &:not(:first-of-type) {
-    margin-left: var(--mantine-spacing-md);
+@media (min-width: 767px) {
+  .wrapper {
+    min-width: 500px;
+    max-width: 600px;
+    height: auto;
+    min-height: 350px;
+    max-height: 600px;
+    overflow: hidden;
   }
 
-  @media (max-width: --mantine-breakpoint-xs) {
-    &:not(:first-of-type) {
-      margin-top: var(--mantine-spacing-md);
-      margin-left: 0;
-    }
+  .title {
+    font-size: clamp(4rem, 8vw, 6rem);
   }
-}
 
-.secondaryControl {
-  color: var(--mantine-color-white);
-  background-color: rgba(255, 255, 255, 0.4);
+  .description {
+    font-size: clamp(2rem, 3vw, 2.5rem);
+    max-width: 80%;
+    margin: 0 auto;
+  }
 
-  @mixin hover {
-    background-color: rgba(255, 255, 255, 0.45);
+  .inner {
+    justify-content: center;
   }
 }

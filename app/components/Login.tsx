@@ -100,7 +100,7 @@ export function Login({
   }
 
   return (
-    <Paper p="xs" {...props} className={classes.login}>
+    <Paper p="xs" {...props} className={classes.login} bg="black" c="white">
       <Center mt="xs">
         <RegisterButton disabled={isAuthenticating || isLoading} />
       </Center>
