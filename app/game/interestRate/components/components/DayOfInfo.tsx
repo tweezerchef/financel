@@ -19,6 +19,14 @@ const getDuration = (rateType: string) => {
       return '5-Year Treasury'
     case 'T_1':
       return '1-Year Treasury'
+    case 'T_1M':
+      return '1-Month Treasury'
+    case 'T_3M':
+      return '3-Month Treasury'
+    case 'T_4M':
+      return '4-Month Treasury'
+    case 'T_6M':
+      return '6-Month Treasury'
     case 'T_OVERNIGHT':
       return 'Overnight Rate'
     default:
