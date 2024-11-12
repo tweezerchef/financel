@@ -37,7 +37,12 @@ function GoogleIcon() {
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid"
       viewBox="0 0 256 262"
-      className="w-4 h-4"
+      style={{
+        width: '1.5rem',
+        height: '1.5rem',
+        display: 'block',
+        minWidth: '1.5rem',
+      }}
     >
       <path
         fill="#4285F4"
@@ -164,13 +169,22 @@ export function GoogleButton({
   return (
     <Button
       leftSection={<GoogleIcon />}
-      variant="default"
+      variant="gradient"
+      gradient={{ from: '#fff564', to: '#ffeb00', deg: 90 }}
       size="md"
       radius="xl"
       onClick={handleGoogleLogin}
       disabled={disabled}
       loading={isLoading}
       loaderProps={{ type: 'bars' }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        padding: '0.5rem 1.5rem',
+        color: '#000000',
+        fontWeight: 600,
+      }}
       {...props}
     >
       Continue with Google

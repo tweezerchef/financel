@@ -1,40 +1,18 @@
 .login {
   width: 100%;
-  max-width: 400px;
   margin: 0;
-  padding: clamp(0.5rem, 2vw, 1rem);
+  padding: 0;
   box-sizing: border-box;
   overflow-y: auto;
-  max-height: 55vh;
+  background-color: #000000;
+  color: #ffffff;
 }
 
-@media (min-width: 768px) {
+@media screen and (min-width: 767px) {
   .login {
-    max-width: 500px;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-    margin-top: 1rem;
-    max-height: calc(100% - 200px); /* Adjust based on header height */
-  }
-}
-
-@media (max-width: 600px) {
-  .login {
-    max-width: 90%;
-    padding: 0.75rem;
-  }
-}
-
-@media (max-width: 380px) {
-  .login {
-    padding: 0.5rem;
-    font-size: 14px;
-  }
-}
-
-@media (max-height: 667px) {
-  .login {
-    max-height: 60vh;
+    min-width: 500px;
+    max-width: 600px;
+    box-shadow: 0 0 15px rgba(255, 235, 0, 0.1);
+    max-height: calc(100% - 200px);
   }
 }

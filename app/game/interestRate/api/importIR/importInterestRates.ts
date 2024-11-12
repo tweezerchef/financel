@@ -7,7 +7,7 @@ import path from 'path'
 import prisma from '../../../../lib/prisma/prisma'
 
 export async function importInterestRates() {
-  const csvFilePath = path.resolve(process.cwd(), 'public/InterestRates.csv')
+  const csvFilePath = path.resolve(process.cwd(), './interestRate.csv')
   const csvData = fs.readFileSync(csvFilePath, 'utf8')
 
   const parser = parse(csvData, {
@@ -15,9 +15,24 @@ export async function importInterestRates() {
     skip_empty_lines: true,
   })
 
+  let importedCount = 0
+
   for await (const record of parser) {
-    // Parse the date from the CSV
-    const date = new Date(record.Date)
+    // Parse the date from MM/DD/YY format
+    const [month, day, year] = record.Date.split('/')
+    // Convert 2-digit year to 4-digit year and ensure UTC
+    const fullYear =
+      parseInt(year, 10) + (parseInt(year, 10) < 50 ? 2000 : 1900)
+    const tempDate = new Date(
+      Date.UTC(fullYear, parseInt(month, 10) - 1, parseInt(day, 10))
+    )
+    const date = new Date(
+      Date.UTC(
+        tempDate.getUTCFullYear(),
+        tempDate.getUTCMonth(),
+        tempDate.getUTCDate()
+      )
+    )
 
     if (Number.isNaN(date.getTime())) {
       console.error(`Invalid date format for row: ${record.Date}`)
@@ -35,6 +50,10 @@ export async function importInterestRates() {
 
     // Map CSV columns to IRCategories
     const categoryMap: { [key: string]: keyof typeof IRCategory } = {
+      '1 Mo': 'T_1M',
+      '3 Mo': 'T_3M',
+      '4 Mo': 'T_4M',
+      '6 Mo': 'T_6M',
       '1 Yr': 'T_1',
       '5 Yr': 'T_5',
       '10 Yr': 'T_10',
@@ -48,7 +67,7 @@ export async function importInterestRates() {
 
       if (Number.isNaN(rate)) {
         console.warn(
-          `Invalid rate for ${csvColumn} on ${record.Date}: ${record[csvColumn]}`
+          `Invalid rate for ${csvColumn} on ${date.toISOString()}: ${record[csvColumn]}`
         )
         continue
       }
@@ -71,8 +90,14 @@ export async function importInterestRates() {
       })
     }
 
-    console.log(`Imported data for ${record.Date}`)
+    console.log(`Imported data for ${date.toISOString()}`)
+    // eslint-disable-next-line no-plusplus
+    importedCount++
   }
 
-  console.log('Import completed successfully')
+  return {
+    message: `Import completed successfully. Imported ${importedCount} dates.`,
+  }
 }
+
+importInterestRates()
