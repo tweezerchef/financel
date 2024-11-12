@@ -6,6 +6,10 @@
   box-sizing: border-box;
   overflow-y: auto;
   max-height: 55vh;
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid var(--mantine-color-yellow-3);
+  border-radius: 8px;
 }
 
 @media (min-width: 768px) {
@@ -13,9 +17,9 @@
     max-width: 500px;
     padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 15px rgba(255, 235, 0, 0.1);
     margin-top: 1rem;
-    max-height: calc(100% - 200px); /* Adjust based on header height */
+    max-height: calc(100% - 200px);
   }
 }
 
@@ -23,6 +27,7 @@
   .login {
     max-width: 90%;
     padding: 0.75rem;
+    border-radius: 4px;
   }
 }
 

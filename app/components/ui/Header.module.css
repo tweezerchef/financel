@@ -12,6 +12,7 @@
   max-height: 300px;
   display: flex;
   flex-direction: column;
+  background-color: #000000;
 }
 
 .imageContainer {
@@ -85,7 +86,7 @@
 }
 
 .description {
-  color: var(--mantine-color-gray-0);
+  color: #c1c2c5;
   text-align: center;
   font-size: clamp(1rem, 7vw, 2.5rem);
   line-height: 1.3;
