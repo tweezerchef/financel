@@ -5,7 +5,8 @@
   box-sizing: border-box;
   overflow-y: auto;
   background-color: #000000;
-  color: #ffffff;
+
+  border-radius: 0;
 }
 
 @media screen and (min-width: 767px) {
