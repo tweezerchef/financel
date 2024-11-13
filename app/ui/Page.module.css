@@ -1,26 +1,23 @@
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically */
-  align-items: center; /* Center content horizontally */
+  justify-content: center;
+  align-items: center;
   height: 100dvh;
   width: 100%;
-  box-sizing: border-box;
-
+  background-color: #000000;
   overflow: hidden;
-
-  /* Add padding to prevent content from touching edges */
+  padding: 0;
 }
+
 @media only screen and (min-width: 768px) {
   .main {
-    justify-content: flex-start;
-    padding: clamp(1rem, 2vw, 1.5rem);
-    min-height: auto;
+    padding: clamp(0.1rem, calc((100vh - 950px) * 0.5), 1.5rem);
+    min-height: 0;
     max-height: none;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-
     height: 100%;
   }
 }

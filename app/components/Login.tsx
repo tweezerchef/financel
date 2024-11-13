@@ -11,6 +11,7 @@ import {
   Button,
   Divider,
   Stack,
+  Text,
 } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { RegisterButton } from './buttons/RegisterButton'
@@ -101,18 +102,21 @@ export function Login({
 
   return (
     <Paper p="xs" {...props} className={classes.login} bg="black" c="white">
-      <Center mt="xs">
-        <RegisterButton disabled={isAuthenticating || isLoading} />
-      </Center>
-
-      <Divider label="Or continue with email" labelPosition="center" my="md" />
       <Center>
         <GoogleButton
           onAuthStart={onAuthStart}
           disabled={isAuthenticating || isLoading}
         />
       </Center>
+      <Divider
+        label={<Text size="lg">Register or Login with email</Text>}
+        labelPosition="center"
+        my="md"
+      />
 
+      <Center mt="xs">
+        <RegisterButton disabled={isAuthenticating || isLoading} />
+      </Center>
       <form onSubmit={form.onSubmit((values) => formSubmit(values))}>
         <Stack gap="xs">
           <TextInput
