@@ -8,6 +8,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  height: 40dvh;
   background-color: #000000;
 }
 
