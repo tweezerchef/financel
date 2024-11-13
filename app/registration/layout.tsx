@@ -1,6 +1,6 @@
 import { Container } from '@mantine/core'
 import { Footer } from './components/Footer'
-import classes from './ui/Layout.module.css'
+import classes from './ui/Registration.Layout.module.css'
 import { Navbar } from './components/Navbar'
 
 export default function Layout({
