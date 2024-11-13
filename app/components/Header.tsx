@@ -1,4 +1,4 @@
-import { Title, Text } from '@mantine/core'
+import { Title } from '@mantine/core'
 import Image from 'next/image'
 // import { GuestButtonWrapper } from './GuestButtonWrapper'
 import classes from './ui/Header.module.css'
@@ -29,10 +29,6 @@ export function Header() {
 
       <div className={classes.inner}>
         <Title className={classes.title}>Financle</Title>
-        <Text className={classes.description}>
-          Financle is where the Brothers and Sisters Of Finance come together to
-          prove their worth.
-        </Text>
       </div>
     </div>
   )
