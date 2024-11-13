@@ -13,11 +13,11 @@ import {
 import { useRouter } from 'next/navigation'
 import { useForm } from '@mantine/form'
 import { AvCarousel } from './google/components/avCarousel'
-import classes from './ui/Page.module.css'
+import classes from './ui/Registration.Page.module.css'
 
 export default function Registration() {
   const router = useRouter()
-  const [active, setActive] = useState(1)
+  const [active, setActive] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const form = useForm({
     initialValues: {
