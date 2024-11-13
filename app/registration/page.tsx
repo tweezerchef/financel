@@ -38,6 +38,10 @@ export default function Registration() {
             values.email !== values.confirmEmail
               ? 'Email does not match'
               : null,
+          password:
+            values.password.length < 6
+              ? 'Password must be at least 6 characters'
+              : null,
           confirmPassword:
             values.password !== values.confirmPassword
               ? 'Password does not match'

@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from '@mantine/form'
 import { useUserContext } from '../../context/user/UserContext'
 import { AvCarousel } from './components/avCarousel'
-import classes from '../ui/Page.module.css'
+import classes from '../ui/Registration.Page.module.css'
 
 export default function Registration() {
   const router = useRouter()
