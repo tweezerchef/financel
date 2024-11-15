@@ -1,28 +1,11 @@
-.chartContainer {
-  width: 100%;
-  max-height: 300px; /* Set a fixed height or use max-height */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 1rem;
-  box-sizing: border-box;
-}
-
-.chartWrapper {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  overflow: hidden; /* Ensure no overflow */
-}
 .shareButton {
   flex-shrink: 0;
   color: black !important;
   fill: black;
   font-weight: 500;
 }
-.buttonContainer {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
+
+.chartContainer {
+  background-color: #000000;
+  width: 100%;
 }

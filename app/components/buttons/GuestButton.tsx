@@ -61,7 +61,7 @@ export const GuestButton = ({
     <Button
       className={classes.control}
       variant="blue"
-      size="lg"
+      size="sm"
       onClick={handleGuestLogin}
       disabled={isLoading || isAuthenticating}
     >

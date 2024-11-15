@@ -10,10 +10,16 @@
 }
 
 .scoreChartWrapper {
+  padding: 0.2rem;
   flex: 0 0 auto;
-  padding: 0.5rem;
   width: 100%;
-  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .scoreChartWrapper {
+    margin: 0 auto;
+  }
 }
 
 .leaderboardWrapper {
@@ -26,22 +32,14 @@
   color: #c1c2c5;
 }
 
-.shareButton {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #1da1f2; /* Twitter blue */
+.scoreDisplay {
+  text-align: center;
+  font-size: 1.2rem;
   color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
 }
 
-.shareButton:disabled {
-  background-color: #8ecdf7;
-  cursor: not-allowed;
-}
-
-.shareButton:hover:not(:disabled) {
-  background-color: #0d95e8;
+.scoreDisplay h2 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--mantine-color-yellow-3);
 }
