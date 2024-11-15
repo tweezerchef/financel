@@ -39,6 +39,7 @@ yarn-error.log*
 #SQL File
 financel_backup.sql
 financel_data.sql
+financel_data_inserts.sql
 # typescript
 *.tsbuildinfo
 next-env.d.ts
