@@ -1,16 +1,15 @@
 .control {
-  height: rem(35px);
-  margin-top: 0.5rem;
-  font-size: var(--mantine-font-size-md);
+  width: auto;
+  min-width: 200px;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  margin: 1rem auto;
+  background: linear-gradient(90deg, #fff964 0%, #ffd700 100%);
+  color: black;
+  font-weight: 600;
+}
 
-  &:not(:first-of-type) {
-    margin-left: var(--mantine-spacing-md);
-  }
-
-  @media (max-width: --mantine-breakpoint-xs) {
-    &:not(:first-of-type) {
-      margin-top: var(--mantine-spacing-md);
-      margin-left: 0;
-    }
-  }
+.control:hover {
+  background: linear-gradient(90deg, #ffd700 0%, #fff964 100%);
+  transform: translateY(-1px);
 }
