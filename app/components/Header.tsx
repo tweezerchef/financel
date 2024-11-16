@@ -13,20 +13,7 @@ export function Header() {
             alt="Financel"
             sizes="(max-width: 600px) 90vw, 400px"
             quality={50}
-            sizes="(max-width: 600px) 90vw, 400px"
-            quality={50}
             priority
-            fill
-            loading="eager"
-            placeholder="blur"
-            blurDataURL="data:image/webp;base64,BASE64_BLUR_HERE"
-            style={{
-              width: '100%',
-              contentVisibility: 'auto',
-              display: 'block',
-              objectFit: 'cover',
-              backgroundColor: '#f0f0f0',
-            }}
             fill
             loading="eager"
             placeholder="blur"
