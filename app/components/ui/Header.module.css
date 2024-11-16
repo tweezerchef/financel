@@ -11,6 +11,7 @@
   flex-direction: column;
   background-color: #000000;
 }
+
 @media (max-width: 375px) {
   .wrapper {
     height: 30dvh;
