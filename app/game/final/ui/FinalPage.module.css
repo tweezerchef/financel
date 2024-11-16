@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 111px);
+  width: 100%;
+  overflow: hidden;
+  background-color: #000;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.scoreChartWrapper {
+  padding: 0.2rem;
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .scoreChartWrapper {
+    margin: 0 auto;
+  }
+}
+
+.leaderboardWrapper {
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  background-color: #000000;
+  color: #c1c2c5;
+}
+
+.scoreDisplay {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.scoreDisplay h2 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--mantine-color-yellow-3);
+}

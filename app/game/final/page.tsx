@@ -1,12 +1,22 @@
 'use client'
 
-import { ScoreChart } from './components/ScoreChart'
+import dynamic from 'next/dist/shared/lib/dynamic'
 import { LeaderBoard } from './components/Leaderboard'
-import classes from './ui/Page.module.css'
+import { useScoreContext } from '../../context/user/ScoreContext'
+import classes from './ui/FinalPage.module.css'
 
+const ScoreChart = dynamic(
+  () => import('./components/ScoreChart').then((mod) => mod.ScoreChart),
+  { ssr: false }
+)
 export default function Final() {
+  const { finalScore } = useScoreContext()
+
   return (
     <div className={classes.container}>
+      <div className={classes.scoreDisplay}>
+        <h2>Final Score: {finalScore}</h2>
+      </div>
       <div className={classes.scoreChartWrapper}>
         <ScoreChart />
       </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +24,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 export function ScoreChart() {
   const chartRef = useRef<ChartJS<'bar'>>(null)
   const [sharing, setSharing] = useState(false)
+  const [chartWidth, setChartWidth] = useState('100%')
   const {
     interestScore,
     currencyScore,
@@ -37,6 +38,17 @@ export function ScoreChart() {
   } = useScoreContext()
   const { user } = useUserContext()
   const resultId = user?.resultId
+
+  useEffect(() => {
+    setChartWidth(window.innerWidth >= 768 ? '800px' : '600px')
+
+    const handleResize = () => {
+      setChartWidth(window.innerWidth >= 768 ? '800px' : '600px')
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   if (!stockScore || !currencyScore || !interestScore || !finalScore)
     refreshScore(resultId || '')
@@ -77,7 +89,7 @@ export function ScoreChart() {
   const options: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: true,
-    aspectRatio: 1.5,
+    aspectRatio: window?.innerWidth >= 768 ? 3 : 2,
     plugins: {
       legend: {
         labels: {
@@ -148,16 +160,15 @@ export function ScoreChart() {
 
           if (!uploadResponse.ok) throw new Error('Chart upload failed')
 
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { imageUrl, chartId } = await uploadResponse.json()
+          const { chartId } = await uploadResponse.json()
 
           if (!chartId) throw new Error('chartId is undefined in the response')
 
           // Construct the URL to the chart page
           const chartPageUrl = `${window.location.origin}/chartShare/${chartId}`
 
-          // Construct the Twitter share URL
-          const tweetText = 'Check out my Financle score chart!'
+          // Construct the Twitter share URL with the final score
+          const tweetText = `I scored ${finalScore} points in Financle! Can you beat my score?`
           const twitterShareUrl = `https://x.com/intent/tweet?url=${encodeURIComponent(chartPageUrl)}&text=${encodeURIComponent(tweetText)}`
 
           // Redirect to the Twitter share URL
@@ -175,10 +186,11 @@ export function ScoreChart() {
   return (
     <div
       style={{
-        width: '80%',
-        maxWidth: '600px',
+        width: '100%',
+        maxWidth: chartWidth,
         margin: '0 auto',
       }}
+      className={classes.chartContainer}
     >
       <Bar ref={chartRef} data={chartData} options={options} />
       <Center>

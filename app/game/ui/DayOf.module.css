@@ -11,7 +11,7 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 46px; /* Height of the legend */
+  bottom: 40px; /* Height of the legend */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,8 +32,9 @@
   left: 0;
   right: 0;
   background-color: transparent;
-  height: 52px;
+  height: 40px;
   overflow: hidden;
+  padding: 3px 0;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease-in-out;
