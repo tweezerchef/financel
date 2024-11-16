@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +24,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 export function ScoreChart() {
   const chartRef = useRef<ChartJS<'bar'>>(null)
   const [sharing, setSharing] = useState(false)
+  const [chartWidth, setChartWidth] = useState('100%')
   const {
     interestScore,
     currencyScore,
@@ -37,6 +38,17 @@ export function ScoreChart() {
   } = useScoreContext()
   const { user } = useUserContext()
   const resultId = user?.resultId
+
+  useEffect(() => {
+    setChartWidth(window.innerWidth >= 768 ? '800px' : '600px')
+
+    const handleResize = () => {
+      setChartWidth(window.innerWidth >= 768 ? '800px' : '600px')
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   if (!stockScore || !currencyScore || !interestScore || !finalScore)
     refreshScore(resultId || '')
@@ -175,7 +187,7 @@ export function ScoreChart() {
     <div
       style={{
         width: '100%',
-        maxWidth: window?.innerWidth >= 768 ? '800px' : '600px',
+        maxWidth: chartWidth,
         margin: '0 auto',
       }}
       className={classes.chartContainer}
